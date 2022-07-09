@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  mysql8:
+    image: mysql:8.0.23
+    volumes:
+      - ./docker/mysql8/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: gravityr
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
