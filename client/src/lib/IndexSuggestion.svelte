@@ -44,7 +44,7 @@
 </ul>
 
 <div>
-  With below command, you can examine the efficiency of indexes by temporally
+  With below command, you can examine the efficiency of indexes by temporarily
   adding them in your database.
 </div>
 
