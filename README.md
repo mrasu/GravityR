@@ -1,5 +1,11 @@
 GravityR is a gravity radar. Find bottleneck in your application.
 
+# Sample
+GravityR's results for slow SQL because no index exists
+
+* [suggest](https://htmlpreview.github.io/?https://github.com/mrasu/GravityR/blob/main/sample/output.html)
+* [suggest --with-examine](https://htmlpreview.github.io/?https://github.com/mrasu/GravityR/blob/main/sample/output_examine.html)
+
 # Usage
 ```sh
 # Search your SQL with EXPLAIN
