@@ -28,6 +28,5 @@ jobs:
           path: 'node_modules'
           key: ${{ runner.os }}-build-client-node-modules-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install
-      - run: yarn check:prettier
-      - run: yarn check:svelte
+      - run: yarn check:all
       - run: yarn test

@@ -65,7 +65,7 @@
           updateSeriesData(series[seriesIndex].data, Number(x));
         },
         dataPointMouseEnter: (
-          event,
+          event: any,
           {
             w: {
               config: { series },

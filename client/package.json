@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check:svelte": "svelte-check --tsconfig ./tsconfig.json",
+    "check:all": "yarn check:svelte && yarn check:prettier",
+    "check:svelte": "svelte-check --fail-on-hints --tsconfig ./tsconfig.json",
     "check:prettier": "prettier --check --ignore-path .gitignore \"!package-lock.json\" --plugin-search-dir=. ./**/*.{json,css,js,ts,cjs,svelte}",
     "test": "jest",
     "fix:prettier": "prettier --write --ignore-path .gitignore \"!package-lock.json\" --plugin-search-dir=. ./**/*.{json,css,js,ts,cjs,svelte}"
