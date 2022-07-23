@@ -9,4 +9,6 @@ jobs:
         with:
           go-version-file: 'go.mod'
           cache: true
+      - name: 'Create dummy directory to enable to build'
+        run: mkdir -p client/dist/assets && touch client/dist/assets/.dummy
       - run: make test
