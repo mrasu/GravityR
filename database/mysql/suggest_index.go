@@ -3,9 +3,8 @@ package mysql
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/mrasu/GravityR/database/mysql/inspectors"
-	query2 "github.com/mrasu/GravityR/database/mysql/inspectors/query"
 	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pingcap/tidb/parser"
 	"github.com/pingcap/tidb/parser/ast"
@@ -137,22 +136,22 @@ func SuggestIndex(db *sqlx.DB, database, query string, aTree *models.ExplainAnal
 	if err != nil {
 		panic(err)
 	}
-	tNames, errs := query2.CollectTable(rootNode)
+	tNames, errs := collectors.CollectTableNames(rootNode)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	tables, err := inspectors.CollectTableSchema(db, database, tNames)
+	tables, err := collectors.CollectTableSchemas(db, database, tNames)
 	if err != nil {
 		return nil, []error{err}
 	}
 
-	scopes, errs := query2.CollectScopedFields(rootNode)
+	scopes, errs := collectors.CollectStmtScopes(rootNode)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	idxCandidates, err := inspectors.CollectIndexTargets(tables, scopes)
+	idxCandidates, err := collectors.CollectIndexTargets(tables, scopes)
 	if err != nil {
 		return nil, []error{err}
 	}

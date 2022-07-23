@@ -1,4 +1,4 @@
-package query
+package collectors
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ type table struct {
 	alias model.CIStr
 }
 
-func CollectTable(rootNode ast.StmtNode) ([]string, []error) {
+func CollectTableNames(rootNode ast.StmtNode) ([]string, []error) {
 	t := &tableCollector{}
 	if _, ok := rootNode.(*ast.SetOprStmt); ok {
 		return nil, []error{lib.NewUnsupportedError("not supporting UNION, EXCEPT etc.")}

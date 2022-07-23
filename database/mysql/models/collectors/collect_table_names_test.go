@@ -1,7 +1,7 @@
-package query_test
+package collectors_test
 
 import (
-	"github.com/mrasu/GravityR/database/mysql/inspectors/query"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -10,7 +10,7 @@ import (
 	_ "github.com/pingcap/tidb/types/parser_driver"
 )
 
-func TestCollectTable(t *testing.T) {
+func TestCollectTableNames(t *testing.T) {
 	tests := []struct {
 		name   string
 		query  string
@@ -85,7 +85,7 @@ order by status desc`,
 		t.Run(tt.name, func(t *testing.T) {
 			stmtNodes, _, err := p.Parse(tt.query, "", "")
 			assert.NoError(t, err)
-			actualTables, errs := query.CollectTable(stmtNodes[0])
+			actualTables, errs := collectors.CollectTableNames(stmtNodes[0])
 			assert.Empty(t, errs)
 
 			assert.ElementsMatch(t, tt.tables, actualTables)
@@ -93,7 +93,7 @@ order by status desc`,
 	}
 }
 
-func TestCollectTable_Errors(t *testing.T) {
+func TestCollectTableNames_Errors(t *testing.T) {
 	tests := []struct {
 		name  string
 		query string
@@ -131,7 +131,7 @@ func TestCollectTable_Errors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			stmtNodes, _, err := p.Parse(tt.query, "", "")
 			assert.NoError(t, err)
-			actualTables, errs := query.CollectTable(stmtNodes[0])
+			actualTables, errs := collectors.CollectTableNames(stmtNodes[0])
 			assert.Nil(t, actualTables)
 
 			assert.Equal(t, len(tt.errs), len(errs))

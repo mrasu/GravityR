@@ -1,4 +1,4 @@
-package inspectors
+package collectors
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -11,16 +11,26 @@ import (
 type explainAnalyzeResultCollector struct{}
 
 func CollectExplainAnalyzeTree(db *sqlx.DB, query string) (*models.ExplainAnalyzeTree, error) {
+	c := explainAnalyzeResultCollector{}
+	root, err := c.collect(db, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.ExplainAnalyzeTree{Root: root}, nil
+}
+
+func (earc *explainAnalyzeResultCollector) collect(db *sqlx.DB, query string) (*models.ExplainAnalyzeTreeNode, error) {
 	nodeStack := lib.NewStack[models.ExplainAnalyzeTreeNode]()
 
-	tree, err := getExplainAnalyzeResult(db, query)
+	expRes, err := earc.runExplainAnalyzeResult(db, query)
 	if err != nil {
 		return nil, err
 	}
 
 	root := &models.ExplainAnalyzeTreeNode{AnalyzeResultLine: &models.ExplainAnalyzeResultLine{}}
 	nodeStack.Push(root)
-	treeLines := strings.Split(tree, "\n")
+	treeLines := strings.Split(expRes, "\n")
 	for _, line := range treeLines {
 		if line == "" {
 			continue
@@ -51,11 +61,10 @@ func CollectExplainAnalyzeTree(db *sqlx.DB, query string) (*models.ExplainAnalyz
 		nodeStack.Push(n)
 	}
 
-	tmp := &models.ExplainAnalyzeTree{Root: root}
-	return tmp, nil
+	return root, nil
 }
 
-func getExplainAnalyzeResult(db *sqlx.DB, query string) (string, error) {
+func (earc *explainAnalyzeResultCollector) runExplainAnalyzeResult(db *sqlx.DB, query string) (string, error) {
 	rows, err := db.Query("EXPLAIN ANALYZE FORMAT=TREE " + query)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to select")

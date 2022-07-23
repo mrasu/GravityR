@@ -1,8 +1,8 @@
-package inspectors_test
+package collectors_test
 
 import (
-	"github.com/mrasu/GravityR/database/mysql/inspectors"
 	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/stretchr/testify/assert"
 	"strings"
@@ -207,7 +207,7 @@ func TestCollectIndexTargets_SingleTable(t *testing.T) {
 				},
 				Fields: tt.scopeFields,
 			}
-			actualTargets, err := inspectors.CollectIndexTargets(tables, []*models.StmtScope{scope})
+			actualTargets, err := collectors.CollectIndexTargets(tables, []*models.StmtScope{scope})
 			assert.NoError(t, err)
 
 			sortTargets(actualTargets)
@@ -331,7 +331,7 @@ func TestCollectIndexTargets_MultipleTables(t *testing.T) {
 				},
 				Fields: tt.scopeFields,
 			}
-			actualTargets, err := inspectors.CollectIndexTargets(tables, []*models.StmtScope{scope})
+			actualTargets, err := collectors.CollectIndexTargets(tables, []*models.StmtScope{scope})
 			assert.NoError(t, err)
 
 			sortTargets(actualTargets)

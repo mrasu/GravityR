@@ -3,8 +3,8 @@ package db
 import (
 	"fmt"
 	"github.com/mrasu/GravityR/database/mysql"
-	"github.com/mrasu/GravityR/database/mysql/inspectors"
 	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	_ "github.com/pingcap/tidb/types/parser_driver"
@@ -286,7 +286,7 @@ func runSuggest() error {
 		return err
 	}
 
-	aTree, err := inspectors.CollectExplainAnalyzeTree(db, queryVar)
+	aTree, err := collectors.CollectExplainAnalyzeTree(db, queryVar)
 	if err != nil {
 		return err
 	}

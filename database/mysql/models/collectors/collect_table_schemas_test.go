@@ -1,10 +1,10 @@
-package inspectors_test
+package collectors_test
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
-	"github.com/mrasu/GravityR/database/mysql/inspectors"
 	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -32,7 +32,7 @@ var tableColumns = map[string][]*models.ColumnSchema{
 
 const tableSchemaQuery = "SELECT\\s+COLUMN_NAME,\\s+COLUMN_KEY,\\s+TABLE_NAME\\s+FROM\\s+information_schema.columns"
 
-func TestCollectTableSchema(t *testing.T) {
+func TestCollectTableSchemas(t *testing.T) {
 	tests := []struct {
 		name   string
 		tables []string
@@ -52,7 +52,7 @@ func TestCollectTableSchema(t *testing.T) {
 			thelper.MockDB(t, func(db *sqlx.DB, mock sqlmock.Sqlmock) {
 				mockTableSchemaQuery(mock, tt.tables)
 
-				ts, err := inspectors.CollectTableSchema(db, thelper.DbName, tt.tables)
+				ts, err := collectors.CollectTableSchemas(db, thelper.DbName, tt.tables)
 				assert.NoError(t, err)
 
 				assert.Equal(t, len(ts), len(tt.tables))
@@ -76,12 +76,12 @@ func mockTableSchemaQuery(mock sqlmock.Sqlmock, tables []string) {
 	mock.ExpectQuery(tableSchemaQuery).WillReturnRows(rows)
 }
 
-func TestCollectTableSchema_Error(t *testing.T) {
+func TestCollectTableSchemas_Error(t *testing.T) {
 	thelper.MockDB(t, func(db *sqlx.DB, mock sqlmock.Sqlmock) {
 		emptyRows := sqlmock.NewRows([]string{"COLUMN_NAME", "COLUMN_KEY", "TABLE_NAME"})
 		mock.ExpectQuery(tableSchemaQuery).WillReturnRows(emptyRows)
 
-		ts, err := inspectors.CollectTableSchema(db, thelper.DbName, []string{"missing"})
+		ts, err := collectors.CollectTableSchemas(db, thelper.DbName, []string{"missing"})
 		assert.Nil(t, ts)
 		assert.Error(t, err)
 	})

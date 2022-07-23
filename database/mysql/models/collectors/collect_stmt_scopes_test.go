@@ -1,15 +1,14 @@
-package query_test
+package collectors_test
 
 import (
-	"fmt"
-	"github.com/mrasu/GravityR/database/mysql/inspectors/query"
 	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/pingcap/tidb/parser"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestCollectScopedFields_SingleField(t *testing.T) {
+func TestCollectStmtScopes_SingleField(t *testing.T) {
 	tests := []struct {
 		name    string
 		query   string
@@ -196,7 +195,7 @@ func TestCollectScopedFields_SingleField(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			stmtNodes, _, err := p.Parse(tt.query, "", "")
 			assert.NoError(t, err)
-			actualScopes, errs := query.CollectScopedFields(stmtNodes[0])
+			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			assert.Empty(t, errs)
 
 			assert.Equal(t, 1, len(actualScopes))
@@ -217,7 +216,7 @@ func TestCollectScopedFields_SingleField(t *testing.T) {
 	}
 }
 
-func TestCollectScopedFields_Joins(t *testing.T) {
+func TestCollectStmtScopes_Joins(t *testing.T) {
 	tests := []struct {
 		name   string
 		query  string
@@ -300,7 +299,7 @@ func TestCollectScopedFields_Joins(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			stmtNodes, _, err := p.Parse(tt.query, "", "")
 			assert.NoError(t, err)
-			actualScopes, errs := query.CollectScopedFields(stmtNodes[0])
+			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			assert.Empty(t, errs)
 
 			assert.Equal(t, 1, len(actualScopes))
@@ -313,7 +312,7 @@ func TestCollectScopedFields_Joins(t *testing.T) {
 	}
 }
 
-func TestCollectScopedFields_NestedScope(t *testing.T) {
+func TestCollectStmtScopes_NestedScope(t *testing.T) {
 	tests := []struct {
 		name   string
 		query  string
@@ -351,7 +350,7 @@ func TestCollectScopedFields_NestedScope(t *testing.T) {
 			t.Skipf("Nest not implemented yet")
 			stmtNodes, _, err := p.Parse(tt.query, "", "")
 			assert.NoError(t, err)
-			actualScopes, errs := query.CollectScopedFields(stmtNodes[0])
+			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			assert.Empty(t, errs)
 
 			assert.Equal(t, 1, len(actualScopes))
@@ -361,109 +360,4 @@ func TestCollectScopedFields_NestedScope(t *testing.T) {
 			//assert.ElementsMatch(t, tt.tables, actualScopes[0].Tables)
 		})
 	}
-}
-
-func TestCollectScopedFields2(t *testing.T) {
-	q := `
-with count_tbl as
-( select
-  status,
-  count(status) as count
-  from users
-  inner join todos on users.user_id = todos.user_id
-  where users.created_at > now() - interval 2  month
-  group by status
-),
-haha as (
- select users.name, status from users inner join (select status, user_id from todos) as a on users.user_id = a.user_id
- where email like 'test%'
-)
-select
-  count_tbl.status as status_num,
-  case when status = 1 then 'Todo'
-       when status = 2 then 'Doing'
-       when status = 3 then 'Done' end as status,
-  count / ( select sum(count) from count_tbl ) * 100 as percent
-from  count_tbl
-where status > 0 and count > 0
-order by status desc;
-`
-	p := parser.New()
-	stmtNodes, _, err := p.Parse(q, "", "")
-	assert.NoError(t, err)
-	actualScopes, errs := query.CollectScopedFields(stmtNodes[0])
-	assert.Empty(t, errs)
-
-	/*
-		[]*StmtScope{{
-			CTEs: {
-				"count_tbl": StmtScope{
-					CTEs: nil,
-					Fields: {"status(REFERENCE)","count(GROUP)", "created_at(users)(CONDITION)", "user_id(users)(CONDITION)", "user_id(todos)(CONDITION)"}
-					Tables: {"users", "todos", "todos2"}
-					Scopes: []
-				},
-				"haha": StmtScope{
-					CTEs: nil,
-					Fields: {"name(users)(REFERENCE)", "status(REFERENCE)", "user_id(users)(CONDITION)", "user_id(a)(CONDITION)", "email(CONDITION)"}
-					Tables: {"users", "a"}
-					Scopes: {
-						"a": StmtScope{
-							CTEs: nil,
-							Fields: {"status(REFERENCE)", "user_id(REFERENCE)"}
-							Tables: {"todos"}
-							Scopes: [],
-						}
-					}
-				}
-			},
-			Fields: {"status(CONDITION)", "count(CONDITION)"}},
-			Tables: {"count_tbl"}
-			Scopes: []
-		}}
-
-		{
-			"count_tbl": {{"status(REFERENCE)", "count(GROUP)", "created_at(users)(CONDITION)", "user_id(users)(CONDITION)", "user_id(todos)(CONDITION)"}, {"users", "todos", "todos2"}},
-			"haha":      {{"name(users)(REFERENCE)", "status(REFERENCE)", "user_id(users)(CONDITION)", "user_id(haha)(CONDITION)", "email(CONDITION)"}, {"users", "a"}},
-			"a":         {{"status(REFERENCE)", "user_id(REFERENCE)"}, {"todos"}},
-			// subqueryの場合はindexしても意味がないので、無視していい
-			// subqueryの後は集計結果を使って集計するから、indexはFROMが直接テーブルを参照しているテーブルのみに関係し、subquery対象のwhereは意味がない
-			// 		(where して絞り込めばoutputする行数が減るから効果はあるが、indexをつけるのとは別の改善方法 (クエリの書き換え)なので今は対象外
-			"root":      {{"status(CONDITION)", "count(CONDITION)"}, {"count_tbl"}},
-		}
-	*/
-	for _, scope := range actualScopes {
-		printScope(scope)
-	}
-}
-
-func printScope(scope *models.StmtScope) {
-	fmt.Println("Scope:")
-	for _, f := range scope.Fields {
-		for _, c := range f.Columns {
-			fmt.Printf("%s(%d, %s), ", c.Name, c.Type, c.Table)
-		}
-		fmt.Printf("AS %s", f.AsName)
-	}
-	fmt.Println()
-
-	fmt.Printf("Ref: ")
-	for _, table := range scope.Tables {
-		fmt.Printf("%s, ", table)
-	}
-	fmt.Println()
-
-	fmt.Printf("---CTEs: ")
-	for name, s := range scope.CTEs {
-		fmt.Printf("%s, ", name)
-		printScope(s)
-	}
-	fmt.Println()
-
-	fmt.Printf("---Scopes: ")
-	for name, s := range scope.Scopes {
-		fmt.Printf("%s, ", name)
-		printScope(s)
-	}
-	fmt.Println()
 }

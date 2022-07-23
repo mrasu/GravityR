@@ -1,10 +1,10 @@
-package inspectors_test
+package collectors_test
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
-	"github.com/mrasu/GravityR/database/mysql/inspectors"
 	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v4"
@@ -234,7 +234,7 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 				rows := sqlmock.NewRows([]string{"EXPLAIN"}).AddRow(tt.explainResult)
 				mock.ExpectQuery("EXPLAIN ANALYZE FORMAT=TREE").WillReturnRows(rows)
 
-				tree, err := inspectors.CollectExplainAnalyzeTree(db, "mimic")
+				tree, err := collectors.CollectExplainAnalyzeTree(db, "mimic")
 				assert.NoError(t, err)
 				assert.NotNil(t, tree)
 				assert.Equal(t, tt.expectedTree, tree)

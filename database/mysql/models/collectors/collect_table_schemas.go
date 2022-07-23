@@ -1,4 +1,4 @@
-package inspectors
+package collectors
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ WHERE
 ORDER BY TABLE_NAME, ORDINAL_POSITION
 `
 
-func CollectTableSchema(db *sqlx.DB, database string, tables []string) ([]*models.TableSchema, error) {
+func CollectTableSchemas(db *sqlx.DB, database string, tables []string) ([]*models.TableSchema, error) {
 	query, args, err := sqlx.In(schemaFetchQuery, database, tables)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build query to get table schema")

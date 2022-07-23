@@ -4,9 +4,8 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/mrasu/GravityR/database/mysql"
-	"github.com/mrasu/GravityR/database/mysql/inspectors"
-	query2 "github.com/mrasu/GravityR/database/mysql/inspectors/query"
 	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	"github.com/mrasu/GravityR/lib"
@@ -57,22 +56,22 @@ func runSample() error {
 	if err != nil {
 		panic(err)
 	}
-	tNames, errs := query2.CollectTable(rootNode)
+	tNames, errs := collectors.CollectTableNames(rootNode)
 	if len(errs) > 0 {
 		return errs[0]
 	}
 
-	tables, err := inspectors.CollectTableSchema(db, "gravityr", tNames)
+	tables, err := collectors.CollectTableSchemas(db, "gravityr", tNames)
 	if err != nil {
 		return err
 	}
 
-	scopes, errs := query2.CollectScopedFields(rootNode)
+	scopes, errs := collectors.CollectStmtScopes(rootNode)
 	if len(errs) > 0 {
 		return errs[0]
 	}
 
-	idxCandidates, err := inspectors.CollectIndexTargets(tables, scopes)
+	idxCandidates, err := collectors.CollectIndexTargets(tables, scopes)
 	if err != nil {
 		return err
 	}
@@ -83,7 +82,7 @@ func runSample() error {
 		vits = append(vits, it.ToIndexTarget().ToViewModel())
 	}
 
-	aTree, err := inspectors.CollectExplainAnalyzeTree(db, query)
+	aTree, err := collectors.CollectExplainAnalyzeTree(db, query)
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package inspectors
+package collectors
 
 import (
 	"fmt"

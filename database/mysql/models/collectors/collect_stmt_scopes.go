@@ -1,4 +1,4 @@
-package query
+package collectors
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ type scopeHolder struct {
 	lastError error
 }
 
-func CollectScopedFields(rootNode ast.StmtNode) ([]*models.StmtScope, []error) {
+func CollectStmtScopes(rootNode ast.StmtNode) ([]*models.StmtScope, []error) {
 	sc := &scopeCollector{scopeStack: lib.NewStack[scopeHolder]()}
 	if _, ok := rootNode.(*ast.SetOprStmt); ok {
 		return nil, []error{lib.NewUnsupportedError("not supporting UNION, EXCEPT etc.")}
