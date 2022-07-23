@@ -1,5 +1,5 @@
 import type { IAnalyzeData } from "../../types/gr_param";
-import type { SeriesData } from "./SeriesData";
+import { SeriesData } from "./SeriesData";
 
 class XNumberTree {
   nodes: XNumberNode[];
@@ -41,7 +41,7 @@ const createXTree = (
   return [xTree, xToSeriesRecords];
 };
 
-const strokeColor = "#CD2F2A";
+const STROKE_COLOR = "#CD2F2A";
 
 const visitAnalyze = (
   parentNode: XNumberNode,
@@ -50,7 +50,7 @@ const visitAnalyze = (
   IAnalyzeData: IAnalyzeData
 ): [number, number] => {
   let maxFinished = 0;
-  const seriesData: SeriesData = {
+  const seriesData = new SeriesData({
     x: nextXNumber.toString(),
     y: [0, 0],
     title: IAnalyzeData.title,
@@ -58,11 +58,11 @@ const visitAnalyze = (
     goals: [
       {
         value: 0,
-        strokeColor: strokeColor,
+        strokeColor: STROKE_COLOR,
       },
     ],
     IAnalyzeData: IAnalyzeData,
-  };
+  });
   xToSeriesRecords[nextXNumber] = {
     seriesData: seriesData,
     treeNode: parentNode,
@@ -188,7 +188,7 @@ export class ExplainAnalyzeTree {
     const seriesDatas: SeriesData[] = [];
     this.getSeriesDataRecursive(focusNumber, seriesDatas, this.xTree.nodes);
 
-    seriesDatas.sort((a, b) => Number(a.x) - Number(b.x));
+    seriesDatas.sort((a, b) => a.xNum - b.xNum);
     const skippedData = this.createSkippedSeriesDatas(seriesDatas);
 
     return seriesDatas.concat(skippedData);
@@ -226,7 +226,7 @@ export class ExplainAnalyzeTree {
   private createSkippedSeriesDatas(
     usingSeriesData: SeriesData[]
   ): SeriesData[] {
-    const usingXs = new Set(usingSeriesData.map((v) => Number(v.x)));
+    const usingXs = new Set(usingSeriesData.map((v) => v.xNum));
     const missingXs = Object.keys(this.xToSeriesRecords)
       .map((v) => Number(v))
       .filter((v) => !usingXs.has(v));
@@ -252,11 +252,7 @@ export class ExplainAnalyzeTree {
       }
       const startAt = Math.min(parentSeriesData.y[0], nodeStartAt);
       const endAt = parentSeriesData.y[1];
-      skippedSeriesData.push({
-        ...parentSeriesData,
-        y: [startAt, endAt],
-        title: undefined,
-      });
+      skippedSeriesData.push(parentSeriesData.copyWith([startAt, endAt]));
     }
 
     return skippedSeriesData;

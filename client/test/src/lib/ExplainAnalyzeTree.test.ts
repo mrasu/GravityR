@@ -115,8 +115,8 @@ describe("ExplainAnalyzeTree", () => {
   });
 
   describe("getSeriesData", () => {
-    const convertXToText = (tree: ExplainAnalyzeTree, x: string) => {
-      return tree.getFromX(Number(x)).text;
+    const convertXToText = (tree: ExplainAnalyzeTree, x: number) => {
+      return tree.getFromX(x).text;
     };
 
     it("no data", () => {
@@ -138,7 +138,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus at the bottom", () => {
         const resultTexts = tree
           .getFocusedSeriesData(4)
-          .map((v) => convertXToText(tree, v.x));
+          .map((v) => convertXToText(tree, v.xNum));
 
         expect(resultTexts).toEqual(["0", "1", "2", "3", "4"]);
       });
@@ -146,7 +146,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus in the middle", () => {
         const resultTexts = tree
           .getFocusedSeriesData(2)
-          .map((v) => convertXToText(tree, v.x));
+          .map((v) => convertXToText(tree, v.xNum));
 
         expect(resultTexts).toEqual(["0", "1", "2", "2"]);
       });
@@ -211,7 +211,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus at the top", () => {
         const resultTexts = tree
           .getFocusedSeriesData(0)
-          .map((v) => convertXToText(tree, v.x));
+          .map((v) => convertXToText(tree, v.xNum));
 
         expect(resultTexts).toEqual(["0", "17", "0", "17"]);
       });
@@ -219,7 +219,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus in the middle", () => {
         const resultTexts = tree
           .getFocusedSeriesData(11)
-          .map((v) => convertXToText(tree, v.x));
+          .map((v) => convertXToText(tree, v.xNum));
 
         expect(resultTexts).toEqual([
           "0",
@@ -239,7 +239,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus in the middle without siblings", () => {
         const resultTexts = tree
           .getFocusedSeriesData(10)
-          .map((v) => convertXToText(tree, v.x));
+          .map((v) => convertXToText(tree, v.xNum));
 
         expect(resultTexts).toEqual([
           "0",
@@ -256,7 +256,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus at the top-level", () => {
         const resultTexts = tree
           .getFocusedSeriesData(17)
-          .map((v) => convertXToText(tree, v.x));
+          .map((v) => convertXToText(tree, v.xNum));
 
         expect(resultTexts).toEqual(["0", "17", "0", "17"]);
       });
