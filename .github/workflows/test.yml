@@ -1,0 +1,33 @@
+name: Go test
+on: [push]
+jobs:
+  go-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - name: 'Create a dummy file to enable to build'
+        run: mkdir -p client/dist/assets && touch client/dist/assets/.dummy
+      - run: make test
+  client-test:
+    defaults:
+      run:
+        working-directory: client
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/cache@v3
+        id: node_modules_cache_id
+        with:
+          path: 'node_modules'
+          key: ${{ runner.os }}-build-client-node-modules-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install
+      - run: yarn check:prettier
+      - run: yarn check:svelte
+      - run: yarn test
