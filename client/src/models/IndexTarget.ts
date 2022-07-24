@@ -15,6 +15,12 @@ export class IndexTarget {
     return `"${this.tableName}:${this.toGrColumnOption()}"`;
   }
 
+  toAlterAddSQL(): string {
+    const columns = this.columns.map((v) => v.name).join(", ");
+
+    return `ALTER TABLE ${this.tableName} ADD INDEX (${columns});`;
+  }
+
   private toGrColumnOption(): string {
     return this.columns.map((v) => v.name).join("+");
   }

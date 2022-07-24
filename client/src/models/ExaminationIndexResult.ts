@@ -6,7 +6,7 @@ export class ExaminationIndexResult {
   indexTarget: IndexTarget;
   executionTimeMillis: number;
 
-  toEfficiency(originalTimeMillis: number): string {
+  toReductionPercent(originalTimeMillis: number): string {
     return (
       (1 - this.executionTimeMillis / originalTimeMillis) *
       100
