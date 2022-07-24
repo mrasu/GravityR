@@ -44,7 +44,12 @@ func init() {
 func runSample() error {
 	fmt.Println("Running sample...")
 
-	db, err := mysql.OpenMySQLDB()
+	cfg, err := mysql.NewConfigFromEnv()
+	if err != nil {
+		return err
+	}
+
+	db, err := mysql.OpenMySQLDB(cfg)
 	if err != nil {
 		return err
 	}

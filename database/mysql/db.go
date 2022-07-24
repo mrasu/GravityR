@@ -1,13 +1,17 @@
 package mysql
 
 import (
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"time"
 )
 
-func OpenMySQLDB() (*sqlx.DB, error) {
-	db, err := sqlx.Open("mysql", "root@/gravityr")
+func OpenMySQLDB(cfg *Config) (*sqlx.DB, error) {
+	dsn := cfg.ToDSN()
+	fmt.Printf("DSN: %s\n", dsn)
+
+	db, err := sqlx.Open("mysql", dsn)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect")
 	}

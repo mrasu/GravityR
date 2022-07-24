@@ -172,7 +172,6 @@ func SuggestIndex(db *sqlx.DB, database, query string, aTree *models.ExplainAnal
 			}
 		}
 	}
-	fmt.Println(asTableMap)
 	lib.SortF(tTrees, func(t *models.SingleTableExplainAnalyzeTree) float64 {
 		return t.EstimatedTotalTime * -1
 	})

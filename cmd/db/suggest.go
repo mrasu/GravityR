@@ -249,13 +249,18 @@ func runSuggest() error {
 			t.user_id < 1000
 		`
 	*/
-	fmt.Println(queryVar)
+	fmt.Printf("\nQuery: %s\n\n", queryVar)
 
-	db, err := mysql.OpenMySQLDB()
-	defer db.Close()
+	cfg, err := mysql.NewConfigFromEnv()
 	if err != nil {
 		return err
 	}
+
+	db, err := mysql.OpenMySQLDB(cfg)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
 
 	/*
 		idxTargets = []*models.IndexTargetTable{
