@@ -12,108 +12,6 @@ describe("ExplainAnalyzeTree", () => {
     };
   };
 
-  describe("getSlowestXNumber", () => {
-    it("no data", () => {
-      const tree = new ExplainAnalyzeTree([]);
-      expect(tree.getSlowestX()).toBe(null);
-    });
-
-    describe("single child only tree", () => {
-      it("the slowest at the bottom", () => {
-        const tree = new ExplainAnalyzeTree([
-          buildIAnalyzeData(14, [
-            buildIAnalyzeData(13, [
-              buildIAnalyzeData(12, [
-                buildIAnalyzeData(11, [buildIAnalyzeData(10)]),
-              ]),
-            ]),
-          ]),
-        ]);
-
-        const xNum = tree.getSlowestX();
-        expect(xNum).toBe(4);
-        expect(tree.getFromX(xNum).text).toBe("10");
-      });
-
-      it("the slowest in the middle", () => {
-        const tree = new ExplainAnalyzeTree([
-          buildIAnalyzeData(14, [
-            buildIAnalyzeData(13, [
-              buildIAnalyzeData(12, [
-                buildIAnalyzeData(2, [buildIAnalyzeData(1)]),
-              ]),
-            ]),
-          ]),
-        ]);
-
-        const xNum = tree.getSlowestX();
-        expect(xNum).toBe(2);
-        expect(tree.getFromX(xNum).text).toBe("12");
-      });
-    });
-
-    it("multi child only tree", () => {
-      const tree = new ExplainAnalyzeTree([
-        buildIAnalyzeData(14, [
-          buildIAnalyzeData(13, [
-            buildIAnalyzeData(12, [
-              buildIAnalyzeData(3, [
-                buildIAnalyzeData(2),
-                buildIAnalyzeData(1),
-              ]),
-              buildIAnalyzeData(3, [
-                buildIAnalyzeData(2),
-                buildIAnalyzeData(1),
-              ]),
-            ]),
-          ]),
-          buildIAnalyzeData(1013, [
-            buildIAnalyzeData(1012, [
-              buildIAnalyzeData(13, [
-                buildIAnalyzeData(12),
-                buildIAnalyzeData(11),
-              ]),
-              buildIAnalyzeData(3, [
-                buildIAnalyzeData(2),
-                buildIAnalyzeData(1),
-              ]),
-            ]),
-          ]),
-        ]),
-        buildIAnalyzeData(114, [
-          buildIAnalyzeData(113, [
-            buildIAnalyzeData(112, [
-              buildIAnalyzeData(3, [
-                buildIAnalyzeData(2),
-                buildIAnalyzeData(1),
-              ]),
-              buildIAnalyzeData(3, [
-                buildIAnalyzeData(2),
-                buildIAnalyzeData(1),
-              ]),
-            ]),
-          ]),
-          buildIAnalyzeData(113, [
-            buildIAnalyzeData(112, [
-              buildIAnalyzeData(13, [
-                buildIAnalyzeData(12),
-                buildIAnalyzeData(11),
-              ]),
-              buildIAnalyzeData(3, [
-                buildIAnalyzeData(2),
-                buildIAnalyzeData(1),
-              ]),
-            ]),
-          ]),
-        ]),
-      ]);
-
-      const xNum = tree.getSlowestX();
-      expect(xNum).toBe(10);
-      expect(tree.getFromX(xNum).text).toBe("1012");
-    });
-  });
-
   describe("getSeriesData", () => {
     const convertXToText = (tree: ExplainAnalyzeTree, x: number) => {
       return tree.getFromX(x).text;
@@ -121,7 +19,7 @@ describe("ExplainAnalyzeTree", () => {
 
     it("no data", () => {
       const tree = new ExplainAnalyzeTree([]);
-      expect(tree.getFocusedSeriesData(0)).toEqual([]);
+      expect(tree.getSeriesData()).toEqual([]);
     });
 
     describe("single child only tree", () => {
@@ -137,18 +35,10 @@ describe("ExplainAnalyzeTree", () => {
 
       it("focus at the bottom", () => {
         const resultTexts = tree
-          .getFocusedSeriesData(4)
+          .getSeriesData()
           .map((v) => convertXToText(tree, v.xNum));
 
         expect(resultTexts).toEqual(["0", "1", "2", "3", "4"]);
-      });
-
-      it("focus in the middle", () => {
-        const resultTexts = tree
-          .getFocusedSeriesData(2)
-          .map((v) => convertXToText(tree, v.xNum));
-
-        expect(resultTexts).toEqual(["0", "1", "2", "2"]);
       });
     });
 
@@ -208,57 +98,16 @@ describe("ExplainAnalyzeTree", () => {
         ]),
       ]);
 
-      it("focus at the top", () => {
-        const resultTexts = tree
-          .getFocusedSeriesData(0)
-          .map((v) => convertXToText(tree, v.xNum));
-
-        expect(resultTexts).toEqual(["0", "17", "0", "17"]);
-      });
-
-      it("focus in the middle", () => {
-        const resultTexts = tree
-          .getFocusedSeriesData(11)
-          .map((v) => convertXToText(tree, v.xNum));
-
-        expect(resultTexts).toEqual([
-          "0",
-          "1",
-          "9",
-          "10",
-          "11",
-          "14",
-          "17",
-          "1",
-          "11",
-          "14",
-          "17",
-        ]);
-      });
-
-      it("focus in the middle without siblings", () => {
-        const resultTexts = tree
-          .getFocusedSeriesData(10)
-          .map((v) => convertXToText(tree, v.xNum));
-
-        expect(resultTexts).toEqual([
-          "0",
-          "1",
-          "9",
-          "10",
-          "17",
-          "1",
-          "10",
-          "17",
-        ]);
-      });
-
       it("focus at the top-level", () => {
         const resultTexts = tree
-          .getFocusedSeriesData(17)
+          .getSeriesData()
           .map((v) => convertXToText(tree, v.xNum));
 
-        expect(resultTexts).toEqual(["0", "17", "0", "17"]);
+        const nums = [];
+        for (let i = 0; i < 34; i++) {
+          nums.push(i.toString());
+        }
+        expect(resultTexts).toEqual(nums);
       });
     });
   });

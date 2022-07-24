@@ -1,7 +1,7 @@
 import ApexCharts from "apexcharts";
 import type { ApexOptions } from "apexcharts";
 import type { ExplainAnalyzeTree } from "./ExplainAnalyzeTree";
-import type { SeriesData } from "./SeriesData";
+import type { ISeriesData } from "./SeriesData";
 
 const DEFAULT_CHART_OPTION: ApexOptions = {
   series: [
@@ -63,7 +63,7 @@ const DEFAULT_CHART_OPTION: ApexOptions = {
 
 const BAR_HEIGHT = 30;
 
-type ChartW = { config: { series: { data: SeriesData[] }[] } };
+type ChartW = { config: { series: { data: ISeriesData[] }[] } };
 type ChartContext = { w: ChartW };
 type ChartPoint = {
   dataPointIndex: number;
@@ -78,7 +78,7 @@ export class ExplainTree {
   private mouseEnteringX?: number;
 
   public onMouseEntered = (_: number): void => {};
-  public createTooltipFn = (_: SeriesData): string => "";
+  public createTooltipFn = (_: ISeriesData): string => "";
 
   constructor(
     private elm: HTMLElement,
@@ -86,12 +86,10 @@ export class ExplainTree {
   ) {}
 
   render() {
-    const seriesData2 = this.explainAnalyzeTree.getFocusedSeriesData(
-      this.explainAnalyzeTree.getSlowestX()
-    );
+    const seriesData = this.explainAnalyzeTree.getSeriesData();
     const option = this.createChartOption();
-    option.series = [{ data: seriesData2 }];
-    option.chart.height = this.calculateChartHeightPx(seriesData2);
+    option.series = [{ data: seriesData }];
+    option.chart.height = this.calculateChartHeightPx(seriesData);
 
     this.chart = new ApexCharts(this.elm, option);
     this.chart.render();
@@ -104,7 +102,6 @@ export class ExplainTree {
     option.dataLabels.formatter = this.dataLabelsFormatter;
     option.chart.events = {
       animationEnd: this.animationEnd,
-      dataPointSelection: this.dataPointSelection,
       dataPointMouseEnter: this.dataPointMouseEnter,
       dataPointMouseLeave: this.dataPointMouseLeave,
     };
@@ -143,19 +140,6 @@ export class ExplainTree {
     }
   };
 
-  private dataPointSelection = (
-    _: any,
-    {
-      w: {
-        config: { series },
-      },
-    }: ChartContext,
-    { seriesIndex, dataPointIndex }: ChartConfig
-  ) => {
-    const x = series[seriesIndex].data[dataPointIndex].xNum;
-    this.updateSeriesData(series[seriesIndex].data, x);
-  };
-
   private dataPointMouseEnter = (
     event: { path: SVGMPathElement[] },
     {
@@ -165,7 +149,7 @@ export class ExplainTree {
     }: ChartContext,
     { seriesIndex, dataPointIndex }: ChartConfig
   ) => {
-    const x = series[seriesIndex].data[dataPointIndex].xNum;
+    const x = Number(series[seriesIndex].data[dataPointIndex].x);
     this.mouseEnteringX = x;
     if (this.animating) return;
 
@@ -177,36 +161,7 @@ export class ExplainTree {
     this.mouseEnteringX = undefined;
   };
 
-  private updateSeriesData = async (currentSeries: SeriesData[], x: number) => {
-    return new Promise<void>((resolve) => {
-      setTimeout(async () => {
-        const nexts = this.explainAnalyzeTree.getNextXs(x);
-        if (!nexts) return;
-
-        const nextX = nexts[0];
-        const isOpen = !!currentSeries.find((d) => d.xNum === nextX);
-        let seriesData: SeriesData[];
-        if (isOpen) {
-          seriesData = this.explainAnalyzeTree.getFocusedSeriesData(x);
-        } else {
-          seriesData = this.explainAnalyzeTree.getFocusedSeriesData(nextX);
-        }
-
-        this.animating = true;
-        await this.chart.updateOptions({
-          series: [
-            {
-              data: seriesData,
-            },
-          ],
-          chart: { height: this.calculateChartHeightPx(seriesData) },
-        });
-        resolve();
-      });
-    });
-  };
-
-  private calculateChartHeightPx = (seriesData: SeriesData[]): string => {
+  private calculateChartHeightPx = (seriesData: ISeriesData[]): string => {
     const barCount = new Set(seriesData.map((data) => data.x)).size;
     const height = barCount * BAR_HEIGHT + 130;
     return `${height}px`;

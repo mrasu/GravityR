@@ -27,7 +27,7 @@
 
   {#if $grParam.analyzeNodes}
     <div class="details-card">
-      <Details class="card">
+      <Details class="card" open>
         <span slot="summary">Explain Tree</span>
         <ExplainAnalyzeText
           {highlightIndexKey}
@@ -51,8 +51,7 @@
 
   {#if $grParam.indexTargets}
     <div class="details-card">
-      <!--<Details class="card" open={!$grParam.examinationResult}>-->
-      <Details class="card" open>
+      <Details class="card" open={!$grParam.examinationResult}>
         <span slot="summary">Index suggestion</span>
         <IndexSuggestion
           examinationCommandOptions={$grParam.examinationCommandOptions}
