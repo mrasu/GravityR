@@ -7,6 +7,7 @@ import (
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
+	"github.com/mrasu/GravityR/lib"
 	_ "github.com/pingcap/tidb/types/parser_driver"
 	"github.com/spf13/cobra"
 	"os"
@@ -291,21 +292,23 @@ func runSuggest() error {
 		return err
 	}
 
-	var idxTargets []*models.IndexTarget
 	its, errs := mysql.SuggestIndex(db, "gravityr", queryVar, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
-	for _, it := range its {
-		idxTargets = append(idxTargets, it.ToIndexTarget())
-	}
-	if len(examinationIdxTargets) == 0 {
-		examinationIdxTargets = idxTargets
-	}
+	idxTargets := toUniqueIndexTargets(its)
 
 	fmt.Println("======suggest index by order-------")
-	for _, it := range idxTargets {
-		fmt.Println(it)
+	if len(idxTargets) > 0 {
+		for _, it := range idxTargets {
+			fmt.Println(it)
+		}
+	} else {
+		fmt.Println("No suggestion. Perhaps already indexed?")
+	}
+
+	if len(examinationIdxTargets) == 0 {
+		examinationIdxTargets = idxTargets
 	}
 
 	var er *models.ExaminationResult
@@ -371,4 +374,13 @@ func parseIndexTargets(indexTargetTexts, indexTargetsWithBacktick []string) ([]*
 	}
 
 	return its, nil
+}
+
+func toUniqueIndexTargets(its []*models.IndexTargetTable) []*models.IndexTarget {
+	var idxTargets []*models.IndexTarget
+	for _, it := range its {
+		idxTargets = append(idxTargets, it.ToIndexTarget())
+	}
+
+	return lib.BruteUniq(idxTargets)
 }

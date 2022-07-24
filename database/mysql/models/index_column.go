@@ -9,3 +9,7 @@ type IndexColumn struct {
 func (ic *IndexColumn) ToViewModel() *viewmodel.VmIndexColumn {
 	return &viewmodel.VmIndexColumn{Name: ic.Name}
 }
+
+func (ic *IndexColumn) Equals(other *IndexColumn) bool {
+	return ic.Name == other.Name
+}

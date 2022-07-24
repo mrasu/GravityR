@@ -13,16 +13,12 @@ type scopeCollector struct {
 	scopes []*models.StmtScope
 	errors []error
 
-	scopeStack *lib.Stack[scopeHolder]
-}
-
-type scopeHolder struct {
-	scope     *models.StmtScope
-	lastError error
+	scopeStack *lib.Stack[models.StmtScope]
+	lastError  error
 }
 
 func CollectStmtScopes(rootNode ast.StmtNode) ([]*models.StmtScope, []error) {
-	sc := &scopeCollector{scopeStack: lib.NewStack[scopeHolder]()}
+	sc := &scopeCollector{scopeStack: lib.NewStack[models.StmtScope]()}
 	if _, ok := rootNode.(*ast.SetOprStmt); ok {
 		return nil, []error{lib.NewUnsupportedError("not supporting UNION, EXCEPT etc.")}
 	}
@@ -39,52 +35,117 @@ func CollectStmtScopes(rootNode ast.StmtNode) ([]*models.StmtScope, []error) {
 }
 
 func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
-	if stmt, ok := in.(*ast.SelectStmt); ok {
-		top := sc.scopeStack.Top()
-		var parent *models.StmtScope
-		if top != nil {
-			parent = top.scope
+	stmt, ok := in.(*ast.SelectStmt)
+	if !ok {
+		return in, false
+	}
+
+	top := sc.scopeStack.Top()
+	var parent *models.StmtScope
+	if top != nil {
+		parent = top
+	}
+	scope := &models.StmtScope{Parent: parent, Name: models.RootScopeName}
+	var foundFields []*models.Field
+	for _, field := range stmt.Fields.Fields {
+		var cols []*models.FieldColumn
+		if field.Expr != nil {
+			cols = sc.collectExprReferences(field.Expr, models.FieldReference)
+			if err := sc.getAndClearLastError(); err != nil {
+				sc.errors = append(sc.errors, err)
+				continue
+			}
+		} else {
+			cols = []*models.FieldColumn{{
+				Table: field.WildCard.Table.L,
+				Type:  models.FieldStar,
+			}}
 		}
-		scope := &models.StmtScope{Parent: parent, Name: models.RootScopeName}
-		holder := &scopeHolder{scope: scope}
-		for _, field := range stmt.Fields.Fields {
-			var cols []*models.FieldColumn
-			if field.Expr != nil {
-				cols = holder.collectExprReferences(field.Expr, models.FieldReference)
-				if holder.lastError != nil {
-					sc.errors = append(sc.errors, holder.lastError)
-					holder.lastError = nil
-					continue
-				}
+
+		foundFields = append(foundFields, &models.Field{
+			AsName:  field.AsName.L,
+			Columns: cols,
+		})
+	}
+	if stmt.From != nil {
+		tables, fields := sc.collectTables(stmt.From)
+		if err := sc.getAndClearLastError(); err != nil {
+			sc.errors = append(sc.errors, err)
+		}
+
+		scope.Tables = tables
+		foundFields = append(foundFields, fields...)
+	}
+	if stmt.Where != nil {
+		f, err := sc.createFieldFromExpr(stmt.Where, models.FieldCondition)
+		if err == nil {
+			foundFields = append(foundFields, f)
+		} else {
+			sc.errors = append(sc.errors, err)
+		}
+	}
+	if stmt.GroupBy != nil {
+		for _, item := range stmt.GroupBy.Items {
+			f, err := sc.createFieldFromExpr(item.Expr, models.FieldReference)
+			if err == nil {
+				foundFields = append(foundFields, f)
 			} else {
-				cols = []*models.FieldColumn{{
-					Table: field.WildCard.Table.L,
-					Type:  models.FieldStar,
-				}}
+				sc.errors = append(sc.errors, err)
 			}
-
-			scope.Fields = append(scope.Fields, &models.Field{
-				AsName:  field.AsName.L,
-				Columns: cols,
-			})
 		}
-		if stmt.From != nil {
-			tables, fields := holder.collectTables(stmt.From)
-			if holder.lastError != nil {
-				sc.errors = append(sc.errors, holder.lastError)
-				holder.lastError = nil
+	}
+	if stmt.Having != nil {
+		f, err := sc.createFieldFromExpr(stmt.Having.Expr, models.FieldReference)
+		if err == nil {
+			foundFields = append(foundFields, f)
+		} else {
+			sc.errors = append(sc.errors, err)
+		}
+	}
+	if stmt.WindowSpecs != nil {
+		sc.errors = append(sc.errors, lib.NewUnsupportedError("not supporting WINDOW"))
+	}
+	if stmt.OrderBy != nil {
+		for _, item := range stmt.OrderBy.Items {
+			f, err := sc.createFieldFromExpr(item.Expr, models.FieldReference)
+			if err == nil {
+				foundFields = append(foundFields, f)
+			} else {
+				sc.errors = append(sc.errors, err)
 			}
-
-			scope.Tables = tables
-			scope.Fields = append(scope.Fields, fields...)
 		}
-		// todo: where, group, having, order, window, cte, limit...
-
-		sc.scopeStack.Push(holder)
-		if len(sc.scopes) == 0 {
-			sc.scopes = append(sc.scopes, scope)
+	}
+	if stmt.Limit != nil {
+		f, err := sc.createFieldFromExpr(stmt.Limit.Count, models.FieldReference)
+		if err == nil {
+			foundFields = append(foundFields, f)
+		} else {
+			sc.errors = append(sc.errors, err)
 		}
 
+		f, err = sc.createFieldFromExpr(stmt.Limit.Offset, models.FieldReference)
+		if err == nil {
+			foundFields = append(foundFields, f)
+		} else {
+			sc.errors = append(sc.errors, err)
+		}
+	}
+	if stmt.Kind == ast.SelectStmtKindValues {
+		sc.lastError = lib.NewInvalidAstError("SELECT for VALUES is not expected")
+	}
+	if stmt.With != nil {
+		sc.lastError = lib.NewInvalidAstError("WITH is not expected")
+	}
+
+	for _, f := range foundFields {
+		if len(f.Columns) > 0 {
+			scope.Fields = append(scope.Fields, f)
+		}
+	}
+
+	sc.scopeStack.Push(scope)
+	if len(sc.scopes) == 0 {
+		sc.scopes = append(sc.scopes, scope)
 	}
 
 	return in, false
@@ -98,7 +159,22 @@ func (sc *scopeCollector) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
-func (sh *scopeHolder) collectExprReferences(expr ast.ExprNode, defaultType models.FieldType) []*models.FieldColumn {
+func (sc *scopeCollector) getAndClearLastError() error {
+	err := sc.lastError
+	sc.lastError = nil
+	return err
+}
+
+func (sc *scopeCollector) createFieldFromExpr(expr ast.ExprNode, fieldType models.FieldType) (*models.Field, error) {
+	cols := sc.collectExprReferences(expr, fieldType)
+	if err := sc.getAndClearLastError(); err != nil {
+		return nil, err
+	}
+
+	return &models.Field{Columns: cols}, nil
+}
+
+func (sc *scopeCollector) collectExprReferences(expr ast.ExprNode, defaultType models.FieldType) []*models.FieldColumn {
 	if expr == nil {
 		return nil
 	}
@@ -106,67 +182,69 @@ func (sh *scopeHolder) collectExprReferences(expr ast.ExprNode, defaultType mode
 	var res []*models.FieldColumn
 	switch e := expr.(type) {
 	case *ast.BetweenExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
-		res = append(res, sh.collectExprReferences(e.Left, defaultType)...)
-		res = append(res, sh.collectExprReferences(e.Right, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Left, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Right, defaultType)...)
 	case *ast.BinaryOperationExpr:
-		res = append(res, sh.collectExprReferences(e.L, defaultType)...)
-		res = append(res, sh.collectExprReferences(e.R, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.L, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.R, defaultType)...)
 	case *ast.CaseExpr:
-		res = append(res, sh.collectExprReferences(e.Value, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Value, defaultType)...)
 		for _, w := range e.WhenClauses {
-			res = append(res, sh.collectExprReferences(w.Expr, defaultType)...)
-			res = append(res, sh.collectExprReferences(w.Result, defaultType)...)
+			res = append(res, sc.collectExprReferences(w.Expr, defaultType)...)
+			res = append(res, sc.collectExprReferences(w.Result, defaultType)...)
 		}
-		res = append(res, sh.collectExprReferences(e.ElseClause, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.ElseClause, defaultType)...)
 	case *ast.SubqueryExpr:
 		// ignore the content of subquery as it will be in different scope.Scopes
 		return []*models.FieldColumn{{Type: models.FieldSubquery}}
 	case *ast.CompareSubqueryExpr:
-		res = append(res, sh.collectExprReferences(e.L, defaultType)...)
-		res = append(res, sh.collectExprReferences(e.R, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.L, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.R, defaultType)...)
 	case *ast.TableNameExpr:
-		sh.lastError = lib.NewInvalidAstError("Table definition is not expected")
+		sc.lastError = lib.NewInvalidAstError("Table definition is not expected")
 	case *ast.ColumnNameExpr:
 		return []*models.FieldColumn{{Table: e.Name.Table.L, Name: e.Name.Name.L, Type: defaultType}}
 	case *ast.DefaultExpr:
-		sh.lastError = lib.NewInvalidAstError("DEFAULT is not expected")
+		sc.lastError = lib.NewInvalidAstError("DEFAULT is not expected")
 	case *ast.ExistsSubqueryExpr:
-		res = append(res, sh.collectExprReferences(e.Sel, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Sel, defaultType)...)
 	case *ast.PatternInExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
 		for _, v := range e.List {
-			res = append(res, sh.collectExprReferences(v, defaultType)...)
+			res = append(res, sc.collectExprReferences(v, defaultType)...)
 		}
-		res = append(res, sh.collectExprReferences(e.Sel, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Sel, defaultType)...)
 	case *ast.IsNullExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
 	case *ast.IsTruthExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
 	case *ast.PatternLikeExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
-		res = append(res, sh.collectExprReferences(e.Pattern, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Pattern, defaultType)...)
 	case *ast.ParenthesesExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
 	case *ast.PositionExpr:
-		sh.lastError = lib.NewInvalidAstError("ORDER or GROUP is not expected")
+		// do nothing as position references a column which is defined in SELECT clause
+		// e.g.) SELECT COUNT(*), name FROM users GROUP BY 2; <- `2` is `name`
 	case *ast.PatternRegexpExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
-		res = append(res, sh.collectExprReferences(e.Pattern, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Pattern, defaultType)...)
 	case *ast.RowExpr:
 		for _, v := range e.Values {
-			res = append(res, sh.collectExprReferences(v, defaultType)...)
+			res = append(res, sc.collectExprReferences(v, defaultType)...)
 		}
 	case *ast.UnaryOperationExpr:
-		res = append(res, sh.collectExprReferences(e.V, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.V, defaultType)...)
 	case *ast.ValuesExpr:
-		sh.lastError = lib.NewInvalidAstError("VALUES is not expected")
+		sc.lastError = lib.NewInvalidAstError("VALUES is not expected")
 	case *ast.VariableExpr:
 		// do nothing as variable doesn't relate to table's column
 	case *ast.MaxValueExpr:
-		sh.lastError = lib.NewInvalidAstError("MAXVALUE is not expected")
+		// MAXVALUE appears in table definition for partition
+		sc.lastError = lib.NewInvalidAstError("MAXVALUE is not expected")
 	case *ast.MatchAgainst:
-		res = append(res, sh.collectExprReferences(e.Against, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Against, defaultType)...)
 		for _, c := range e.ColumnNames {
 			res = append(res, &models.FieldColumn{Table: c.Table.L, Name: c.Name.L, Type: defaultType})
 		}
@@ -174,29 +252,29 @@ func (sh *scopeHolder) collectExprReferences(expr ast.ExprNode, defaultType mode
 		// do nothing as COLLATE doesn't relate to table's column
 	case *ast.FuncCallExpr:
 		for _, arg := range e.Args {
-			res = append(res, sh.collectExprReferences(arg, defaultType)...)
+			res = append(res, sc.collectExprReferences(arg, defaultType)...)
 		}
 	case *ast.FuncCastExpr:
-		res = append(res, sh.collectExprReferences(e.Expr, defaultType)...)
+		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
 	case *ast.TrimDirectionExpr:
 		// do nothing as Direction of trim doesn't relate to table's column
 		// Direction is "LEADING" at `TRIM(LEADING ' ' FROM '  hello  ')` for example.
 	case *ast.AggregateFuncExpr:
 		for _, arg := range e.Args {
-			res = append(res, sh.collectExprReferences(arg, defaultType)...)
+			res = append(res, sc.collectExprReferences(arg, defaultType)...)
 		}
 	case *ast.WindowFuncExpr:
 		for _, arg := range e.Args {
-			res = append(res, sh.collectExprReferences(arg, defaultType)...)
+			res = append(res, sc.collectExprReferences(arg, defaultType)...)
 		}
 		if e.Spec.PartitionBy != nil {
 			for _, i := range e.Spec.PartitionBy.Items {
-				res = append(res, sh.collectExprReferences(i.Expr, defaultType)...)
+				res = append(res, sc.collectExprReferences(i.Expr, defaultType)...)
 			}
 		}
 		if e.Spec.OrderBy != nil {
 			for _, i := range e.Spec.OrderBy.Items {
-				res = append(res, sh.collectExprReferences(i.Expr, defaultType)...)
+				res = append(res, sc.collectExprReferences(i.Expr, defaultType)...)
 			}
 		}
 
@@ -217,7 +295,7 @@ func (sh *scopeHolder) collectExprReferences(expr ast.ExprNode, defaultType mode
 	case *driver.ParamMarkerExpr:
 		// do nothing as `?` for prepared statement doesn't relate to table's column
 	default:
-		sh.lastError = lib.NewUnsupportedError(
+		sc.lastError = lib.NewUnsupportedError(
 			fmt.Sprintf("not supporting query exists from %d. type: %s", e.OriginTextPosition(), reflect.TypeOf(e).Name()),
 		)
 		return nil
@@ -226,17 +304,17 @@ func (sh *scopeHolder) collectExprReferences(expr ast.ExprNode, defaultType mode
 	return res
 }
 
-func (sh *scopeHolder) collectTables(ref *ast.TableRefsClause) ([]*models.Table, []*models.Field) {
+func (sc *scopeCollector) collectTables(ref *ast.TableRefsClause) ([]*models.Table, []*models.Field) {
 	if ref == nil {
 		return nil, nil
 	}
 
-	tables, fields := sh.collectJoinReferences(ref.TableRefs)
+	tables, fields := sc.collectJoinReferences(ref.TableRefs)
 
 	return tables, fields
 }
 
-func (sh *scopeHolder) collectReferencingTables(resultSet ast.ResultSetNode) ([]*models.Table, []*models.Field) {
+func (sc *scopeCollector) collectReferencingTables(resultSet ast.ResultSetNode) ([]*models.Table, []*models.Field) {
 	if resultSet == nil {
 		return nil, nil
 	}
@@ -248,7 +326,7 @@ func (sh *scopeHolder) collectReferencingTables(resultSet ast.ResultSetNode) ([]
 		switch src := n.Source.(type) {
 		case *ast.TableName:
 			if src.Schema.O != "" {
-				sh.lastError = lib.NewUnsupportedError(
+				sc.lastError = lib.NewUnsupportedError(
 					fmt.Sprintf("not supporting query referencing database explicitly: %s.%s", src.Schema.O, src.Name.O),
 				)
 				return nil, nil
@@ -257,18 +335,18 @@ func (sh *scopeHolder) collectReferencingTables(resultSet ast.ResultSetNode) ([]
 		case *ast.SelectStmt:
 			tables = append(tables, &models.Table{AsName: n.AsName.L})
 		case *ast.SetOprStmt:
-			sh.lastError = lib.NewUnsupportedError("not supporting UNION, EXCEPT etc.")
+			sc.lastError = lib.NewUnsupportedError("not supporting UNION, EXCEPT etc.")
 		case *ast.Join:
-			tables, fields = sh.collectJoinReferences(src)
+			tables, fields = sc.collectJoinReferences(src)
 		default:
-			sh.lastError = lib.NewUnsupportedError(
+			sc.lastError = lib.NewUnsupportedError(
 				fmt.Sprintf("not supporting table source exists from %d. type: %s", n.OriginTextPosition(), reflect.TypeOf(n).Name()),
 			)
 		}
 	case *ast.Join:
-		tables, fields = sh.collectJoinReferences(n)
+		tables, fields = sc.collectJoinReferences(n)
 	default:
-		sh.lastError = lib.NewUnsupportedError(
+		sc.lastError = lib.NewUnsupportedError(
 			fmt.Sprintf("not supporting table reference exists from %d. type: %s", n.OriginTextPosition(), reflect.TypeOf(n).Name()),
 		)
 	}
@@ -276,18 +354,18 @@ func (sh *scopeHolder) collectReferencingTables(resultSet ast.ResultSetNode) ([]
 	return tables, fields
 }
 
-func (sh *scopeHolder) collectJoinReferences(j *ast.Join) ([]*models.Table, []*models.Field) {
+func (sc *scopeCollector) collectJoinReferences(j *ast.Join) ([]*models.Table, []*models.Field) {
 	if j == nil {
 		return nil, nil
 	}
 
-	tables, fields := sh.collectReferencingTables(j.Left)
-	rTables, rFields := sh.collectReferencingTables(j.Right)
+	tables, fields := sc.collectReferencingTables(j.Left)
+	rTables, rFields := sc.collectReferencingTables(j.Right)
 	tables = append(tables, rTables...)
 	fields = append(fields, rFields...)
 
 	if j.On != nil {
-		fields = append(fields, &models.Field{Columns: sh.collectExprReferences(j.On.Expr, models.FieldCondition)})
+		fields = append(fields, &models.Field{Columns: sc.collectExprReferences(j.On.Expr, models.FieldCondition)})
 	}
 
 	return tables, fields

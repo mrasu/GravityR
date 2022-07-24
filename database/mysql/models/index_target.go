@@ -67,3 +67,20 @@ func (it *IndexTarget) String() string {
 	)
 	return txt
 }
+
+func (it *IndexTarget) Equals(other *IndexTarget) bool {
+	if it.TableName != other.TableName {
+		return false
+	}
+	if len(it.Columns) != len(other.Columns) {
+		return false
+	}
+
+	for i, col := range it.Columns {
+		if !col.Equals(other.Columns[i]) {
+			return false
+		}
+	}
+
+	return true
+}
