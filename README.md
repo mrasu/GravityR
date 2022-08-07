@@ -9,11 +9,11 @@ GravityR's results for slow SQL because no index exists
 
 # Usage
 ```sh
-# Set evn to connect DB
+# Set envs to connect DB
 export DB_USERNAME=root DB_DATABASE=gravityr
 
-# Get info with AWS' Performance Insights
-gr db suggest -o "example/output.html" -q "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.name = 'foo'"
+# Get database information with AWS' Performance Insights
+gr db dig performance-insights -o "example/performance-insights.html"
 
 # Search your SQL with EXPLAIN
 gr db suggest -o "example/output.html" -q "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.name = 'foo'"
