@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/mrasu/GravityR/cmd/db"
+	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/spf13/cobra"
 )
 
@@ -20,14 +21,9 @@ to quickly create a Cobra application.`,
 func init() {
 	dbCmd.AddCommand(db.SuggestCmd)
 	dbCmd.AddCommand(db.SampleCmd)
+	dbCmd.AddCommand(db.DigCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// dbCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// dbCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	flg := dbCmd.PersistentFlags()
+	flg.StringVarP(&flag.DbFlag.Output, "output", "o", "", "[Required] File name to output result html")
+	cobra.MarkFlagRequired(flg, "output")
 }

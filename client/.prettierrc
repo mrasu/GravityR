@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": ["src/dummies/*.json"],
+      "options": {
+        "printWidth": 1000
+      }
+    }
+  ]
+}

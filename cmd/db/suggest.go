@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/database/mysql"
 	"github.com/mrasu/GravityR/database/mysql/models"
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
@@ -29,27 +30,22 @@ to quickly create IAnalyzeData Cobra application.`,
 	},
 }
 
-var runsExamination bool
-var indexTargetsVar []string
-var indexTargetsWithBackticksVar []string
-var queryVar string
-var outputPathVar string
+type suggestVarS struct {
+	runsExamination           bool
+	indexTargets              []string
+	indexTargetsWithBackticks []string
+	query                     string
+}
+
+var suggestVar = suggestVarS{}
 
 func init() {
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// SuggestCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
 	flg := SuggestCmd.Flags()
-	flg.BoolVar(&runsExamination, "with-examine", false, "Examine query by adding index")
-	flg.StringArrayVarP(&indexTargetsVar, "index", "i", []string{}, "Specify index")
-	flg.StringArrayVar(&indexTargetsWithBackticksVar, "backtick-index", []string{}, "Specify index with backtick way")
+	flg.BoolVar(&suggestVar.runsExamination, "with-examine", false, "Examine query by adding index")
+	flg.StringArrayVarP(&suggestVar.indexTargets, "index", "i", []string{}, "Specify index")
+	flg.StringArrayVar(&suggestVar.indexTargetsWithBackticks, "backtick-index", []string{}, "Specify index with backtick way")
 
-	flg.StringVarP(&queryVar, "query", "q", "", "Query to check")
-	flg.StringVarP(&outputPathVar, "output", "o", "", "File name to output result html")
+	flg.StringVarP(&suggestVar.query, "query", "q", "", "[Required] Query to check")
 	cobra.MarkFlagRequired(flg, "query")
 }
 
@@ -249,7 +245,7 @@ func runSuggest() error {
 			t.user_id < 1000
 		`
 	*/
-	fmt.Printf("\nQuery: %s\n\n", queryVar)
+	fmt.Printf("\nQuery: %s\n\n", suggestVar.query)
 
 	cfg, err := mysql.NewConfigFromEnv()
 	if err != nil {
@@ -287,17 +283,17 @@ func runSuggest() error {
 		}
 	*/
 
-	examinationIdxTargets, err := parseIndexTargets(indexTargetsVar, indexTargetsWithBackticksVar)
+	examinationIdxTargets, err := parseIndexTargets(suggestVar.indexTargets, suggestVar.indexTargetsWithBackticks)
 	if err != nil {
 		return err
 	}
 
-	aTree, err := collectors.CollectExplainAnalyzeTree(db, queryVar)
+	aTree, err := collectors.CollectExplainAnalyzeTree(db, suggestVar.query)
 	if err != nil {
 		return err
 	}
 
-	its, errs := mysql.SuggestIndex(db, "gravityr", queryVar, aTree)
+	its, errs := mysql.SuggestIndex(db, "gravityr", suggestVar.query, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
@@ -317,15 +313,16 @@ func runSuggest() error {
 	}
 
 	var er *models.ExaminationResult
-	if runsExamination {
+	if suggestVar.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
-		er, err = mysql.ExamineIndex(db, queryVar, examinationIdxTargets)
+		er, err = mysql.ExamineIndex(db, suggestVar.query, examinationIdxTargets)
 		if err != nil {
 			return err
 		}
 	}
 
-	if outputPathVar != "" {
+	outputPath := flag.DbFlag.Output
+	if outputPath != "" {
 		var vits []*viewmodel.VmIndexTarget
 		for _, it := range idxTargets {
 			vits = append(vits, it.ToViewModel())
@@ -336,25 +333,25 @@ func runSuggest() error {
 			ver = er.ToViewModel()
 		}
 
-		bo := &html.BuildOption{
-			Query:        queryVar,
-			AnalyzeNodes: aTree.ToViewModel(),
-			IndexTargets: vits,
-			CommandOptions: []*viewmodel.VmExaminationCommandOption{
-				viewmodel.CreateOutputExaminationOption(!runsExamination, outputPathVar),
-				{IsShort: true, Name: "q", Value: queryVar},
+		bo := html.NewSuggestDataBuildOption(
+			suggestVar.query,
+			aTree.ToViewModel(),
+			vits,
+			[]*viewmodel.VmExaminationCommandOption{
+				viewmodel.CreateOutputExaminationOption(!suggestVar.runsExamination, outputPath),
+				{IsShort: true, Name: "q", Value: suggestVar.query},
 			},
-			ExaminationResults: ver,
-		}
+			ver,
+		)
 
-		err = html.CreateHtml(outputPathVar, bo)
+		err = html.CreateHtml(outputPath, bo)
 		if err != nil {
 			return err
 		}
 
 		wd, err := os.Getwd()
 		if err == nil {
-			fmt.Printf("Result html is at: %s\n", path.Join(wd, outputPathVar))
+			fmt.Printf("Result html is at: %s\n", path.Join(wd, outputPath))
 		}
 	}
 	return nil

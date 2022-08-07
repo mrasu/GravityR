@@ -10,3 +10,10 @@ services:
     environment:
       MYSQL_DATABASE: gravityr
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+  aws_mock:
+    build:
+      context: ./docker/aws_mock
+    volumes:
+      - ./docker/aws_mock/fastapi:/app
+    ports:
+      - "8080:8080"

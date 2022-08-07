@@ -1,0 +1,50 @@
+[
+  {
+    "Time": "14:40:00",
+    "Value": 0.36661971830985916,
+    "db.sql_tokenized.id": "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C",
+    "db.sql_tokenized.statement": "INSERT INTO `todos` ( `user_id` , `title` , DESCRIPTION , STATUS , `created_at` , `updated_at` ) SELECT `users` . `id` , ?, ... , `tmp_100` . `id` % ? , `users` . `updated_at` - INTERVAL ( ( `tmp_100` . `id` % ? ) + ? ) SQL_TSI_HOUR , `users` . `updated_at` - INTERVAL ( `tmp_100` . `id` % ? ) SQL_TSI_HOUR FROM `users` CROSS JOIN ( SELECT * FROM `users` LIMIT ? ) `tmp_100`"
+  },
+  {
+    "Time": "14:40:00",
+    "Value": 0.007042253521126761,
+    "db.sql_tokenized.id": "E11B0E9BBC156D4CFE99F1530946C682D27FD626",
+    "db.sql_tokenized.statement": "INSERT `users` ( NAME , `email` , PASSWORD , `created_at` , `updated_at` ) WITH `l0` AS ( SELECT ? AS `num` UNION ALL SELECT ? ) , `l1` AS ( SELECT `a` . `num` * ? + `b` . `num` AS `num` FROM `l0` AS `a` CROSS JOIN `l0` AS `b` ) , `l2` AS ( SELECT `a` . `num` * ? + `b` . `num` AS `num` FROM `l1` AS `a` CROSS JOIN `l1` AS `b` ) , `l3` AS ( SELECT `a` . `num` * ? + `b` . `num` AS `num` FROM `l2` AS `a` CROSS JOIN `l2` AS `b` ) , `l4` AS ( SELECT `a` . `num` * ? + `b` . `num` AS `num` FROM `l3` AS "
+  },
+  {
+    "Time": "14:40:00",
+    "Value": 0.0035211267605633804,
+    "db.sql_tokenized.id": "AC5AB727A800FAB79DF2B4A3EDE4CBBAB9FB4C25",
+    "db.sql_tokenized.statement": "SELECT @@`version_comment` LIMIT ?"
+  },
+  {
+    "Time": "14:40:00",
+    "Value": 0.12345,
+    "db.sql_tokenized.id": "A192925921893390FD3679B2FEA9D3BAC46BB9FA",
+    "db.sql_tokenized.statement": "SELECT NAME , DESCRIPTION FROM `users` INNER JOIN `todos` AS ...ON `users` . `id` ="
+  },
+  {
+    "Time": "14:45:00",
+    "Value": 0.03515625,
+    "db.sql_tokenized.id": "D51E26E104C8374C3547D9AEC929104FB6A2D9AE",
+    "db.sql_tokenized.statement": "SELECT NAME , `t` . `description` FROM `users` INNER JOIN `todos` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?"
+  },
+  {
+    "Time": "14:45:00",
+    "Value": 0.148125,
+    "db.sql_tokenized.id": "64E6FE2C360536B8BED607E6A6B66BC463667A4A",
+    "db.sql_tokenized.statement": "EXPLAIN ANALYZE SELECT NAME , `t` . `description` FROM `users` INNER JOIN `todos` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?"
+  },
+  {
+    "Time": "15:20:00",
+    "Value": 0.08416666666666667,
+    "db.sql_tokenized.id": "D51E26E104C8374C3547D9AEC929104FB6A2D9AE",
+    "db.sql_tokenized.statement": "SELECT NAME , `t` . `description` FROM `users` INNER JOIN `todos` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?"
+  },
+  {
+    "Time": "15:20:00",
+    "Value": 0.016666666666666666,
+    "db.sql_tokenized.id": "8B3C8976E635486D34735D6953A9F362B9738BF0",
+    "db.sql_tokenized.statement": "SELECT * FROM `users` INNER JOIN `todos` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?"
+  }
+]

@@ -1,4 +1,4 @@
-import { ExplainAnalyzeTree } from "../../../src/lib/ExplainAnalyzeChart/ExplainAnalyzeTree";
+import { ExplainAnalyzeTree } from "../../../src/pages/suggest/ExplainAnalyzeChart/ExplainAnalyzeTree";
 import type { IAnalyzeData } from "../../../src/types/gr_param";
 
 describe("ExplainAnalyzeTree", () => {
@@ -14,7 +14,7 @@ describe("ExplainAnalyzeTree", () => {
 
   describe("getSeriesData", () => {
     const convertXToText = (tree: ExplainAnalyzeTree, x: number) => {
-      return tree.getFromX(x).text;
+      return tree.getFromX(x).prop.IAnalyzeData.text;
     };
 
     it("no data", () => {
@@ -36,7 +36,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus at the bottom", () => {
         const resultTexts = tree
           .getSeriesData()
-          .map((v) => convertXToText(tree, v.xNum));
+          .map((v) => convertXToText(tree, v.prop.xNum));
 
         expect(resultTexts).toEqual(["0", "1", "2", "3", "4"]);
       });
@@ -101,7 +101,7 @@ describe("ExplainAnalyzeTree", () => {
       it("focus at the top-level", () => {
         const resultTexts = tree
           .getSeriesData()
-          .map((v) => convertXToText(tree, v.xNum));
+          .map((v) => convertXToText(tree, v.prop.xNum));
 
         const nums = [];
         for (let i = 0; i < 34; i++) {

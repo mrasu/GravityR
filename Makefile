@@ -1,4 +1,4 @@
-.PHONY: sample
+.PHONY: example
 
 export DB_USERNAME := root
 export DB_DATABASE :=gravityr
@@ -17,7 +17,7 @@ clean:
 	rm -rf dist/
 	rm -rf client/dist/
 
-define sample_query
+define example_query
 SELECT
 	name,
 	t.description
@@ -27,9 +27,10 @@ FROM
 WHERE
 	users.email = 'test31776@example.com'
 endef
-export sample_query
+export example_query
 
-sample:
-	./dist/gr db suggest -o "sample/output.html" -q "$${sample_query}"
-	./dist/gr db suggest --with-examine -o "sample/output_examine.html" -q "$${sample_query}"
+example:
+	./dist/gr db suggest -o "example/output.html" -q "$${example_query}"
+	./dist/gr db suggest --with-examine -o "example/output_examine.html" -q "$${example_query}"
+	./dist/gr db dig performance-insights -o "example/performance-insights.html"  --use-mock --start-from 2022-08-04T14:00:00Z
 

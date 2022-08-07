@@ -1,22 +1,15 @@
 import { readable } from "svelte/store";
-import { ExaminationResult } from "../models/ExaminationResult";
+import { SuggestData } from "../models/SuggestData";
+import { DigData } from "../models/DigData";
 import { plainToInstance } from "class-transformer";
-import { IndexTarget } from "../models/IndexTarget";
-import { ExaminationCommandOption } from "../models/ExaminationCommandOption";
 
 export const grParam = readable({
-  analyzeNodes: window.gr.analyzeNodes,
-  query: window.gr.query,
+  dev: window.grParam.dev || false,
+  suggestData: window.grParam.suggestData
+    ? new SuggestData(window.grParam.suggestData)
+    : null,
 
-  indexTargets: window.gr.indexTargets?.map((v) =>
-    plainToInstance(IndexTarget, v)
-  ),
-
-  examinationCommandOptions: window.gr.examinationCommandOptions?.map((v) =>
-    plainToInstance(ExaminationCommandOption, v)
-  ),
-
-  examinationResult: window.gr.examinationResult
-    ? plainToInstance(ExaminationResult, window.gr.examinationResult)
-    : undefined,
+  digData: window.grParam.digData
+    ? plainToInstance(DigData, window.grParam.digData)
+    : null,
 });

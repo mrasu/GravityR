@@ -92,16 +92,16 @@ func runSample() error {
 		return err
 	}
 
-	bo := &html.BuildOption{
-		Query:        query,
-		AnalyzeNodes: aTree.ToViewModel(),
-		IndexTargets: vits,
-		CommandOptions: []*viewmodel.VmExaminationCommandOption{
+	bo := html.NewSuggestDataBuildOption(
+		query,
+		aTree.ToViewModel(),
+		vits,
+		[]*viewmodel.VmExaminationCommandOption{
 			viewmodel.CreateOutputExaminationOption(true, "output.html"),
 			{IsShort: true, Name: "q", Value: query},
 		},
-		ExaminationResults: nil,
-	}
+		nil,
+	)
 
 	err = html.CreateHtml("output.html", bo)
 	if err != nil {

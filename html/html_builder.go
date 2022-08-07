@@ -8,11 +8,11 @@ import (
 )
 
 func CreateHtml(filename string, bo *BuildOption) error {
-	script, err := fs.ReadFile(injections.ClientDist, "client/dist/assets/index.js")
+	script, err := fs.ReadFile(injections.ClientDist, "client/dist/assets/main.js")
 	if err != nil {
 		return err
 	}
-	style, err := fs.ReadFile(injections.ClientDist, "client/dist/assets/index.css")
+	style, err := fs.ReadFile(injections.ClientDist, "client/dist/assets/main.css")
 	if err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func CreateHtml(filename string, bo *BuildOption) error {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GravityR</title>
 	<script>
-      window.gr = {{.gr}}
+      window.grParam = {{.gr}}
     </script>
 	<style>{{.style}}</style>
   </head>
@@ -42,13 +42,7 @@ func CreateHtml(filename string, bo *BuildOption) error {
 	m := map[string]interface{}{
 		"script": template.JS(script),
 		"style":  template.CSS(style),
-		"gr": map[string]interface{}{
-			"query":                     bo.Query,
-			"analyzeNodes":              bo.AnalyzeNodes,
-			"indexTargets":              bo.IndexTargets,
-			"examinationCommandOptions": bo.CommandOptions,
-			"examinationResult":         bo.ExaminationResults,
-		},
+		"gr":     bo.createGrMap(),
 	}
 
 	f, err := os.Create(filename)
