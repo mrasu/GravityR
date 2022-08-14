@@ -38,10 +38,10 @@ func init() {
 }
 
 func runDig() error {
-	fmt.Println(flag.GlobalFlag.GetAwsEndpoint())
+	fmt.Printf("mocked?: %t\n", flag.GlobalFlag.UseMock)
 
 	gFlg := flag.GlobalFlag
-	cfg, err := aws.NewAwsConfig(gFlg.GetAwsEndpoint(), gFlg.Verbose)
+	cfg, err := aws.NewAwsConfig(gFlg.UseMock, gFlg.Verbose)
 	if err != nil {
 		return err
 	}

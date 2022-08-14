@@ -1,9 +1,10 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy example content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
-  push:
+  workflow_run:
+    workflows: ["Run tests"]
+    types:
+      - completed
     branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -21,8 +22,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -30,12 +32,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - run: docker-compose up -d
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+          cache-dependency-path: 'client/yarn.lock'
+      - run: yarn install
+        working-directory: ./client
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - run: make build
+      - name: Wait for MySQL setup
+        run: |
+          while ! docker-compose exec -T mysql8 mysql -u root gravityr -e "SELECT 1" >/dev/null 2>&1; do
+            echo "waiting for mysql setup..."
+            sleep 1
+          done
+        timeout-minutes: 3
+      - name: Setup MySQL data
+        run: docker-compose exec -T mysql8 mysql -u root gravityr < docker/mysql8/init/script.sql
+      - run: make example
       - name: Setup Pages
         uses: actions/configure-pages@v1
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
           path: 'example'
       - name: Deploy to GitHub Pages
         id: deployment

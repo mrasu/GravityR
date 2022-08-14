@@ -30,6 +30,7 @@ endef
 export example_query
 
 example:
+	mkdir -p example
 	./dist/gr db suggest -o "example/output.html" -q "$${example_query}"
 	./dist/gr db suggest --with-examine -o "example/output_examine.html" -q "$${example_query}"
 	./dist/gr db dig performance-insights -o "example/performance-insights.html"  --use-mock --start-from 2022-08-04T14:00:00Z
