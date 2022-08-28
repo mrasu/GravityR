@@ -6,7 +6,8 @@ import type {
 } from "@/types/gr_param";
 import { BaseSuggestData } from "./BaseSuggestData";
 import { plainToInstance } from "class-transformer";
-import { IndexTarget, PostgresIndexTarget } from "@/models/IndexTarget";
+import type { IndexTarget } from "@/models/IndexTarget";
+import { PostgresIndexTarget } from "@/models/PostgresIndexTarget";
 import { ExaminationResult } from "@/models/ExaminationResult";
 
 export class PostgresSuggestData extends BaseSuggestData {

@@ -16,18 +16,6 @@ export class MysqlSuggestData extends BaseSuggestData {
     super(suggestData);
 
     this.analyzeNodes = suggestData.analyzeNodes;
-
-    this.indexTargets = suggestData.indexTargets?.map((v) =>
-      plainToInstance(IndexTarget, v)
-    );
-
-    this.examinationResult = suggestData.examinationResult
-      ? plainToInstance(ExaminationResult, suggestData.examinationResult)
-      : undefined;
-
-    for (const result of this.examinationResult.indexResults) {
-      result.indexTarget = plainToInstance(IndexTarget, result.indexTarget);
-    }
   }
 
   protected createIndexTargets(targets?: IIndexTarget[]): IndexTarget[] {

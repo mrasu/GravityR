@@ -25,11 +25,3 @@ export class IndexTarget {
     return this.columns.map((v) => v.name).join("+");
   }
 }
-
-export class PostgresIndexTarget extends IndexTarget {
-  toAlterAddSQL(): string {
-    const columns = this.columns.map((v) => v.name).join(", ");
-
-    return `CREATE INDEX ON ${this.tableName} (${columns});`;
-  }
-}
