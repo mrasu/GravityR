@@ -1,4 +1,5 @@
-import analyzeNodes from "./analyzeNodes.json";
+import analyzeMysqlNodes from "./analyzeMysqlNodes.json";
+import analyzePostgresNodes from "./analyzePostgresNodes.json";
 
 const query = `
 with count_tbl as
@@ -6,7 +7,7 @@ with count_tbl as
   status,
   count(status) as count
   from users
-  inner join todos on users.user_id = todos.user_id
+  inner join todos on users.id = todos.user_id
   where users.created_at > now() - interval 2  month
   group by status
 )
@@ -15,7 +16,8 @@ select
        when status = 2 then 'Doing'
        when status = 3 then 'Done' end as status,
   sum(count)
-from  count_tbl;
+from  count_tbl
+group by status;
 `;
 const indexTargets = [
   { tableName: "todos", columns: [{ name: "user_id" }] },
@@ -50,13 +52,35 @@ const examinationResult = {
   ],
 };
 
+const postgresPlanningText = `Planning:
+  Buffers: shared hit=6
+Planning Time: 0.167 ms
+JIT:
+  Functions: 57
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 3.100 ms, Inlining 0.000 ms, Optimization 1.174 ms, Emission 20.082 ms, Total 24.357 ms
+Execution Time: 375.843 ms`;
+
 export const dummySuggestData = {
-  query: query,
-  analyzeNodes: analyzeNodes,
-  indexTargets: indexTargets,
-  examinationResult: examinationResult,
-  examinationCommandOptions: [
-    { isShort: true, name: "o", value: "output_examine.html" },
-    { isShort: true, name: "q", value: query },
-  ],
+  mysql: {
+    query: query,
+    analyzeNodes: analyzeMysqlNodes,
+    indexTargets: indexTargets,
+    examinationResult: examinationResult,
+    examinationCommandOptions: [
+      { isShort: true, name: "o", value: "output_examine.html" },
+      { isShort: true, name: "q", value: query },
+    ],
+  },
+  postgres: {
+    query: query,
+    analyzeNodes: analyzePostgresNodes,
+    planningText: postgresPlanningText,
+    indexTargets: indexTargets,
+    examinationResult: examinationResult,
+    examinationCommandOptions: [
+      { isShort: true, name: "o", value: "output_examine.html" },
+      { isShort: true, name: "q", value: query },
+    ],
+  },
 };

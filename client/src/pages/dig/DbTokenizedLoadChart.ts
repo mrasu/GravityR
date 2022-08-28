@@ -1,8 +1,8 @@
 import type { ApexOptions } from "apexcharts";
-import type { TimeDbLoad } from "../../models/TimeDbLoad";
-import { GrChart } from "../../lib/GrChart";
-import type { GrChartOptions } from "../../lib/GrChart";
-import type { GrChartSeries } from "../../lib/GrChart";
+import type { TimeDbLoad } from "@/models/TimeDbLoad";
+import { GrChart } from "@/lib/GrChart";
+import type { GrChartOptions } from "@/lib/GrChart";
+import type { GrChartSeries } from "@/lib/GrChart";
 import { createLoadPropChartSeries } from "./util/chart/LoadPropChartSereies";
 import { createRawLoads, pickRawLoads } from "./util/chart/TokenizedLoad";
 import type { RawLoadOfSql } from "./util/chart/TokenizedLoad";

@@ -1,4 +1,4 @@
-import type { TimeDbLoad } from "../../../models/TimeDbLoad";
+import type { TimeDbLoad } from "@/models/TimeDbLoad";
 
 export const getAllDatabase = (dbLoads?: TimeDbLoad[]): string[] => {
   if (!dbLoads) return [];

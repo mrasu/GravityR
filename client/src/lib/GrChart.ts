@@ -31,8 +31,12 @@ export abstract class GrChart<T> {
 
   protected constructor(private readonly elm: HTMLElement) {}
 
-  protected renderChart(option: GrChartOptions<T>) {
+  destroy() {
     this.chart?.destroy();
+  }
+
+  protected renderChart(option: GrChartOptions<T>) {
+    this.destroy();
 
     this.assignOptionFunctions(option);
     this.chart = new ApexCharts(this.elm, option);

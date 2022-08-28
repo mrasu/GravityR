@@ -10,7 +10,9 @@ import (
 )
 
 // ExplainAnalyzeResultLine is the parsed information from `EXPLAIN ANALYZE` query
-// c.f) https://dev.mysql.com/doc/refman/8.0/en/explain.html#explain-analyze
+// c.f)
+//	https://dev.mysql.com/doc/refman/8.0/en/explain.html#explain-analyze
+//	https://github.com/mysql/mysql-server/blob/8d8c986e5716e38cb776b627a8eee9e92241b4ce/sql/join_optimizer/explain_access_path.cc#L475
 type ExplainAnalyzeResultLine struct {
 	Text      string
 	TableName string

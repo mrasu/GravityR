@@ -10,6 +10,16 @@ services:
     environment:
       MYSQL_DATABASE: gravityr
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+  postgres14:
+    image: postgres:14
+    volumes:
+      - ./docker/postgres14/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: gravityr
+      POSTGRES_USER: root
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
   aws_mock:
     build:
       context: ./docker/aws_mock

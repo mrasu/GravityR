@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Checkbox, Card, Radio } from "svelte-chota";
-  import type { TimeDbLoad } from "../../models/TimeDbLoad";
-  import CommandCode from "../../lib/components/CommandCode.svelte";
+  import type { TimeDbLoad } from "@/models/TimeDbLoad";
+  import CommandCode from "@/lib/components/CommandCode.svelte";
   import { createLoadSumTooltip } from "./util/LoadTooltip";
   import { DbTokenizedLoadRankingChart } from "./DbTokenizedLoadRankingChart";
   import type { DbTokenizedLoadRankingChartProp } from "./DbTokenizedLoadRankingChart";

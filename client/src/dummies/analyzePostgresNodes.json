@@ -1,0 +1,133 @@
+[
+  {
+    "text": "GroupAggregate  (cost=107142.99..107143.85 rows=3 width=66) (actual time=371.793..374.581 rows=3 loops=1)\n  Group Key: todos.status\n  Buffers: shared hit=2623 read=67211",
+    "title": "GroupAggregate",
+    "tableName": "",
+    "estimatedInitCost": 107142.99,
+    "estimatedCost": 107143.85,
+    "estimatedReturnedRows": 3,
+    "estimatedWidth": 66,
+    "actualTimeFirstRow": 371.793,
+    "actualTimeAvg": 374.581,
+    "actualReturnedRows": 3,
+    "actualLoopCount": 1,
+    "children": [
+      {
+        "text": "  ->  Finalize GroupAggregate  (cost=107142.99..107143.75 rows=3 width=10) (actual time=371.785..374.574 rows=3 loops=1)\n        Group Key: todos.status\n        Buffers: shared hit=2623 read=67211",
+        "title": "Finalize GroupAggregate",
+        "tableName": "",
+        "estimatedInitCost": 107142.99,
+        "estimatedCost": 107143.75,
+        "estimatedReturnedRows": 3,
+        "estimatedWidth": 10,
+        "actualTimeFirstRow": 371.785,
+        "actualTimeAvg": 374.574,
+        "actualReturnedRows": 3,
+        "actualLoopCount": 1,
+        "children": [
+          {
+            "text": "        ->  Gather Merge  (cost=107142.99..107143.69 rows=6 width=10) (actual time=371.779..374.566 rows=9 loops=1)\n              Workers Planned: 2\n              Workers Launched: 2\n              Buffers: shared hit=2623 read=67211",
+            "title": "Gather Merge",
+            "tableName": "",
+            "estimatedInitCost": 107142.99,
+            "estimatedCost": 107143.69,
+            "estimatedReturnedRows": 6,
+            "estimatedWidth": 10,
+            "actualTimeFirstRow": 371.779,
+            "actualTimeAvg": 374.566,
+            "actualReturnedRows": 9,
+            "actualLoopCount": 1,
+            "children": [
+              {
+                "text": "              ->  Sort  (cost=106142.96..106142.97 rows=3 width=10) (actual time=353.091..353.093 rows=3 loops=3)\n                    Sort Key: todos.status\n                    Sort Method: quicksort  Memory: 25kB\n                    Buffers: shared hit=2623 read=67211\n                    Worker 0:  Sort Method: quicksort  Memory: 25kB\n                    Worker 1:  Sort Method: quicksort  Memory: 25kB",
+                "title": "Sort",
+                "tableName": "",
+                "estimatedInitCost": 106142.96,
+                "estimatedCost": 106142.97,
+                "estimatedReturnedRows": 3,
+                "estimatedWidth": 10,
+                "actualTimeFirstRow": 353.091,
+                "actualTimeAvg": 353.093,
+                "actualReturnedRows": 3,
+                "actualLoopCount": 3,
+                "children": [
+                  {
+                    "text": "                    ->  Partial HashAggregate  (cost=106142.91..106142.94 rows=3 width=10) (actual time=353.078..353.080 rows=3 loops=3)\n                          Group Key: todos.status\n                          Batches: 1  Memory Usage: 24kB\n                          Buffers: shared hit=2609 read=67211\n                          Worker 0:  Batches: 1  Memory Usage: 24kB\n                          Worker 1:  Batches: 1  Memory Usage: 24kB",
+                    "title": "Partial HashAggregate",
+                    "tableName": "",
+                    "estimatedInitCost": 106142.91,
+                    "estimatedCost": 106142.94,
+                    "estimatedReturnedRows": 3,
+                    "estimatedWidth": 10,
+                    "actualTimeFirstRow": 353.078,
+                    "actualTimeAvg": 353.08,
+                    "actualReturnedRows": 3,
+                    "actualLoopCount": 3,
+                    "children": [
+                      {
+                        "text": "                          ->  Hash Join  (cost=2017.14..104055.20 rows=417541 width=2) (actual time=17.872..317.433 rows=331833 loops=3)\n                                Hash Cond: (todos.user_id = users.id)\n                                Buffers: shared hit=2609 read=67211",
+                        "title": "Hash Join",
+                        "tableName": "",
+                        "estimatedInitCost": 2017.14,
+                        "estimatedCost": 104055.2,
+                        "estimatedReturnedRows": 417541,
+                        "estimatedWidth": 2,
+                        "actualTimeFirstRow": 17.872,
+                        "actualTimeAvg": 317.433,
+                        "actualReturnedRows": 331833,
+                        "actualLoopCount": 3,
+                        "children": [
+                          {
+                            "text": "                                ->  Parallel Seq Scan on todos  (cost=0.00..94869.61 rows=2730661 width=6) (actual time=0.018..119.979 rows=2184533 loops=3)\n                                      Buffers: shared hit=352 read=67211",
+                            "title": "Parallel Seq Scan",
+                            "tableName": "todos",
+                            "estimatedInitCost": 0.0,
+                            "estimatedCost": 94869.61,
+                            "estimatedReturnedRows": 2730661,
+                            "estimatedWidth": 6,
+                            "actualTimeFirstRow": 0.018,
+                            "actualTimeAvg": 119.979,
+                            "actualReturnedRows": 2184533,
+                            "actualLoopCount": 3
+                          },
+                          {
+                            "text": "                                ->  Hash  (cost=1891.88..1891.88 rows=10021 width=4) (actual time=17.393..17.394 rows=9955 loops=3)\n                                      Buckets: 16384  Batches: 1  Memory Usage: 478kB\n                                      Buffers: shared hit=2235",
+                            "title": "Hash",
+                            "tableName": "",
+                            "estimatedInitCost": 1891.88,
+                            "estimatedCost": 1891.88,
+                            "estimatedReturnedRows": 4,
+                            "estimatedWidth": 66,
+                            "actualTimeFirstRow": 17.393,
+                            "actualTimeAvg": 17.394,
+                            "actualReturnedRows": 9955,
+                            "actualLoopCount": 3,
+                            "children": [
+                              {
+                                "text": "                                      ->  Seq Scan on users  (cost=0.00..1891.88 rows=10021 width=4) (actual time=7.247..15.952 rows=9955 loops=3)\n                                            Filter: (created_at > (now() - '2 mons'::interval))\n                                            Rows Removed by Filter: 55581\n                                            Buffers: shared hit=2235",
+                                "title": "Seq Scan",
+                                "tableName": "users",
+                                "estimatedInitCost": 0.0,
+                                "estimatedCost": 1891.88,
+                                "estimatedReturnedRows": 10021,
+                                "estimatedWidth": 4,
+                                "actualTimeFirstRow": 7.247,
+                                "actualTimeAvg": 15.952,
+                                "actualReturnedRows": 9955,
+                                "actualLoopCount": 3
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

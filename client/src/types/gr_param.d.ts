@@ -5,11 +5,24 @@ export interface IGrParam {
 }
 
 export interface ISuggestData {
-  analyzeNodes?: IAnalyzeData[];
+  mysql?: IMysqlSuggestData;
+  postgres?: IPostgresSuggestData;
+}
+
+export abstract interface IDbSuggestData {
   query: string;
   indexTargets?: IIndexTarget[];
   examinationCommandOptions: IExaminationCommandOption[];
   examinationResult?: IExaminationResult;
+}
+
+export interface IMysqlSuggestData extends IDbSuggestData {
+  analyzeNodes?: IMysqlAnalyzeData[];
+}
+
+export interface IPostgresSuggestData extends IDbSuggestData {
+  analyzeNodes?: IPostgresAnalyzeData[];
+  planningText: string;
 }
 
 export interface IDigData {
@@ -17,19 +30,33 @@ export interface IDigData {
   tokenizedSqlDbLoads: ITimeDbLoad[];
 }
 
-export interface IAnalyzeData {
+export abstract interface IDbAnalyzeData {
   text: string;
   title: string;
   tableName?: string;
-  estimatedInitCost?: number;
-  estimatedCost?: number;
-  estimatedReturnedRows?: number;
   actualTimeFirstRow?: number;
   actualTimeAvg?: number;
   actualReturnedRows?: number;
   actualLoopCount?: number;
 
-  children?: IAnalyzeData[];
+  children?: IDbAnalyzeData[];
+}
+
+export interface IMysqlAnalyzeData extends IDbAnalyzeData {
+  estimatedInitCost?: number;
+  estimatedCost?: number;
+  estimatedReturnedRows?: number;
+
+  children?: IMysqlAnalyzeData[];
+}
+
+export interface IPostgresAnalyzeData extends IDbAnalyzeData {
+  estimatedInitCost: number;
+  estimatedCost: number;
+  estimatedReturnedRows: number;
+  estimatedWidth: number;
+
+  children?: IPostgresAnalyzeData[];
 }
 
 interface IIndexTarget {

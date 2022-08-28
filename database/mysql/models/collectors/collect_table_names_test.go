@@ -44,7 +44,7 @@ func TestCollectTableNames(t *testing.T) {
 		{
 			name:   "CTE name duplicated query",
 			query:  "WITH users AS (SELECT * FROM todos AS t) SELECT * FROM users AS u INNER JOIN users ON u.id = users.user_id",
-			tables: []string{"todos", "users"},
+			tables: []string{"todos"},
 		},
 		{
 			name:   "CTE name duplicated query",

@@ -2,7 +2,7 @@ package collectors
 
 import (
 	"fmt"
-	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pingcap/tidb/parser/ast"
 	driver "github.com/pingcap/tidb/types/parser_driver"
@@ -10,15 +10,15 @@ import (
 )
 
 type scopeCollector struct {
-	scopes []*models.StmtScope
+	scopes []*db_models.StmtScope
 	errors []error
 
-	scopeStack *lib.Stack[models.StmtScope]
+	scopeStack *lib.Stack[db_models.StmtScope]
 	lastError  error
 }
 
-func CollectStmtScopes(rootNode ast.StmtNode) ([]*models.StmtScope, []error) {
-	sc := &scopeCollector{scopeStack: lib.NewStack[models.StmtScope]()}
+func CollectStmtScopes(rootNode ast.StmtNode) ([]*db_models.StmtScope, []error) {
+	sc := &scopeCollector{scopeStack: lib.NewStack[db_models.StmtScope]()}
 	if _, ok := rootNode.(*ast.SetOprStmt); ok {
 		return nil, []error{lib.NewUnsupportedError("not supporting UNION, EXCEPT etc.")}
 	}
@@ -41,28 +41,28 @@ func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
 	}
 
 	top := sc.scopeStack.Top()
-	var parent *models.StmtScope
+	var parent *db_models.StmtScope
 	if top != nil {
 		parent = top
 	}
-	scope := &models.StmtScope{Parent: parent, Name: models.RootScopeName}
-	var foundFields []*models.Field
+	scope := &db_models.StmtScope{Parent: parent, Name: db_models.RootScopeName}
+	var foundFields []*db_models.Field
 	for _, field := range stmt.Fields.Fields {
-		var cols []*models.FieldColumn
+		var cols []*db_models.FieldColumn
 		if field.Expr != nil {
-			cols = sc.collectExprReferences(field.Expr, models.FieldReference)
+			cols = sc.collectExprReferences(field.Expr, db_models.FieldReference)
 			if err := sc.getAndClearLastError(); err != nil {
 				sc.errors = append(sc.errors, err)
 				continue
 			}
 		} else {
-			cols = []*models.FieldColumn{{
+			cols = []*db_models.FieldColumn{{
 				Table: field.WildCard.Table.L,
-				Type:  models.FieldStar,
+				Type:  db_models.FieldStar,
 			}}
 		}
 
-		foundFields = append(foundFields, &models.Field{
+		foundFields = append(foundFields, &db_models.Field{
 			AsName:  field.AsName.L,
 			Columns: cols,
 		})
@@ -77,7 +77,7 @@ func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
 		foundFields = append(foundFields, fields...)
 	}
 	if stmt.Where != nil {
-		f, err := sc.createFieldFromExpr(stmt.Where, models.FieldCondition)
+		f, err := sc.createFieldFromExpr(stmt.Where, db_models.FieldCondition)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
@@ -86,7 +86,7 @@ func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
 	}
 	if stmt.GroupBy != nil {
 		for _, item := range stmt.GroupBy.Items {
-			f, err := sc.createFieldFromExpr(item.Expr, models.FieldReference)
+			f, err := sc.createFieldFromExpr(item.Expr, db_models.FieldReference)
 			if err == nil {
 				foundFields = append(foundFields, f)
 			} else {
@@ -95,7 +95,7 @@ func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
 		}
 	}
 	if stmt.Having != nil {
-		f, err := sc.createFieldFromExpr(stmt.Having.Expr, models.FieldReference)
+		f, err := sc.createFieldFromExpr(stmt.Having.Expr, db_models.FieldReference)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
@@ -107,7 +107,7 @@ func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
 	}
 	if stmt.OrderBy != nil {
 		for _, item := range stmt.OrderBy.Items {
-			f, err := sc.createFieldFromExpr(item.Expr, models.FieldReference)
+			f, err := sc.createFieldFromExpr(item.Expr, db_models.FieldReference)
 			if err == nil {
 				foundFields = append(foundFields, f)
 			} else {
@@ -116,14 +116,14 @@ func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
 		}
 	}
 	if stmt.Limit != nil {
-		f, err := sc.createFieldFromExpr(stmt.Limit.Count, models.FieldReference)
+		f, err := sc.createFieldFromExpr(stmt.Limit.Count, db_models.FieldReference)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
 			sc.errors = append(sc.errors, err)
 		}
 
-		f, err = sc.createFieldFromExpr(stmt.Limit.Offset, models.FieldReference)
+		f, err = sc.createFieldFromExpr(stmt.Limit.Offset, db_models.FieldReference)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
@@ -165,21 +165,21 @@ func (sc *scopeCollector) getAndClearLastError() error {
 	return err
 }
 
-func (sc *scopeCollector) createFieldFromExpr(expr ast.ExprNode, fieldType models.FieldType) (*models.Field, error) {
+func (sc *scopeCollector) createFieldFromExpr(expr ast.ExprNode, fieldType db_models.FieldType) (*db_models.Field, error) {
 	cols := sc.collectExprReferences(expr, fieldType)
 	if err := sc.getAndClearLastError(); err != nil {
 		return nil, err
 	}
 
-	return &models.Field{Columns: cols}, nil
+	return &db_models.Field{Columns: cols}, nil
 }
 
-func (sc *scopeCollector) collectExprReferences(expr ast.ExprNode, defaultType models.FieldType) []*models.FieldColumn {
+func (sc *scopeCollector) collectExprReferences(expr ast.ExprNode, defaultType db_models.FieldType) []*db_models.FieldColumn {
 	if expr == nil {
 		return nil
 	}
 
-	var res []*models.FieldColumn
+	var res []*db_models.FieldColumn
 	switch e := expr.(type) {
 	case *ast.BetweenExpr:
 		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
@@ -197,14 +197,14 @@ func (sc *scopeCollector) collectExprReferences(expr ast.ExprNode, defaultType m
 		res = append(res, sc.collectExprReferences(e.ElseClause, defaultType)...)
 	case *ast.SubqueryExpr:
 		// ignore the content of subquery as it will be in different scope.Scopes
-		return []*models.FieldColumn{{Type: models.FieldSubquery}}
+		return []*db_models.FieldColumn{{Type: db_models.FieldSubquery}}
 	case *ast.CompareSubqueryExpr:
 		res = append(res, sc.collectExprReferences(e.L, defaultType)...)
 		res = append(res, sc.collectExprReferences(e.R, defaultType)...)
 	case *ast.TableNameExpr:
 		sc.lastError = lib.NewInvalidAstError("Table definition is not expected")
 	case *ast.ColumnNameExpr:
-		return []*models.FieldColumn{{Table: e.Name.Table.L, Name: e.Name.Name.L, Type: defaultType}}
+		return []*db_models.FieldColumn{{Table: e.Name.Table.L, Name: e.Name.Name.L, Type: defaultType}}
 	case *ast.DefaultExpr:
 		sc.lastError = lib.NewInvalidAstError("DEFAULT is not expected")
 	case *ast.ExistsSubqueryExpr:
@@ -246,7 +246,7 @@ func (sc *scopeCollector) collectExprReferences(expr ast.ExprNode, defaultType m
 	case *ast.MatchAgainst:
 		res = append(res, sc.collectExprReferences(e.Against, defaultType)...)
 		for _, c := range e.ColumnNames {
-			res = append(res, &models.FieldColumn{Table: c.Table.L, Name: c.Name.L, Type: defaultType})
+			res = append(res, &db_models.FieldColumn{Table: c.Table.L, Name: c.Name.L, Type: defaultType})
 		}
 	case *ast.SetCollationExpr:
 		// do nothing as COLLATE doesn't relate to table's column
@@ -304,7 +304,7 @@ func (sc *scopeCollector) collectExprReferences(expr ast.ExprNode, defaultType m
 	return res
 }
 
-func (sc *scopeCollector) collectTables(ref *ast.TableRefsClause) ([]*models.Table, []*models.Field) {
+func (sc *scopeCollector) collectTables(ref *ast.TableRefsClause) ([]*db_models.Table, []*db_models.Field) {
 	if ref == nil {
 		return nil, nil
 	}
@@ -314,13 +314,13 @@ func (sc *scopeCollector) collectTables(ref *ast.TableRefsClause) ([]*models.Tab
 	return tables, fields
 }
 
-func (sc *scopeCollector) collectReferencingTables(resultSet ast.ResultSetNode) ([]*models.Table, []*models.Field) {
+func (sc *scopeCollector) collectReferencingTables(resultSet ast.ResultSetNode) ([]*db_models.Table, []*db_models.Field) {
 	if resultSet == nil {
 		return nil, nil
 	}
 
-	var tables []*models.Table
-	var fields []*models.Field
+	var tables []*db_models.Table
+	var fields []*db_models.Field
 	switch n := resultSet.(type) {
 	case *ast.TableSource:
 		switch src := n.Source.(type) {
@@ -331,9 +331,9 @@ func (sc *scopeCollector) collectReferencingTables(resultSet ast.ResultSetNode) 
 				)
 				return nil, nil
 			}
-			tables = append(tables, &models.Table{AsName: n.AsName.L, Name: src.Name.L})
+			tables = append(tables, &db_models.Table{AsName: n.AsName.L, Name: src.Name.L})
 		case *ast.SelectStmt:
-			tables = append(tables, &models.Table{AsName: n.AsName.L})
+			tables = append(tables, &db_models.Table{AsName: n.AsName.L})
 		case *ast.SetOprStmt:
 			sc.lastError = lib.NewUnsupportedError("not supporting UNION, EXCEPT etc.")
 		case *ast.Join:
@@ -354,7 +354,7 @@ func (sc *scopeCollector) collectReferencingTables(resultSet ast.ResultSetNode) 
 	return tables, fields
 }
 
-func (sc *scopeCollector) collectJoinReferences(j *ast.Join) ([]*models.Table, []*models.Field) {
+func (sc *scopeCollector) collectJoinReferences(j *ast.Join) ([]*db_models.Table, []*db_models.Field) {
 	if j == nil {
 		return nil, nil
 	}
@@ -365,7 +365,7 @@ func (sc *scopeCollector) collectJoinReferences(j *ast.Join) ([]*models.Table, [
 	fields = append(fields, rFields...)
 
 	if j.On != nil {
-		fields = append(fields, &models.Field{Columns: sc.collectExprReferences(j.On.Expr, models.FieldCondition)})
+		fields = append(fields, &db_models.Field{Columns: sc.collectExprReferences(j.On.Expr, db_models.FieldCondition)})
 	}
 
 	return tables, fields

@@ -98,7 +98,7 @@ func (tc *tableCollector) addTableIfNotDerived(tSrc *ast.TableSource) {
 			))
 			return
 		}
-		if tSrc.AsName.L != "" || !tc.isCteTable(src.Name.L) {
+		if !tc.isCteTable(src.Name.L) {
 			tc.tables = append(tc.tables, &table{
 				name:  src.Name,
 				alias: tSrc.AsName,

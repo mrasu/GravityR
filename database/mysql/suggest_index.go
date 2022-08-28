@@ -3,6 +3,8 @@ package mysql
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/mrasu/GravityR/database/db_models"
+	"github.com/mrasu/GravityR/database/db_models/builders"
 	"github.com/mrasu/GravityR/database/mysql/models"
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/lib"
@@ -131,7 +133,7 @@ import (
 */
 
 // TODO: 既存のインデックスと被るものは除外する
-func SuggestIndex(db *sqlx.DB, database, query string, aTree *models.ExplainAnalyzeTree) ([]*models.IndexTargetTable, []error) {
+func SuggestIndex(db *sqlx.DB, database, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
 	rootNode, err := parse(query)
 	if err != nil {
 		panic(err)
@@ -151,53 +153,17 @@ func SuggestIndex(db *sqlx.DB, database, query string, aTree *models.ExplainAnal
 		return nil, errs
 	}
 
-	idxCandidates, err := collectors.CollectIndexTargets(tables, scopes)
+	idxCandidates, err := builders.BuildIndexTargets(tables, scopes)
 	if err != nil {
 		return nil, []error{err}
 	}
-	fmt.Println(lib.JoinF(idxCandidates, "\n", func(f *models.IndexTargetTable) string { return f.String() }))
+	fmt.Println(lib.JoinF(idxCandidates, "\n", func(f *db_models.IndexTargetTable) string { return f.String() }))
 	fmt.Println()
 
-	tTrees := aTree.ToSingleTableTrees()
-	fmt.Println(lib.JoinF(tTrees, "\n", func(st *models.SingleTableExplainAnalyzeTree) string { return st.String() }))
+	tableResults := aTree.ToSingleTableResults()
+	fmt.Println(lib.JoinF(tableResults, "\n", func(st *db_models.SingleTableExplainResult) string { return st.String() }))
 
-	//TODO: consider scope to handle name duplication
-	asTableMap := map[string]*lib.Set[string]{}
-	for _, s := range scopes {
-		for tName, tables := range s.ListAsTableMap() {
-			if _, ok := asTableMap[tName]; ok {
-				asTableMap[tName].Merge(tables)
-			} else {
-				asTableMap[tName] = tables
-			}
-		}
-	}
-	lib.SortF(tTrees, func(t *models.SingleTableExplainAnalyzeTree) float64 {
-		return t.EstimatedTotalTime * -1
-	})
-
-	calledTable := lib.NewSet[string]()
-	var indexes []*models.IndexTargetTable
-	for _, ttree := range tTrees {
-		tNames := []string{ttree.TableName}
-		if name, ok := asTableMap[ttree.TableName]; ok {
-			tNames = name.Values()
-		}
-
-		for _, tName := range tNames {
-			if calledTable.Contains(tName) {
-				continue
-			}
-			for _, c := range idxCandidates {
-				if c.TableName == tName {
-					indexes = append(indexes, c)
-				}
-			}
-			calledTable.Add(tName)
-		}
-	}
-
-	return indexes, nil
+	return builders.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
 
 func parse(sql string) (ast.StmtNode, error) {

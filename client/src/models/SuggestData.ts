@@ -1,31 +1,18 @@
-import type { IAnalyzeData, ISuggestData } from "../types/gr_param";
-import { IndexTarget } from "./IndexTarget";
-import { ExaminationCommandOption } from "./ExaminationCommandOption";
-import { ExaminationResult } from "./ExaminationResult";
-import { plainToInstance } from "class-transformer";
+import type { ISuggestData } from "@/types/gr_param";
+import { MysqlSuggestData } from "./MysqlSuggestData";
+import { PostgresSuggestData } from "./PostgresSuggestData";
 
 export class SuggestData {
-  analyzeNodes?: IAnalyzeData[];
-  query: string;
-  indexTargets?: IndexTarget[];
-  examinationCommandOptions: ExaminationCommandOption[];
-  examinationResult?: ExaminationResult;
+  mysqlSuggestData?: MysqlSuggestData;
+  postgresSuggestData?: PostgresSuggestData;
 
   constructor(iSuggestData: ISuggestData) {
-    this.analyzeNodes = iSuggestData.analyzeNodes;
-    this.query = iSuggestData.query;
-
-    this.indexTargets = iSuggestData.indexTargets?.map((v) =>
-      plainToInstance(IndexTarget, v)
-    );
-
-    this.examinationCommandOptions =
-      iSuggestData.examinationCommandOptions?.map((v) =>
-        plainToInstance(ExaminationCommandOption, v)
-      );
-
-    this.examinationResult = iSuggestData.examinationResult
-      ? plainToInstance(ExaminationResult, iSuggestData.examinationResult)
-      : undefined;
+    if (iSuggestData.mysql) {
+      this.mysqlSuggestData = new MysqlSuggestData(iSuggestData.mysql);
+    }
+    if (iSuggestData.postgres) {
+      this.postgresSuggestData = new PostgresSuggestData(iSuggestData.postgres);
+      console.log(this.postgresSuggestData);
+    }
   }
 }

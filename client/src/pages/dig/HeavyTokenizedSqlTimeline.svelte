@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Checkbox, Radio, Card } from "svelte-chota";
-  import type { TimeDbLoad } from "../../models/TimeDbLoad";
+  import type { TimeDbLoad } from "@/models/TimeDbLoad";
   import { DbTokenizedLoadChart } from "./DbTokenizedLoadChart";
   import type { DbTokenizedLoadChartProp } from "./DbTokenizedLoadChart";
-  import CommandCode from "../../lib/components/CommandCode.svelte";
+  import CommandCode from "@/lib/components/CommandCode.svelte";
   import { createLoadMaxTooltip } from "./util/LoadTooltip";
   import type { RawLoadOfSql } from "./util/chart/TokenizedLoad";
   import { getAllDatabase, getFirstDatabaseAsArray } from "./util/Databases";

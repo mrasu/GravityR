@@ -5,16 +5,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DigCmd represents the db command
 var DigCmd = &cobra.Command{
 	Use:   "dig",
 	Short: "Dig database behavior",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is IAnalyzeData CLI library for Go that empowers applications.
-This application is IAnalyzeData tool to generate the needed files
-to quickly create IAnalyzeData Cobra application.`,
 }
 
 func init() {

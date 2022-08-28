@@ -3,7 +3,7 @@ package collectors
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 )
@@ -27,49 +27,27 @@ WHERE
 ORDER BY TABLE_NAME, ORDINAL_POSITION
 `
 
-func CollectTableSchemas(db *sqlx.DB, database string, tables []string) ([]*models.TableSchema, error) {
+func CollectTableSchemas(db *sqlx.DB, database string, tables []string) ([]*db_models.TableSchema, error) {
 	query, args, err := sqlx.In(schemaFetchQuery, database, tables)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build query to get table schema")
 	}
-	rows, err := db.Queryx(query, args...)
+
+	var cols []column
+	err = db.Select(&cols, query, args...)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get table schema")
+		return nil, errors.Wrap(err, "failed to execute query to get table schema")
 	}
 
-	ts := map[string]*models.TableSchema{}
-	for rows.Next() {
-		var c column
-		err = rows.StructScan(&c)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to wrap result from information_schema.columns")
-		}
-		var t *models.TableSchema
-		if et, ok := ts[c.TableName]; ok {
-			t = et
-		} else {
-			t = &models.TableSchema{
-				Name: c.TableName,
-			}
-			ts[c.TableName] = t
-		}
+	schemas := db_models.CreateTableSchemas(tables, cols, func(c column) (string, string, bool) {
+		return c.TableName, c.ColumnName, c.ColumnKey == "PRI"
+	})
 
-		t.Columns = append(t.Columns, &models.ColumnSchema{
-			Name: c.ColumnName,
-		})
-
-		if c.ColumnKey == "PRI" {
-			t.PrimaryKeys = append(t.PrimaryKeys, c.ColumnName)
+	for i, table := range tables {
+		if schemas[i] == nil {
+			return nil, lib.NewUnsupportedError(fmt.Sprintf("unknown table found. perhaps using VIEW? not supporting: %s", table))
 		}
 	}
 
-	var res []*models.TableSchema
-	for _, table := range tables {
-		if t, ok := ts[table]; ok {
-			res = append(res, t)
-		} else {
-			return nil, lib.NewUnsupportedError(fmt.Sprintf("unknown table. perhaps using VIEW? not supporting: %s", table))
-		}
-	}
-	return res, nil
+	return schemas, nil
 }

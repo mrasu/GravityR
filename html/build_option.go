@@ -6,11 +6,25 @@ import (
 )
 
 type suggestData struct {
-	Query              string
-	AnalyzeNodes       []*viewmodel.VmExplainAnalyzeNode
-	IndexTargets       []*viewmodel.VmIndexTarget
-	CommandOptions     []*viewmodel.VmExaminationCommandOption
-	ExaminationResults *viewmodel.VmExaminationResult
+	MySQL    *mysqlData    `json:"mysql"`
+	Postgres *postgresData `json:"postgres"`
+}
+
+type mysqlData struct {
+	Query              string                                  `json:"query"`
+	AnalyzeNodes       []*viewmodel.VmMysqlExplainAnalyzeNode  `json:"analyzeNodes"`
+	IndexTargets       []*viewmodel.VmIndexTarget              `json:"indexTargets"`
+	CommandOptions     []*viewmodel.VmExaminationCommandOption `json:"examinationCommandOptions"`
+	ExaminationResults *viewmodel.VmExaminationResult          `json:"examinationResult"`
+}
+
+type postgresData struct {
+	Query              string                                    `json:"query"`
+	AnalyzeNodes       []*viewmodel.VmPostgresExplainAnalyzeNode `json:"analyzeNodes"`
+	PlanningText       string                                    `json:"planningText"`
+	IndexTargets       []*viewmodel.VmIndexTarget                `json:"indexTargets"`
+	CommandOptions     []*viewmodel.VmExaminationCommandOption   `json:"examinationCommandOptions"`
+	ExaminationResults *viewmodel.VmExaminationResult            `json:"examinationResult"`
 }
 
 type digData struct {
@@ -23,17 +37,37 @@ type BuildOption struct {
 	DigData     *digData
 }
 
-func NewSuggestDataBuildOption(query string,
-	analyzeNodes []*viewmodel.VmExplainAnalyzeNode,
+func NewSuggestMySQLDataBuildOption(query string,
+	analyzeNodes []*viewmodel.VmMysqlExplainAnalyzeNode,
 	indexTargets []*viewmodel.VmIndexTarget,
 	commandOptions []*viewmodel.VmExaminationCommandOption,
 	examinationResults *viewmodel.VmExaminationResult) *BuildOption {
 	return &BuildOption{SuggestData: &suggestData{
-		Query:              query,
-		AnalyzeNodes:       analyzeNodes,
-		IndexTargets:       indexTargets,
-		CommandOptions:     commandOptions,
-		ExaminationResults: examinationResults,
+		MySQL: &mysqlData{
+			Query:              query,
+			AnalyzeNodes:       analyzeNodes,
+			IndexTargets:       indexTargets,
+			CommandOptions:     commandOptions,
+			ExaminationResults: examinationResults,
+		},
+	}}
+}
+
+func NewSuggestPostgresDataBuildOption(query string,
+	analyzeNodes []*viewmodel.VmPostgresExplainAnalyzeNode,
+	planningText string,
+	indexTargets []*viewmodel.VmIndexTarget,
+	commandOptions []*viewmodel.VmExaminationCommandOption,
+	examinationResults *viewmodel.VmExaminationResult) *BuildOption {
+	return &BuildOption{SuggestData: &suggestData{
+		Postgres: &postgresData{
+			Query:              query,
+			AnalyzeNodes:       analyzeNodes,
+			PlanningText:       planningText,
+			IndexTargets:       indexTargets,
+			CommandOptions:     commandOptions,
+			ExaminationResults: examinationResults,
+		},
 	}}
 }
 
@@ -45,17 +79,6 @@ func NewDigDataBuildOption(sqlCpuUsages []*viewmodel.VmTimeDbLoad, tokenizedSqlC
 }
 
 func (bo *BuildOption) createGrMap() map[string]interface{} {
-	var suggestData map[string]interface{}
-	if bo.SuggestData != nil {
-		suggestData = map[string]interface{}{
-			"query":                     bo.SuggestData.Query,
-			"analyzeNodes":              bo.SuggestData.AnalyzeNodes,
-			"indexTargets":              bo.SuggestData.IndexTargets,
-			"examinationCommandOptions": bo.SuggestData.CommandOptions,
-			"examinationResult":         bo.SuggestData.ExaminationResults,
-		}
-	}
-
 	var digData map[string]interface{}
 	if bo.DigData != nil {
 		digData = map[string]interface{}{
@@ -65,7 +88,7 @@ func (bo *BuildOption) createGrMap() map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		"suggestData": suggestData,
+		"suggestData": bo.SuggestData,
 		"digData":     digData,
 	}
 }

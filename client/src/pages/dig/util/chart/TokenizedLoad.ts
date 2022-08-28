@@ -1,5 +1,5 @@
-import type { TimeDbLoad } from "../../../../models/TimeDbLoad";
-import type { DbLoadOfSql } from "../../../../models/DbLoadOfSql";
+import type { TimeDbLoad } from "@/models/TimeDbLoad";
+import type { DbLoadOfSql } from "@/models/DbLoadOfSql";
 
 export type RawLoadOfSql = {
   dbName: string;

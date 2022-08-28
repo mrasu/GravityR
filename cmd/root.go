@@ -1,7 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
@@ -13,17 +9,12 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "GravityR",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Use:   "gr",
+	Short: "Gravity Radar to remove bottleneck in your application",
+	Long: `GravityR is Gravity-Radar.
+This exists to remove bottleneck in your application without help of experts.
+And also this is to help experts solving problems faster and easily.  
+`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

@@ -1,7 +1,7 @@
 .PHONY: example
 
 export DB_USERNAME := root
-export DB_DATABASE :=gravityr
+export DB_DATABASE := gravityr
 
 devSetup:
 	go install github.com/spf13/cobra-cli@latest
@@ -31,7 +31,9 @@ export example_query
 
 example:
 	mkdir -p example
-	./dist/gr db suggest -o "example/output.html" -q "$${example_query}"
-	./dist/gr db suggest --with-examine -o "example/output_examine.html" -q "$${example_query}"
+	./dist/gr db suggest mysql -o "example/mysql.html" -q "$${example_query}"
+	./dist/gr db suggest mysql --with-examine -o "example/mysql_examine.html" -q "$${example_query}"
+	./dist/gr db suggest postgres -o "example/postgres.html" -q "$${example_query}"
+	./dist/gr db suggest postgres --with-examine -o "example/postgres_examine.html" -q "$${example_query}"
 	./dist/gr db dig performance-insights -o "example/performance-insights.html"  --use-mock --start-from 2022-08-04T14:00:00Z
 

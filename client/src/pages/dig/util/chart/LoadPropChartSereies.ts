@@ -1,7 +1,7 @@
-import type { GrChartSeries, GrChartSeriesData } from "../../../../lib/GrChart";
-import type { TimeDbLoad } from "../../../../models/TimeDbLoad";
-import type { DbLoadOfSql } from "../../../../models/DbLoadOfSql";
-import type { DbLoad } from "../../../../models/DbLoad";
+import type { GrChartSeries, GrChartSeriesData } from "@/lib/GrChart";
+import type { TimeDbLoad } from "@/models/TimeDbLoad";
+import type { DbLoadOfSql } from "@/models/DbLoadOfSql";
+import type { DbLoad } from "@/models/DbLoad";
 
 type SeriesRecord<T> = Record<string, Record<string, GrChartSeries<T>[number]>>;
 

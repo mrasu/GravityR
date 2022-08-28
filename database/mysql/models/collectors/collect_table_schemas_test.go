@@ -3,14 +3,14 @@ package collectors_test
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
-	"github.com/mrasu/GravityR/database/mysql/models"
+	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-var tableColumns = map[string][]*models.ColumnSchema{
+var tableColumns = map[string][]*db_models.ColumnSchema{
 	"users": {
 		{Name: "id"},
 		{Name: "name"},
@@ -60,6 +60,7 @@ func TestCollectTableSchemas(t *testing.T) {
 					actual := ts[i]
 					assert.Equal(t, actual.Name, name)
 					assert.ElementsMatch(t, actual.Columns, tableColumns[name])
+					assert.ElementsMatch(t, actual.PrimaryKeys, []string{"id"})
 				}
 			})
 		})
@@ -70,7 +71,11 @@ func mockTableSchemaQuery(mock sqlmock.Sqlmock, tables []string) {
 	rows := sqlmock.NewRows([]string{"COLUMN_NAME", "COLUMN_KEY", "TABLE_NAME"})
 	for _, table := range tables {
 		for _, c := range tableColumns[table] {
-			rows.AddRow(c.Name, "", table)
+			pk := ""
+			if c.Name == "id" {
+				pk = "PRI"
+			}
+			rows.AddRow(c.Name, pk, table)
 		}
 	}
 	mock.ExpectQuery(tableSchemaQuery).WillReturnRows(rows)

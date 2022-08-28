@@ -3,8 +3,8 @@
   import { DbLoadChart } from "./DbLoadChart";
   import type { DbLoadChartProp } from "./DbLoadChart";
   import { Checkbox } from "svelte-chota";
-  import type { TimeDbLoad } from "../../models/TimeDbLoad";
-  import CommandCode from "../../lib/components/CommandCode.svelte";
+  import type { TimeDbLoad } from "@/models/TimeDbLoad";
+  import CommandCode from "@/lib/components/CommandCode.svelte";
   import { createLoadMaxTooltip } from "./util/LoadTooltip";
   import { getAllDatabase, getFirstDatabaseAsArray } from "./util/Databases";
   import { buildCommandText } from "./util/CommandText";

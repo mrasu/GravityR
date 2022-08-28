@@ -16,12 +16,6 @@ import (
 var PerformanceInsightsCmd = &cobra.Command{
 	Use:   "performance-insights",
 	Short: "Dig database behavior with AWS' PerformanceInsights",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is IAnalyzeData CLI library for Go that empowers applications.
-This application is IAnalyzeData tool to generate the needed files
-to quickly create IAnalyzeData Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runDig()
 	},

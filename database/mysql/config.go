@@ -53,3 +53,7 @@ func (cfg *Config) ToDSN() string {
 
 	return dsn
 }
+
+func (cfg *Config) GetDBName() string {
+	return cfg.config.DBName
+}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DigData } from "../../models/DigData";
+  import type { DigData } from "@/models/DigData";
   import { Details, Tab, Tabs } from "svelte-chota";
   import HeavySqlTimeline from "./HeavySqlTimeline.svelte";
   import HeaviestSqlRanking from "./HeaviestSqlRanking.svelte";

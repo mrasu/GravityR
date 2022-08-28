@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Checkbox } from "svelte-chota";
-  import type { TimeDbLoad } from "../../models/TimeDbLoad";
+  import type { TimeDbLoad } from "@/models/TimeDbLoad";
   import { DbLoadRankingChart } from "./DbLoadRankingChart";
   import type { DbLoadRankingChartProp } from "./DbLoadRankingChart";
-  import CommandCode from "../../lib/components/CommandCode.svelte";
+  import CommandCode from "@/lib/components/CommandCode.svelte";
   import { createLoadSumTooltip } from "./util/LoadTooltip";
   import { getAllDatabase, getFirstDatabaseAsArray } from "./util/Databases";
   import { buildCommandText } from "./util/CommandText";
