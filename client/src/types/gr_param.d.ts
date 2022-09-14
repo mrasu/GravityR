@@ -7,6 +7,7 @@ export interface IGrParam {
 export interface ISuggestData {
   mysql?: IMysqlSuggestData;
   postgres?: IPostgresSuggestData;
+  hasura?: IHasuraSuggestData;
 }
 
 export abstract interface IDbSuggestData {
@@ -22,6 +23,17 @@ export interface IMysqlSuggestData extends IDbSuggestData {
 
 export interface IPostgresSuggestData extends IDbSuggestData {
   analyzeNodes?: IPostgresAnalyzeData[];
+  planningText: string;
+}
+
+export interface IHasuraSuggestData {
+  postgres: IHasuraPostgresSuggestData;
+}
+
+export interface IHasuraPostgresSuggestData extends IDbSuggestData {
+  gql: string;
+  gqlVariables: Record<string, any>;
+  analyzeNodes?: IPostgresExplainData[];
   planningText: string;
 }
 
@@ -57,6 +69,23 @@ export interface IPostgresAnalyzeData extends IDbAnalyzeData {
   estimatedWidth: number;
 
   children?: IPostgresAnalyzeData[];
+}
+
+export abstract interface IDbExplainData {
+  text: string;
+  title: string;
+  tableName?: string;
+
+  children?: IDbAnalyzeData[];
+}
+
+export interface IPostgresExplainData extends IDbExplainData {
+  estimatedInitCost: number;
+  estimatedCost: number;
+  estimatedReturnedRows: number;
+  estimatedWidth: number;
+
+  children?: IPostgresExplainData[];
 }
 
 interface IIndexTarget {

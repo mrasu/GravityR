@@ -1,11 +1,8 @@
 package collectors_test
 
 import (
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jmoiron/sqlx"
 	"github.com/mrasu/GravityR/database/postgres/models"
 	"github.com/mrasu/GravityR/database/postgres/models/collectors"
-	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v4"
 	"strings"
@@ -27,7 +24,7 @@ Planning Time: 0.031 ms
 Execution Time: 6.023 ms
 `,
 			expectedTree: &models.ExplainAnalyzeTree{
-				PlanningText: `Planning Time: 0.031 ms
+				SummaryText: `Planning Time: 0.031 ms
 Execution Time: 6.023 ms`,
 				Root: &models.ExplainAnalyzeTreeNode{
 					SpaceSize:         -1,
@@ -72,7 +69,7 @@ Planning Time: 0.119 ms
 Execution Time: 1693.383 ms
 `,
 			expectedTree: &models.ExplainAnalyzeTree{
-				PlanningText: `Planning Time: 0.119 ms
+				SummaryText: `Planning Time: 0.119 ms
 Execution Time: 1693.383 ms`,
 				Root: &models.ExplainAnalyzeTreeNode{
 					SpaceSize:         -1,
@@ -184,7 +181,7 @@ JIT:
 Execution Time: 1609.370 ms
 `,
 			expectedTree: &models.ExplainAnalyzeTree{
-				PlanningText: `Planning:
+				SummaryText: `Planning:
   Buffers: shared hit=6
 Planning Time: 0.142 ms
 JIT:
@@ -335,7 +332,7 @@ JIT:
 Execution Time: 821.344 ms
 `,
 			expectedTree: &models.ExplainAnalyzeTree{
-				PlanningText: `Planning:
+				SummaryText: `Planning:
   Buffers: shared hit=203 read=12
 Planning Time: 2.202 ms
 JIT:
@@ -368,7 +365,7 @@ Execution Time: 821.344 ms`,
 							},
 							Children: []*models.ExplainAnalyzeTreeNode{
 								{
-									SpaceSize: 4,
+									SpaceSize: 2,
 									AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
 										Lines: []string{
 											"  CTE count_tbl",
@@ -540,7 +537,7 @@ Execution Time: 821.344 ms`,
 									},
 								},
 								{
-									SpaceSize: 4,
+									SpaceSize: 2,
 									AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
 										Lines: []string{
 											"  InitPlan 2 (returns $2)",
@@ -606,19 +603,291 @@ Execution Time: 821.344 ms`,
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thelper.MockDB(t, func(db *sqlx.DB, mock sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"QUERY PLAN"})
-				for _, line := range strings.Split(strings.Trim(tt.explainResult, "\n"), "\n") {
-					rows.AddRow(line)
-				}
-				mock.ExpectQuery("EXPLAIN \\(ANALYZE, BUFFERS\\)").WillReturnRows(rows)
+			explainLines := strings.Split(strings.Trim(tt.explainResult, "\n"), "\n")
+			tree, err := collectors.CollectExplainAnalyzeTree(explainLines)
+			assert.NoError(t, err)
+			assert.NotNil(t, tree)
+			assert.Equal(t, tt.expectedTree, tree)
+		})
+	}
+}
 
-				tree, err := collectors.CollectExplainAnalyzeTree(db, "mimic")
-				assert.NoError(t, err)
-				assert.NotNil(t, tree)
-				assert.Equal(t, tt.expectedTree, tree)
-			})
+func TestCollectExplainAnalyzeTree_NoAnalyze(t *testing.T) {
+	tests := []struct {
+		name          string
+		explainResult string
+		expectedTree  *models.ExplainAnalyzeTree
+	}{
+		{
+			name: "simple(Subquery explain)",
+			explainResult: `
+Aggregate  (cost=105447.85..105447.86 rows=1 width=32)
+  ->  Nested Loop Left Join  (cost=2564.50..105446.35 rows=100 width=55)
+        ->  Gather  (cost=2564.21..104612.35 rows=100 width=27)
+              Workers Planned: 2
+              ->  Hash Join  (cost=1564.21..103602.35 rows=42 width=27)
+                    Hash Cond: (todos.user_id = __be_0_users.id)
+                    ->  Parallel Seq Scan on todos  (cost=0.00..94869.67 rows=2730667 width=27)
+                    ->  Hash  (cost=1564.20..1564.20 rows=1 width=4)
+                          ->  Seq Scan on users __be_0_users  (cost=0.00..1564.20 rows=1 width=4)
+                                Filter: ((email)::text = 'test1111@example.com'::text)
+        ->  Subquery Scan on "_root.or.user.base"  (cost=0.29..8.33 rows=1 width=32)
+              ->  Limit  (cost=0.29..8.31 rows=1 width=566)
+                    ->  Index Scan using users_pkey on users  (cost=0.29..8.31 rows=1 width=566)
+                          Index Cond: (id = todos.user_id)
+              SubPlan 1
+                ->  Result  (cost=0.00..0.01 rows=1 width=32)
+  SubPlan 2
+    ->  Result  (cost=0.00..0.01 rows=1 width=32)
+JIT:
+  Functions: 30
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+`,
+			expectedTree: &models.ExplainAnalyzeTree{
+				SummaryText: `JIT:
+  Functions: 30
+  Options: Inlining false, Optimization false, Expressions true, Deforming true`,
+				Root: &models.ExplainAnalyzeTreeNode{
+					SpaceSize:         -1,
+					AnalyzeResultNode: &models.ExplainAnalyzeResultNode{},
+					Children: []*models.ExplainAnalyzeTreeNode{
+						{
+							SpaceSize: 0,
+							AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+								Lines: []string{
+									"Aggregate  (cost=105447.85..105447.86 rows=1 width=32)",
+								},
+								TableName:             "",
+								EstimatedInitCost:     null.FloatFrom(105447.85),
+								EstimatedCost:         null.FloatFrom(105447.86),
+								EstimatedReturnedRows: null.IntFrom(1),
+								EstimatedWidth:        null.IntFrom(32),
+								ActualTimeFirstRow:    null.FloatFromPtr(nil),
+								ActualTimeAvg:         null.FloatFromPtr(nil),
+								ActualReturnedRows:    null.IntFromPtr(nil),
+								ActualLoopCount:       null.IntFromPtr(nil),
+							},
+							Children: []*models.ExplainAnalyzeTreeNode{
+								{
+									SpaceSize: 2,
+									AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+										Lines: []string{
+											"  ->  Nested Loop Left Join  (cost=2564.50..105446.35 rows=100 width=55)",
+										},
+										TableName:             "",
+										EstimatedInitCost:     null.FloatFrom(2564.50),
+										EstimatedCost:         null.FloatFrom(105446.35),
+										EstimatedReturnedRows: null.IntFrom(100),
+										EstimatedWidth:        null.IntFrom(55),
+										ActualTimeFirstRow:    null.FloatFromPtr(nil),
+										ActualTimeAvg:         null.FloatFromPtr(nil),
+										ActualReturnedRows:    null.IntFromPtr(nil),
+										ActualLoopCount:       null.IntFromPtr(nil),
+									},
+									Children: []*models.ExplainAnalyzeTreeNode{
+										{
+											SpaceSize: 8,
+											AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+												Lines: []string{
+													"        ->  Gather  (cost=2564.21..104612.35 rows=100 width=27)",
+													"              Workers Planned: 2",
+												},
+												TableName:             "",
+												EstimatedInitCost:     null.FloatFrom(2564.21),
+												EstimatedCost:         null.FloatFrom(104612.35),
+												EstimatedReturnedRows: null.IntFrom(100),
+												EstimatedWidth:        null.IntFrom(27),
+												ActualTimeFirstRow:    null.FloatFromPtr(nil),
+												ActualTimeAvg:         null.FloatFromPtr(nil),
+												ActualReturnedRows:    null.IntFromPtr(nil),
+												ActualLoopCount:       null.IntFromPtr(nil),
+											},
+											Children: []*models.ExplainAnalyzeTreeNode{
+												{
+													SpaceSize: 14,
+													AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+														Lines: []string{
+															"              ->  Hash Join  (cost=1564.21..103602.35 rows=42 width=27)",
+															"                    Hash Cond: (todos.user_id = __be_0_users.id)",
+														},
+														TableName:             "",
+														EstimatedInitCost:     null.FloatFrom(1564.21),
+														EstimatedCost:         null.FloatFrom(103602.35),
+														EstimatedReturnedRows: null.IntFrom(42),
+														EstimatedWidth:        null.IntFrom(27),
+														ActualTimeFirstRow:    null.FloatFromPtr(nil),
+														ActualTimeAvg:         null.FloatFromPtr(nil),
+														ActualReturnedRows:    null.IntFromPtr(nil),
+														ActualLoopCount:       null.IntFromPtr(nil),
+													},
+													Children: []*models.ExplainAnalyzeTreeNode{
+														{
+															SpaceSize: 20,
+															AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+																Lines: []string{
+																	"                    ->  Parallel Seq Scan on todos  (cost=0.00..94869.67 rows=2730667 width=27)",
+																},
+																TableName:             "todos",
+																EstimatedInitCost:     null.FloatFrom(0.00),
+																EstimatedCost:         null.FloatFrom(94869.67),
+																EstimatedReturnedRows: null.IntFrom(2730667),
+																EstimatedWidth:        null.IntFrom(27),
+																ActualTimeFirstRow:    null.FloatFromPtr(nil),
+																ActualTimeAvg:         null.FloatFromPtr(nil),
+																ActualReturnedRows:    null.IntFromPtr(nil),
+																ActualLoopCount:       null.IntFromPtr(nil),
+															},
+														},
+														{
+															SpaceSize: 20,
+															AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+																Lines: []string{
+																	"                    ->  Hash  (cost=1564.20..1564.20 rows=1 width=4)",
+																},
+																TableName:             "",
+																EstimatedInitCost:     null.FloatFrom(1564.20),
+																EstimatedCost:         null.FloatFrom(1564.20),
+																EstimatedReturnedRows: null.IntFrom(1),
+																EstimatedWidth:        null.IntFrom(4),
+																ActualTimeFirstRow:    null.FloatFromPtr(nil),
+																ActualTimeAvg:         null.FloatFromPtr(nil),
+																ActualReturnedRows:    null.IntFromPtr(nil),
+																ActualLoopCount:       null.IntFromPtr(nil),
+															},
+															Children: []*models.ExplainAnalyzeTreeNode{
+																{
+																	SpaceSize: 26,
+																	AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+																		Lines: []string{
+																			"                          ->  Seq Scan on users __be_0_users  (cost=0.00..1564.20 rows=1 width=4)",
+																			"                                Filter: ((email)::text = 'test1111@example.com'::text)",
+																		},
+																		TableName:             "users",
+																		EstimatedInitCost:     null.FloatFrom(0.00),
+																		EstimatedCost:         null.FloatFrom(1564.20),
+																		EstimatedReturnedRows: null.IntFrom(1),
+																		EstimatedWidth:        null.IntFrom(4),
+																		ActualTimeFirstRow:    null.FloatFromPtr(nil),
+																		ActualTimeAvg:         null.FloatFromPtr(nil),
+																		ActualReturnedRows:    null.IntFromPtr(nil),
+																		ActualLoopCount:       null.IntFromPtr(nil),
+																	},
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+										{
+											SpaceSize: 8,
+											AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+												Lines: []string{
+													"        ->  Subquery Scan on \"_root.or.user.base\"  (cost=0.29..8.33 rows=1 width=32)",
+												},
+												TableName:             "_root.or.user.base",
+												EstimatedInitCost:     null.FloatFrom(0.29),
+												EstimatedCost:         null.FloatFrom(8.33),
+												EstimatedReturnedRows: null.IntFrom(1),
+												EstimatedWidth:        null.IntFrom(32),
+												ActualTimeFirstRow:    null.FloatFromPtr(nil),
+												ActualTimeAvg:         null.FloatFromPtr(nil),
+												ActualReturnedRows:    null.IntFromPtr(nil),
+												ActualLoopCount:       null.IntFromPtr(nil),
+											},
+											Children: []*models.ExplainAnalyzeTreeNode{
+												{
+													SpaceSize: 14,
+													AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+														Lines: []string{
+															"              ->  Limit  (cost=0.29..8.31 rows=1 width=566)",
+														},
+														TableName:             "",
+														EstimatedInitCost:     null.FloatFrom(0.29),
+														EstimatedCost:         null.FloatFrom(8.31),
+														EstimatedReturnedRows: null.IntFrom(1),
+														EstimatedWidth:        null.IntFrom(566),
+														ActualTimeFirstRow:    null.FloatFromPtr(nil),
+														ActualTimeAvg:         null.FloatFromPtr(nil),
+														ActualReturnedRows:    null.IntFromPtr(nil),
+														ActualLoopCount:       null.IntFromPtr(nil),
+													},
+													Children: []*models.ExplainAnalyzeTreeNode{
+														{
+															SpaceSize: 20,
+															AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+																Lines: []string{
+																	"                    ->  Index Scan using users_pkey on users  (cost=0.29..8.31 rows=1 width=566)",
+																	"                          Index Cond: (id = todos.user_id)",
+																},
+																TableName:             "users",
+																EstimatedInitCost:     null.FloatFrom(0.29),
+																EstimatedCost:         null.FloatFrom(8.31),
+																EstimatedReturnedRows: null.IntFrom(1),
+																EstimatedWidth:        null.IntFrom(566),
+																ActualTimeFirstRow:    null.FloatFromPtr(nil),
+																ActualTimeAvg:         null.FloatFromPtr(nil),
+																ActualReturnedRows:    null.IntFromPtr(nil),
+																ActualLoopCount:       null.IntFromPtr(nil),
+															},
+														},
+													},
+												},
+												{
+													SpaceSize: 14,
+													AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+														Lines: []string{
+															"              SubPlan 1",
+															"                ->  Result  (cost=0.00..0.01 rows=1 width=32)",
+														},
+														TableName:             "",
+														EstimatedInitCost:     null.FloatFrom(0.00),
+														EstimatedCost:         null.FloatFrom(0.01),
+														EstimatedReturnedRows: null.IntFrom(1),
+														EstimatedWidth:        null.IntFrom(32),
+														ActualTimeFirstRow:    null.FloatFromPtr(nil),
+														ActualTimeAvg:         null.FloatFromPtr(nil),
+														ActualReturnedRows:    null.IntFromPtr(nil),
+														ActualLoopCount:       null.IntFromPtr(nil),
+													},
+												},
+											},
+										},
+									},
+								},
+								{
+									SpaceSize: 2,
+									AnalyzeResultNode: &models.ExplainAnalyzeResultNode{
+										Lines: []string{
+											"  SubPlan 2",
+											"    ->  Result  (cost=0.00..0.01 rows=1 width=32)",
+										},
+										TableName:             "",
+										EstimatedInitCost:     null.FloatFrom(0.00),
+										EstimatedCost:         null.FloatFrom(0.01),
+										EstimatedReturnedRows: null.IntFrom(1),
+										EstimatedWidth:        null.IntFrom(32),
+										ActualTimeFirstRow:    null.FloatFromPtr(nil),
+										ActualTimeAvg:         null.FloatFromPtr(nil),
+										ActualReturnedRows:    null.IntFromPtr(nil),
+										ActualLoopCount:       null.IntFromPtr(nil),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			explainLines := strings.Split(strings.Trim(tt.explainResult, "\n"), "\n")
+			tree, err := collectors.CollectExplainAnalyzeTree(explainLines)
+			assert.NoError(t, err)
+			assert.NotNil(t, tree)
+			assert.Equal(t, tt.expectedTree, tree)
 		})
 	}
 }

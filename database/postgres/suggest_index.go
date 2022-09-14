@@ -3,20 +3,20 @@ package postgres
 import (
 	"fmt"
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
-	"github.com/jmoiron/sqlx"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/database/db_models/builders"
 	"github.com/mrasu/GravityR/database/postgres/models"
 	"github.com/mrasu/GravityR/database/postgres/models/collectors"
+	"github.com/mrasu/GravityR/infra/postgres"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 )
 
 // TODO: 既存のインデックスと被るものは除外する
-func SuggestIndex(db *sqlx.DB, schema, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
+func SuggestIndex(db *postgres.DB, schema, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
 	stmt, err := parse(query)
 	if err != nil {
-		panic(err)
+		return nil, []error{err}
 	}
 	tNames, errs := collectors.CollectTableNames(stmt)
 	if len(errs) > 0 {

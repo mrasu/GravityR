@@ -1,6 +1,7 @@
 package collectors_test
 
 import (
+	"github.com/google/go-cmp/cmp"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
 	"github.com/pingcap/tidb/parser"
@@ -200,17 +201,15 @@ func TestCollectStmtScopes_SingleField(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-
-			if len(actualScope.Tables) == 0 {
-				assert.Equal(t, 0, len(actualScope.Tables))
-			} else {
-				assert.Equal(t, 1, len(actualScope.Tables))
-				assert.Equal(t, tt.table, actualScope.Tables[0])
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+			}}
+			if tt.table != nil {
+				expectedScopes[0].Tables = []*db_models.Table{tt.table}
+			}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
 			}
 		})
 	}
@@ -302,12 +301,14 @@ func TestCollectStmtScopes_Joins(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -430,12 +431,14 @@ func TestCollectStmtScopes_Where(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, []*db_models.Table{tt.table}, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: []*db_models.Table{tt.table},
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -458,13 +461,13 @@ func TestCollectStmtScopes_GroupBy(t *testing.T) {
 		{
 			name:   "group by value",
 			query:  "SELECT COUNT(*) FROM users GROUP BY 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
 			name:   "group by null",
 			query:  "SELECT COUNT(*) FROM users GROUP BY null",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
@@ -498,12 +501,14 @@ func TestCollectStmtScopes_GroupBy(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -543,12 +548,14 @@ func TestCollectStmtScopes_Having(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -571,13 +578,13 @@ func TestCollectStmtScopes_OrderBy(t *testing.T) {
 		{
 			name:   "order by value",
 			query:  "SELECT COUNT(*) FROM users ORDER BY 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
 			name:   "group by null",
 			query:  "SELECT COUNT(*) FROM users ORDER BY null",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
@@ -599,12 +606,14 @@ func TestCollectStmtScopes_OrderBy(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -619,19 +628,19 @@ func TestCollectStmtScopes_Limit(t *testing.T) {
 		{
 			name:   "simple query",
 			query:  "SELECT 1 FROM users LIMIT 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
 			name:   "offset exists",
 			query:  "SELECT 1 FROM users LIMIT 1 OFFSET 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
 			name:   "offset without OFFSET keyword",
 			query:  "SELECT 1 FROM users LIMIT 1, 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 	}
@@ -643,12 +652,14 @@ func TestCollectStmtScopes_Limit(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmtNodes[0])
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }

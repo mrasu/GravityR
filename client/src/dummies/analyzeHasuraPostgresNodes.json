@@ -1,0 +1,103 @@
+[
+  {
+    "text": "Aggregate  (cost=151049.88..151049.89 rows=1 width=32)",
+    "title": "Aggregate",
+    "tableName": "",
+    "estimatedInitCost": 151049.88,
+    "estimatedCost": 151049.89,
+    "estimatedReturnedRows": 1,
+    "estimatedWidth": 32,
+    "actualTimeFirstRow": null,
+    "actualTimeAvg": null,
+    "actualReturnedRows": null,
+    "actualLoopCount": null,
+    "children": [
+      {
+        "text": "  ->  Nested Loop Left Join  (cost=149485.63..151049.86 rows=1 width=62)",
+        "title": "Nested Loop Left Join",
+        "tableName": "",
+        "estimatedInitCost": 149485.63,
+        "estimatedCost": 151049.86,
+        "estimatedReturnedRows": 1,
+        "estimatedWidth": 62,
+        "actualTimeFirstRow": null,
+        "actualTimeAvg": null,
+        "actualReturnedRows": null,
+        "actualLoopCount": null,
+        "children": [
+          {
+            "text": "        ->  Seq Scan on users  (cost=0.00..1564.20 rows=1 width=34)\n              Filter: ((email)::text = 'test1111@example.com'::text)",
+            "title": "Seq Scan",
+            "tableName": "users",
+            "estimatedInitCost": 0,
+            "estimatedCost": 1564.2,
+            "estimatedReturnedRows": 1,
+            "estimatedWidth": 34,
+            "actualTimeFirstRow": null,
+            "actualTimeAvg": null,
+            "actualReturnedRows": null,
+            "actualLoopCount": null,
+            "children": null
+          },
+          {
+            "text": "        ->  Aggregate  (cost=149485.63..149485.64 rows=1 width=32)",
+            "title": "Aggregate",
+            "tableName": "",
+            "estimatedInitCost": 149485.63,
+            "estimatedCost": 149485.64,
+            "estimatedReturnedRows": 1,
+            "estimatedWidth": 32,
+            "actualTimeFirstRow": null,
+            "actualTimeAvg": null,
+            "actualReturnedRows": null,
+            "actualLoopCount": null,
+            "children": [
+              {
+                "text": "              ->  Seq Scan on todos  (cost=0.00..149483.00 rows=175 width=13)\n                    Filter: (users.id = user_id)",
+                "title": "Seq Scan",
+                "tableName": "todos",
+                "estimatedInitCost": 0,
+                "estimatedCost": 149483,
+                "estimatedReturnedRows": 175,
+                "estimatedWidth": 13,
+                "actualTimeFirstRow": null,
+                "actualTimeAvg": null,
+                "actualReturnedRows": null,
+                "actualLoopCount": null,
+                "children": null
+              },
+              {
+                "text": "              SubPlan 2\n                ->  Result  (cost=0.00..0.01 rows=1 width=32)",
+                "title": "Result",
+                "tableName": "",
+                "estimatedInitCost": 0,
+                "estimatedCost": 0.01,
+                "estimatedReturnedRows": 1,
+                "estimatedWidth": 32,
+                "actualTimeFirstRow": null,
+                "actualTimeAvg": null,
+                "actualReturnedRows": null,
+                "actualLoopCount": null,
+                "children": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "text": "  SubPlan 1\n    ->  Result  (cost=0.00..0.01 rows=1 width=32)",
+        "title": "Result",
+        "tableName": "",
+        "estimatedInitCost": 0,
+        "estimatedCost": 0.01,
+        "estimatedReturnedRows": 1,
+        "estimatedWidth": 32,
+        "actualTimeFirstRow": null,
+        "actualTimeAvg": null,
+        "actualReturnedRows": null,
+        "actualLoopCount": null,
+        "children": null
+      }
+    ]
+  }
+]

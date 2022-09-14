@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createHighlightIndexContext } from "@/contexts/HighlightIndexContext";
-  import QueryText from "@/components/QueryText.svelte";
-  import ExplainAnalyzeText from "@/components/ExplainAnalyzeText.svelte";
+  import PlainText from "@/components/PlainText.svelte";
+  import ExplainText from "@/components/ExplainText.svelte";
   import ExplainAnalyzeChart from "./ExplainAnalyzeChart.svelte";
   import IndexSuggestion from "@/components/IndexSuggestion.svelte";
   import ExaminationResultTable from "@/components/ExaminationResultTable.svelte";
@@ -14,14 +14,14 @@
 
 <main>
   {#if suggestData.query}
-    <DetailsCard title="SQL">
-      <QueryText query={suggestData.query} />
+    <DetailsCard title="SQL" open>
+      <PlainText text={suggestData.query} />
     </DetailsCard>
   {/if}
 
   {#if suggestData.analyzeNodes}
     <DetailsCard title="Explain Tree" open>
-      <ExplainAnalyzeText
+      <ExplainText
         {highlightIndexKey}
         analyzeNodes={suggestData.analyzeNodes}
       />
@@ -32,6 +32,7 @@
     <DetailsCard title="Execution Timeline" open>
       <ExplainAnalyzeChart
         {highlightIndexKey}
+        chartDescription="Execution time based timeline from EXPLAIN ANALYZE"
         analyzeNodes={suggestData.analyzeNodes}
       />
     </DetailsCard>

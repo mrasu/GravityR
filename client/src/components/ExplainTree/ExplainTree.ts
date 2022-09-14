@@ -1,5 +1,5 @@
-import type { IDbAnalyzeData } from "@/types/gr_param";
 import type { ExplainTreeSeriesData } from "./ExplainTreeChart";
+import type { DbExplainData } from "@/models/explain_data/DbExplainData";
 
 class XNumberTree {
   nodes: XNumberNode[];
@@ -17,18 +17,17 @@ class XNumberNode {
   }
 }
 
-type XToSeriesRecords<D extends IDbAnalyzeData> = Record<
+type XToSeriesRecords<D extends DbExplainData> = Record<
   number,
   SeriesPointer<D>
 >;
-type SeriesPointer<D extends IDbAnalyzeData> = {
+type SeriesPointer<D extends DbExplainData> = {
   seriesData: ExplainTreeSeriesData<D>;
   treeNode: XNumberNode;
 };
 
-const createXTree = <D extends IDbAnalyzeData>(
-  IAnalyzeDatas: IDbAnalyzeData[],
-  considersActualTimeIsAverageIfLooped: boolean
+const createXTree = <D extends DbExplainData>(
+  IAnalyzeDatas: DbExplainData[]
 ): [XNumberTree, XToSeriesRecords<D>] => {
   const xTree = new XNumberTree();
   const xToSeriesRecords: XToSeriesRecords<D> = {};
@@ -41,8 +40,7 @@ const createXTree = <D extends IDbAnalyzeData>(
       xNode,
       xToSeriesRecords,
       nextXNumber,
-      IAnalyzeDatas[i],
-      considersActualTimeIsAverageIfLooped
+      IAnalyzeDatas[i]
     );
   }
 
@@ -51,12 +49,11 @@ const createXTree = <D extends IDbAnalyzeData>(
 
 const STROKE_COLOR = "#CD2F2A";
 
-const visitAnalyze = <D extends IDbAnalyzeData>(
+const visitAnalyze = <D extends DbExplainData>(
   parentNode: XNumberNode,
   xToSeriesRecords: XToSeriesRecords<D>,
   nextXNumber: number,
-  IAnalyzeData: D,
-  considersActualTimeIsAverageIfLooped: boolean
+  IAnalyzeData: D
 ): [number, number] => {
   let maxFinished = 0;
   const seriesData: ExplainTreeSeriesData<D> = {
@@ -73,6 +70,7 @@ const visitAnalyze = <D extends IDbAnalyzeData>(
       IAnalyzeData: IAnalyzeData,
     },
   };
+
   xToSeriesRecords[nextXNumber] = {
     seriesData: seriesData,
     treeNode: parentNode,
@@ -90,35 +88,14 @@ const visitAnalyze = <D extends IDbAnalyzeData>(
         xNode,
         xToSeriesRecords,
         nextXNumber,
-        data,
-        considersActualTimeIsAverageIfLooped
+        data
       );
       childrenFinished.push(childFinished);
     }
     startTime = Math.max(...childrenFinished);
   }
 
-  let endTimeFromData: number;
-  if (
-    considersActualTimeIsAverageIfLooped &&
-    IAnalyzeData.actualLoopCount > 1
-  ) {
-    if (
-      IAnalyzeData.actualLoopCount > 1000 &&
-      IAnalyzeData.actualTimeAvg === 0
-    ) {
-      // ActualTimeAvg doesn't show the value less than 0.000, however,
-      // when the number of loop is much bigger, time can be meaningful even the result of multiplication is zero.
-      // To handle the problem, assume ActualTimeAvg is some less than 0.000
-      endTimeFromData = startTime + 0.0001 * IAnalyzeData.actualLoopCount;
-    } else {
-      endTimeFromData =
-        startTime + IAnalyzeData.actualTimeAvg * IAnalyzeData.actualLoopCount;
-    }
-  } else {
-    endTimeFromData = IAnalyzeData.actualTimeAvg;
-  }
-
+  const endTimeFromData = IAnalyzeData.calculateEndTime(startTime);
   const endTime = Math.max(endTimeFromData, startTime);
   maxFinished = Math.max(maxFinished, endTime);
   seriesData.y = [Math.min(startTime, endTime - 0.0001), endTime];
@@ -127,18 +104,12 @@ const visitAnalyze = <D extends IDbAnalyzeData>(
   return [nextXNumber, maxFinished];
 };
 
-export class ExplainAnalyzeTree<D extends IDbAnalyzeData> {
+export class ExplainTree<D extends DbExplainData> {
   xTree: XNumberTree;
   xToSeriesRecords: XToSeriesRecords<D>;
 
-  constructor(
-    IAnalyzeDatas: IDbAnalyzeData[],
-    considersActualTimeIsAverageIfLooped: boolean
-  ) {
-    [this.xTree, this.xToSeriesRecords] = createXTree(
-      IAnalyzeDatas,
-      considersActualTimeIsAverageIfLooped
-    );
+  constructor(IAnalyzeDatas: DbExplainData[]) {
+    [this.xTree, this.xToSeriesRecords] = createXTree(IAnalyzeDatas);
   }
 
   getFromX(xNum: number): ExplainTreeSeriesData<D> {

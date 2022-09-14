@@ -1,35 +1,29 @@
 package collectors
 
 import (
-	"github.com/jmoiron/sqlx"
 	"github.com/mrasu/GravityR/database/postgres/models"
 	"github.com/mrasu/GravityR/lib"
-	"github.com/pkg/errors"
 	"regexp"
 	"strings"
 )
 
 type explainAnalyzeResultCollector struct{}
 
-func CollectExplainAnalyzeTree(db *sqlx.DB, query string) (*models.ExplainAnalyzeTree, error) {
+func CollectExplainAnalyzeTree(explainLines []string) (*models.ExplainAnalyzeTree, error) {
 	c := explainAnalyzeResultCollector{}
-	root, planningText, err := c.collect(db, query)
+	root, summaryText, err := c.collect(explainLines)
 	if err != nil {
 		return nil, err
 	}
 
 	return &models.ExplainAnalyzeTree{
-		Root:         root,
-		PlanningText: planningText,
+		Root:        root,
+		SummaryText: summaryText,
 	}, nil
 }
 
-func (earc *explainAnalyzeResultCollector) collect(db *sqlx.DB, query string) (*models.ExplainAnalyzeTreeNode, string, error) {
-	treeLines, err := earc.runExplainAnalyzeResult(db, query)
-	if err != nil {
-		return nil, "", err
-	}
-	lineNodes, planningText := earc.groupToPlanLineNodes(treeLines)
+func (earc *explainAnalyzeResultCollector) collect(explainLines []string) (*models.ExplainAnalyzeTreeNode, string, error) {
+	lineNodes, summaryText := earc.groupToPlanLineNodes(explainLines)
 
 	root := &models.ExplainAnalyzeTreeNode{AnalyzeResultNode: &models.ExplainAnalyzeResultNode{}, SpaceSize: -1}
 	nodeStack := lib.NewStack[models.ExplainAnalyzeTreeNode]()
@@ -58,56 +52,37 @@ func (earc *explainAnalyzeResultCollector) collect(db *sqlx.DB, query string) (*
 
 		nodeStack.Push(n)
 	}
-	return root, planningText, nil
-}
-
-func (earc *explainAnalyzeResultCollector) runExplainAnalyzeResult(db *sqlx.DB, query string) ([]string, error) {
-	rows, err := db.Query("EXPLAIN (ANALYZE, BUFFERS) " + query)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to select")
-	}
-	defer rows.Close()
-
-	var res []string
-	for rows.Next() {
-		var txt string
-		if err := rows.Scan(&txt); err != nil {
-			return nil, errors.Wrap(err, "failed to Scan")
-		}
-		res = append(res, txt)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, errors.Wrap(err, "failed to execute EXPLAIN ANALYZE")
-	}
-
-	return res, nil
+	return root, summaryText, nil
 }
 
 var arrowRowReg = regexp.MustCompile(`\s*-> `)
 var infoRowReg = regexp.MustCompile(`\s*(\w+ ?)+: `)
+var summaryReg = regexp.MustCompile(`^\w[\w ]+:`)
 
 const (
 	analyzeLineInfo int = iota
 	analyzeLineArrow
-	analyzeLineOther
+	analyzeLinePlanName
 )
 
 func (earc *explainAnalyzeResultCollector) groupToPlanLineNodes(explainLines []string) ([][]string, string) {
 	var lineNodes [][]string
 	var nodeLines []string
-	prevLineType := analyzeLineOther
-	pStartLine := 0
+	prevLineType := analyzeLinePlanName
+	summaryStartLine := 0
 	for i, line := range explainLines {
-		// `^Planning` is a marker which indicates following lines are summary for the query
-		if strings.HasPrefix(line, "Planning") {
+		if summaryReg.MatchString(line) {
 			if len(nodeLines) > 0 {
 				lineNodes = append(lineNodes, nodeLines)
 			}
-			pStartLine = i
+			summaryStartLine = i
 			break
 		}
-
+		if i == 0 {
+			nodeLines = append(nodeLines, line)
+			prevLineType = analyzeLineArrow
+			continue
+		}
 		if prevLineType == analyzeLineInfo {
 			if infoRowReg.MatchString(line) {
 				nodeLines = append(nodeLines, line)
@@ -132,15 +107,19 @@ func (earc *explainAnalyzeResultCollector) groupToPlanLineNodes(explainLines []s
 			nodeLines = append(nodeLines, line)
 			prevLineType = analyzeLineArrow
 		} else {
+			if len(nodeLines) > 0 {
+				lineNodes = append(lineNodes, nodeLines)
+				nodeLines = nil
+			}
 			nodeLines = append(nodeLines, line)
-			prevLineType = analyzeLineOther
+			prevLineType = analyzeLinePlanName
 		}
 	}
 
-	pLine := ""
-	if pStartLine > 0 {
-		pLine = strings.Join(explainLines[pStartLine:], "\n")
+	sLine := ""
+	if summaryStartLine > 0 {
+		sLine = strings.Join(explainLines[summaryStartLine:], "\n")
 	}
 
-	return lineNodes, pLine
+	return lineNodes, sLine
 }

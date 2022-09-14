@@ -1,12 +1,12 @@
 import type { ApexOptions } from "apexcharts";
-import type { ExplainAnalyzeTree } from "./ExplainAnalyzeTree";
+import type { ExplainTree } from "./ExplainTree";
 import type {
   GrChartOptions,
   GrChartPoint,
   GrChartSeriesData,
 } from "@/lib/GrChart";
-import type { IDbAnalyzeData } from "@/types/gr_param";
 import { GrChart } from "@/lib/GrChart";
+import type { DbExplainData } from "@/models/explain_data/DbExplainData";
 
 const DEFAULT_CHART_OPTION: ApexOptions = {
   series: [
@@ -61,9 +61,6 @@ const DEFAULT_CHART_OPTION: ApexOptions = {
   tooltip: {
     enabled: true,
   },
-  title: {
-    text: "Execution time based timeline from EXPLAIN ANALYZE",
-  },
   legend: {
     show: true,
   },
@@ -71,30 +68,32 @@ const DEFAULT_CHART_OPTION: ApexOptions = {
 
 const BAR_HEIGHT = 30;
 
-export type ExplainTreeChartProp<D extends IDbAnalyzeData> = {
+export type ExplainTreeChartProp<D extends DbExplainData> = {
   xNum: number;
   IAnalyzeData: D;
 };
 
-export type ExplainTreeSeriesData<D extends IDbAnalyzeData> = GrChartSeriesData<
+export type ExplainTreeSeriesData<D extends DbExplainData> = GrChartSeriesData<
   ExplainTreeChartProp<D>
 >;
 
-export class ExplainTreeChart<D extends IDbAnalyzeData> extends GrChart<
+export class ExplainTreeChart<D extends DbExplainData> extends GrChart<
   ExplainTreeChartProp<D>
 > {
   constructor(
     elm: HTMLElement,
-    private explainAnalyzeTree: ExplainAnalyzeTree<D>
+    private explainTree: ExplainTree<D>,
+    private description: string
   ) {
     super(elm);
   }
 
   render() {
-    const seriesData = this.explainAnalyzeTree.getSeriesData();
+    const seriesData = this.explainTree.getSeriesData();
     const option = JSON.parse(JSON.stringify(DEFAULT_CHART_OPTION));
     option.series = [{ data: seriesData }];
     option.chart.height = this.calculateChartHeightPx(seriesData);
+    option.title = { text: this.description };
 
     this.renderChart(option);
   }

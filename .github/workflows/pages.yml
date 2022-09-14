@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - run: docker-compose up -d
+      - run: docker-compose up -d mysql8 postgres14 aws_mock
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -59,10 +59,13 @@ jobs:
             sleep 1
           done
         timeout-minutes: 3
+      - run: docker-compose up -d hasura2
       - name: Setup MySQL data
         run: docker-compose exec -T mysql8 mysql -u root gravityr < docker/mysql8/init/script.sql
       - name: Setup PostgreSQL data
         run: docker-compose exec -T postgres14 psql -d gravityr -U root -f - < docker/postgres14/init/script.sql
+      - name: Setup Hasura metadata
+        run: docker-compose exec -w /hasura -T node hasura metadata apply --skip-update-check
       - run: make example
       - name: Setup Pages
         uses: actions/configure-pages@v1

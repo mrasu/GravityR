@@ -6,6 +6,7 @@
   import { grParam } from "./stores/gr_param.js";
   import { Nav } from "svelte-chota";
   import SuggestPostgresPage from "./pages/suggest/postgres/SuggestPostgresPage.svelte";
+  import SuggestHasuraPage from "@/pages/suggest/hasura/SuggestHasuraPage.svelte";
 
   const getCurrentTab = (path: string): string => {
     if ($grParam.dev) {
@@ -15,6 +16,9 @@
       if (path === "/suggest_postgres") {
         return "suggest_postgres";
       }
+      if (path === "/suggest_hasura") {
+        return "suggest_hasura";
+      }
       if (path === "/dig") {
         return "dig";
       }
@@ -23,8 +27,10 @@
     if (!!$grParam.suggestData) {
       if (!!$grParam.suggestData.mysqlSuggestData) {
         return "suggest_mysql";
-      } else {
+      } else if (!!$grParam.suggestData.postgresSuggestData) {
         return "suggest_postgres";
+      } else if (!!$grParam.suggestData.hasuraSuggestData) {
+        return "suggest_hasura";
       }
     } else {
       return "dig";
@@ -41,6 +47,7 @@
         <a href="/">Root</a>
         <a href="/suggest_mysql">Suggest (MySQL)</a>
         <a href="/suggest_postgres">Suggest (Postgres)</a>
+        <a href="/suggest_hasura">Suggest (Hasura)</a>
         <a href="/dig">Dig</a>
       </svelte:fragment>
     </Nav>
@@ -54,6 +61,8 @@
     <SuggestPostgresPage
       suggestData={$grParam.suggestData.postgresSuggestData}
     />
+  {:else if page === "suggest_hasura"}
+    <SuggestHasuraPage suggestData={$grParam.suggestData.hasuraSuggestData} />
   {:else if page === "dig"}
     <DigPage digData={$grParam.digData} />
   {/if}

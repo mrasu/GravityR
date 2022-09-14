@@ -1,11 +1,8 @@
 package collectors_test
 
 import (
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jmoiron/sqlx"
 	"github.com/mrasu/GravityR/database/mysql/models"
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
-	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v4"
 	"testing"
@@ -230,16 +227,10 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			thelper.MockDB(t, func(db *sqlx.DB, mock sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"EXPLAIN"}).AddRow(tt.explainResult)
-				mock.ExpectQuery("EXPLAIN ANALYZE FORMAT=TREE").WillReturnRows(rows)
-
-				tree, err := collectors.CollectExplainAnalyzeTree(db, "mimic")
-				assert.NoError(t, err)
-				assert.NotNil(t, tree)
-				assert.Equal(t, tt.expectedTree, tree)
-			})
-
+			tree, err := collectors.CollectExplainAnalyzeTree(tt.explainResult)
+			assert.NoError(t, err)
+			assert.NotNil(t, tree)
+			assert.Equal(t, tt.expectedTree, tree)
 		})
 	}
 }

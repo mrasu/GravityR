@@ -1,25 +1,24 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { ExplainAnalyzeTree } from "@/components/ExplainTree/ExplainAnalyzeTree";
-  import type { IPostgresAnalyzeData } from "@/types/gr_param";
+  import { ExplainTree } from "@/components/ExplainTree/ExplainTree";
   import { getHighlightIndex } from "@/contexts/HighlightIndexContext";
   import { ExplainTreeChart } from "@/components/ExplainTree/ExplainTreeChart";
   import type { ExplainTreeChartProp } from "@/components/ExplainTree/ExplainTreeChart";
+  import type { PostgresAnalyzeData } from "@/models/explain_data/PostgresAnalyzeData";
 
   export let highlightIndexKey: symbol;
   let highlightIndex = getHighlightIndex(highlightIndexKey);
 
-  export let analyzeNodes: IPostgresAnalyzeData[];
+  export let chartDescription: string;
+  export let analyzeNodes: PostgresAnalyzeData[];
 
-  // considersActualTimeIsAverageIfLooped is false because
-  //  actualTimeAvg seems not the average time of loops for PostgreSQL even doc says so
-  $: explainAnalyzeTree = new ExplainAnalyzeTree(analyzeNodes, false);
+  $: explainTree = new ExplainTree(analyzeNodes);
 
   let chartDiv: HTMLElement;
   onMount(() => {
-    const chart = new ExplainTreeChart(chartDiv, explainAnalyzeTree);
+    const chart = new ExplainTreeChart(chartDiv, explainTree, chartDescription);
     chart.onDataPointMouseEnter = (
-      prop: ExplainTreeChartProp<IPostgresAnalyzeData>
+      prop: ExplainTreeChartProp<PostgresAnalyzeData>
     ) => {
       $highlightIndex = prop.xNum;
     };
@@ -31,7 +30,7 @@
     };
   });
 
-  const createTooltip = (prop: ExplainTreeChartProp<IPostgresAnalyzeData>) => {
+  const createTooltip = (prop: ExplainTreeChartProp<PostgresAnalyzeData>) => {
     const trimmedText = prop.IAnalyzeData.text.trim();
     const text =
       trimmedText.length > 50

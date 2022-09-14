@@ -1,6 +1,5 @@
 import type {
   IIndexTarget,
-  IPostgresAnalyzeData,
   IPostgresSuggestData,
   IExaminationResult,
 } from "@/types/gr_param";
@@ -9,15 +8,19 @@ import { plainToInstance } from "class-transformer";
 import type { IndexTarget } from "@/models/IndexTarget";
 import { PostgresIndexTarget } from "@/models/PostgresIndexTarget";
 import { ExaminationResult } from "@/models/ExaminationResult";
+import { PostgresAnalyzeData } from "@/models/explain_data/PostgresAnalyzeData";
 
 export class PostgresSuggestData extends BaseSuggestData {
-  analyzeNodes?: IPostgresAnalyzeData[];
+  analyzeNodes?: PostgresAnalyzeData[];
   planningText: string;
 
   constructor(suggestData: IPostgresSuggestData) {
     super(suggestData);
 
-    this.analyzeNodes = suggestData.analyzeNodes;
+    this.analyzeNodes = plainToInstance(
+      PostgresAnalyzeData,
+      suggestData.analyzeNodes
+    );
     this.planningText = suggestData.planningText;
   }
 

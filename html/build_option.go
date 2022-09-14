@@ -8,6 +8,7 @@ import (
 type suggestData struct {
 	MySQL    *mysqlData    `json:"mysql"`
 	Postgres *postgresData `json:"postgres"`
+	Hasura   *hasuraData   `json:"hasura"`
 }
 
 type mysqlData struct {
@@ -21,7 +22,22 @@ type mysqlData struct {
 type postgresData struct {
 	Query              string                                    `json:"query"`
 	AnalyzeNodes       []*viewmodel.VmPostgresExplainAnalyzeNode `json:"analyzeNodes"`
-	PlanningText       string                                    `json:"planningText"`
+	SummaryText        string                                    `json:"summaryText"`
+	IndexTargets       []*viewmodel.VmIndexTarget                `json:"indexTargets"`
+	CommandOptions     []*viewmodel.VmExaminationCommandOption   `json:"examinationCommandOptions"`
+	ExaminationResults *viewmodel.VmExaminationResult            `json:"examinationResult"`
+}
+
+type hasuraData struct {
+	Postgres *hasuraPostgresData `json:"postgres"`
+}
+
+type hasuraPostgresData struct {
+	Gql                string                                    `json:"gql"`
+	GqlVariables       map[string]interface{}                    `json:"gqlVariables"`
+	Query              string                                    `json:"query"`
+	AnalyzeNodes       []*viewmodel.VmPostgresExplainAnalyzeNode `json:"analyzeNodes"`
+	SummaryText        string                                    `json:"summaryText"`
 	IndexTargets       []*viewmodel.VmIndexTarget                `json:"indexTargets"`
 	CommandOptions     []*viewmodel.VmExaminationCommandOption   `json:"examinationCommandOptions"`
 	ExaminationResults *viewmodel.VmExaminationResult            `json:"examinationResult"`
@@ -37,11 +53,13 @@ type BuildOption struct {
 	DigData     *digData
 }
 
-func NewSuggestMySQLDataBuildOption(query string,
+func NewSuggestMySQLDataBuildOption(
+	query string,
 	analyzeNodes []*viewmodel.VmMysqlExplainAnalyzeNode,
 	indexTargets []*viewmodel.VmIndexTarget,
 	commandOptions []*viewmodel.VmExaminationCommandOption,
-	examinationResults *viewmodel.VmExaminationResult) *BuildOption {
+	examinationResults *viewmodel.VmExaminationResult,
+) *BuildOption {
 	return &BuildOption{SuggestData: &suggestData{
 		MySQL: &mysqlData{
 			Query:              query,
@@ -53,20 +71,48 @@ func NewSuggestMySQLDataBuildOption(query string,
 	}}
 }
 
-func NewSuggestPostgresDataBuildOption(query string,
+func NewSuggestPostgresDataBuildOption(
+	query string,
 	analyzeNodes []*viewmodel.VmPostgresExplainAnalyzeNode,
-	planningText string,
+	sumaryText string,
 	indexTargets []*viewmodel.VmIndexTarget,
 	commandOptions []*viewmodel.VmExaminationCommandOption,
-	examinationResults *viewmodel.VmExaminationResult) *BuildOption {
+	examinationResults *viewmodel.VmExaminationResult,
+) *BuildOption {
 	return &BuildOption{SuggestData: &suggestData{
 		Postgres: &postgresData{
 			Query:              query,
 			AnalyzeNodes:       analyzeNodes,
-			PlanningText:       planningText,
+			SummaryText:        sumaryText,
 			IndexTargets:       indexTargets,
 			CommandOptions:     commandOptions,
 			ExaminationResults: examinationResults,
+		},
+	}}
+}
+
+func NewSuggestHasuraDataBuildOption(
+	gql string,
+	gqlVariables map[string]interface{},
+	query string,
+	analyzeNodes []*viewmodel.VmPostgresExplainAnalyzeNode,
+	sumaryText string,
+	indexTargets []*viewmodel.VmIndexTarget,
+	commandOptions []*viewmodel.VmExaminationCommandOption,
+	examinationResults *viewmodel.VmExaminationResult,
+) *BuildOption {
+	return &BuildOption{SuggestData: &suggestData{
+		Hasura: &hasuraData{
+			Postgres: &hasuraPostgresData{
+				Gql:                gql,
+				GqlVariables:       gqlVariables,
+				Query:              query,
+				AnalyzeNodes:       analyzeNodes,
+				SummaryText:        sumaryText,
+				IndexTargets:       indexTargets,
+				CommandOptions:     commandOptions,
+				ExaminationResults: examinationResults,
+			},
 		},
 	}}
 }
