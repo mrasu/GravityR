@@ -59,13 +59,19 @@ jobs:
             sleep 1
           done
         timeout-minutes: 3
-      - run: docker-compose up -d hasura2
       - name: Setup MySQL data
         run: docker-compose exec -T mysql8 mysql -u root gravityr < docker/mysql8/init/script.sql
       - name: Setup PostgreSQL data
         run: docker-compose exec -T postgres14 psql -d gravityr -U root -f - < docker/postgres14/init/script.sql
+      - run: docker-compose up -d hasura2
+      - name: Wait for Hasura setup
+        run: |
+          while ! curl http://localhost:8081 >/dev/null 2>&1; do
+            echo "waiting for hasura setup..."
+            sleep 1
+          done
       - name: Setup Hasura metadata
-        run: docker-compose exec -w /hasura -T node hasura metadata apply --skip-update-check
+        run: docker-compose run -w /hasura -T node hasura metadata apply --skip-update-check
       - run: make example
       - name: Setup Pages
         uses: actions/configure-pages@v1
