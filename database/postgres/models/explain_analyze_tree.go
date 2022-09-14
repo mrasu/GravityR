@@ -7,8 +7,8 @@ import (
 )
 
 type ExplainAnalyzeTree struct {
-	Root         *ExplainAnalyzeTreeNode
-	PlanningText string
+	Root        *ExplainAnalyzeTreeNode
+	SummaryText string
 }
 
 func (eat *ExplainAnalyzeTree) ToSingleTableResults() []*db_models.SingleTableExplainResult {

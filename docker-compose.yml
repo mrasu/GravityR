@@ -18,6 +18,8 @@ services:
       POSTGRES_DB: gravityr
       POSTGRES_USER: root
       POSTGRES_HOST_AUTH_METHOD: trust
+    # Uncomment to see show all queries
+    # command: ["postgres", "-c", "log_statement=all"]
     ports:
       - "5432:5432"
   aws_mock:
@@ -27,3 +29,24 @@ services:
       - ./docker/aws_mock/fastapi:/app
     ports:
       - "8080:8080"
+  hasura2:
+    image: hasura/graphql-engine:v2.10.0
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres14
+    restart: unless-stopped
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://root:@postgres14:5432/gravityr
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
+      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+  node:
+    build:
+      context: ./docker/node
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./docker/node/hasura:/hasura
+    environment:
+      HASURA_GRAPHQL_ENABLE_TELEMETRY: 'false'
+      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+

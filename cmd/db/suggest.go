@@ -13,4 +13,5 @@ var SuggestCmd = &cobra.Command{
 func init() {
 	SuggestCmd.AddCommand(suggest.MySqlCmd)
 	SuggestCmd.AddCommand(suggest.PostgresCmd)
+	SuggestCmd.AddCommand(suggest.HasuraCmd)
 }

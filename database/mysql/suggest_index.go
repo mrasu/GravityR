@@ -2,11 +2,11 @@ package mysql
 
 import (
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/database/db_models/builders"
 	"github.com/mrasu/GravityR/database/mysql/models"
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
+	"github.com/mrasu/GravityR/infra/mysql"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pingcap/tidb/parser"
 	"github.com/pingcap/tidb/parser/ast"
@@ -133,10 +133,10 @@ import (
 */
 
 // TODO: 既存のインデックスと被るものは除外する
-func SuggestIndex(db *sqlx.DB, database, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
+func SuggestIndex(db *mysql.DB, database, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
 	rootNode, err := parse(query)
 	if err != nil {
-		panic(err)
+		return nil, []error{err}
 	}
 	tNames, errs := collectors.CollectTableNames(rootNode)
 	if len(errs) > 0 {

@@ -3,13 +3,14 @@ package suggest
 import (
 	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/database/postgres"
 	"github.com/mrasu/GravityR/database/postgres/models"
 	"github.com/mrasu/GravityR/database/postgres/models/collectors"
-	"github.com/mrasu/GravityR/database/rdb"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
+	iPostgres "github.com/mrasu/GravityR/infra/postgres"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
@@ -44,23 +45,28 @@ func init() {
 type postgresRunner struct{}
 
 func (pr *postgresRunner) run() error {
-	cfg, err := postgres.NewConfigFromEnv()
+	cfg, err := iPostgres.NewConfigFromEnv()
 	if err != nil {
 		return err
 	}
 
-	db, err := postgres.OpenPostgresDB(cfg)
+	db, err := iPostgres.OpenPostgresDB(cfg)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 
-	examinationIdxTargets, err := pr.parseIndexTargets(postgresVar.indexTargets)
+	examinationIdxTargets, err := parseIndexTargets(postgresVar.indexTargets)
 	if err != nil {
 		return err
 	}
 
-	aTree, err := collectors.CollectExplainAnalyzeTree(db, postgresVar.query)
+	explainLines, err := db.ExplainWithAnalyze(postgresVar.query)
+	if err != nil {
+		return err
+	}
+
+	aTree, err := collectors.CollectExplainAnalyzeTree(explainLines)
 	if err != nil {
 		return err
 	}
@@ -91,8 +97,8 @@ func (pr *postgresRunner) run() error {
 	var er *db_models.ExaminationResult
 	if postgresVar.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
-		ie := &rdb.IndexExaminer{DbType: rdb.PostgreSQL}
-		er, err = ie.Run(db, postgresVar.query, examinationIdxTargets)
+		ie := postgres.NewIndexExaminer(db, postgresVar.query)
+		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
 			return err
 		}
@@ -113,19 +119,6 @@ func (pr *postgresRunner) run() error {
 	return nil
 }
 
-func (pr *postgresRunner) parseIndexTargets(indexTargetTexts []string) ([]*db_models.IndexTarget, error) {
-	var its []*db_models.IndexTarget
-	for _, text := range indexTargetTexts {
-		it, err := db_models.NewIndexTarget(text)
-		if err != nil {
-			return nil, err
-		}
-		its = append(its, it)
-	}
-
-	return its, nil
-}
-
 func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*db_models.IndexTarget, er *db_models.ExaminationResult, aTree *models.ExplainAnalyzeTree) error {
 	var vits []*viewmodel.VmIndexTarget
 	for _, it := range idxTargets {
@@ -140,7 +133,7 @@ func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*db_models.
 	bo := html.NewSuggestPostgresDataBuildOption(
 		postgresVar.query,
 		aTree.ToViewModel(),
-		aTree.PlanningText,
+		aTree.SummaryText,
 		vits,
 		[]*viewmodel.VmExaminationCommandOption{
 			viewmodel.CreateOutputExaminationOption(!postgresVar.runsExamination, outputPath),

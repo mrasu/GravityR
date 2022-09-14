@@ -2,9 +2,10 @@ package collectors_test
 
 import (
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
+	"github.com/google/go-cmp/cmp"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/database/postgres/models/collectors"
-	"github.com/stretchr/testify/assert"
+	"github.com/mrasu/GravityR/thelper/tdata"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -200,17 +201,15 @@ func TestCollectStmtScopes_SingleField(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-
-			if len(actualScope.Tables) == 0 {
-				assert.Equal(t, 0, len(actualScope.Tables))
-			} else {
-				assert.Equal(t, 1, len(actualScope.Tables))
-				assert.Equal(t, tt.table, actualScope.Tables[0])
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+			}}
+			if tt.table != nil {
+				expectedScopes[0].Tables = []*db_models.Table{tt.table}
+			}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
 			}
 		})
 	}
@@ -277,22 +276,6 @@ func TestCollectStmtScopes_Joins(t *testing.T) {
 			},
 			tables: []*db_models.Table{{AsName: "u", Name: "users"}, {Name: "todos"}},
 		},
-		{
-			name: "subquery join query",
-			query: `
-				SELECT todos.id
-				FROM users AS u
-				INNER JOIN (SELECT * FROM todos) AS t ON u.id = t.user_id
-			`,
-			fields: []*db_models.Field{
-				{Columns: []*db_models.FieldColumn{{Table: "todos", Name: "id", Type: db_models.FieldReference}}},
-				{Columns: []*db_models.FieldColumn{
-					{Table: "u", Name: "id", Type: db_models.FieldCondition},
-					{Table: "t", Name: "user_id", Type: db_models.FieldCondition},
-				}},
-			},
-			tables: []*db_models.Table{{AsName: "u", Name: "users"}, {AsName: "t"}},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -300,60 +283,406 @@ func TestCollectStmtScopes_Joins(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
 
-func TestCollectStmtScopes_NestedScope(t *testing.T) {
+func TestCollectStmtScopes_Subquery(t *testing.T) {
 	tests := []struct {
 		name   string
 		query  string
-		fields []*db_models.Field
-		tables []string
+		scopes []*db_models.StmtScope
 	}{
 		{
-			name:   "subquery",
-			query:  "SELECT id, (SELECT COUNT(status) FROM todos) AS status_count FROM users",
-			fields: []*db_models.Field{{Columns: []*db_models.FieldColumn{{Name: "", Type: db_models.FieldSubquery}}}},
-			tables: []string{},
+			name:  "subquery in SELECT",
+			query: "SELECT (SELECT id FROM todos limit 1)",
+			scopes: []*db_models.StmtScope{
+				{
+					Name: "<root>",
+					Fields: []*db_models.Field{
+						{Columns: []*db_models.FieldColumn{{ReferenceName: "<field0>", Type: db_models.FieldSubquery}}},
+					},
+					FieldScopes: []*db_models.StmtScope{
+						{
+							Name: "<field0>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "todos"},
+							},
+						},
+					},
+				},
+			},
 		},
 		{
-			name:   "subquery with comparison",
-			query:  "SELECT (SELECT COUNT(status) FROM todos) - (SELECT COUNT(description) FROM todos) AS no_desc_count",
-			fields: []*db_models.Field{{Columns: []*db_models.FieldColumn{{Name: "", Type: db_models.FieldSubquery}}}},
-			tables: []string{},
+			name:  "subquery in SELECT's aliased field",
+			query: "SELECT id, (SELECT COUNT(status) FROM todos) AS status_count FROM users",
+			scopes: []*db_models.StmtScope{{
+				Name: "<root>",
+				Fields: []*db_models.Field{
+					{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+					{AsName: "status_count", Columns: []*db_models.FieldColumn{{ReferenceName: "<field0>", Type: db_models.FieldSubquery}}},
+				},
+				FieldScopes: []*db_models.StmtScope{
+					{
+						Name: "<field0>",
+						Fields: []*db_models.Field{
+							{Columns: []*db_models.FieldColumn{{Name: "status", Type: db_models.FieldReference}}},
+						},
+						Tables: []*db_models.Table{
+							{Name: "todos"},
+						},
+					},
+				},
+				Tables: []*db_models.Table{
+					{Name: "users"},
+				},
+			}},
 		},
 		{
-			name:   "exists subquery",
-			query:  "SELECT id, EXISTS (SELECT * FROM todos WHERE user_id = users.user_id) FROM users",
-			fields: []*db_models.Field{{Columns: []*db_models.FieldColumn{{Name: "", Type: db_models.FieldSubquery}}}},
-			tables: []string{},
+			name:  "subquery with comparison",
+			query: "SELECT (SELECT COUNT(status) FROM todos) - (SELECT COUNT(description) FROM todos) AS no_desc_count",
+			scopes: []*db_models.StmtScope{{
+				Name: "<root>",
+				Fields: []*db_models.Field{
+					{AsName: "no_desc_count", Columns: []*db_models.FieldColumn{
+						{ReferenceName: "<field0>", Type: db_models.FieldSubquery},
+						{ReferenceName: "<field1>", Type: db_models.FieldSubquery},
+					}},
+				},
+				FieldScopes: []*db_models.StmtScope{
+					{
+						Name: "<field0>",
+						Fields: []*db_models.Field{
+							{Columns: []*db_models.FieldColumn{{Name: "status", Type: db_models.FieldReference}}},
+						},
+						Tables: []*db_models.Table{
+							{Name: "todos"},
+						},
+					},
+					{
+						Name: "<field1>",
+						Fields: []*db_models.Field{
+							{Columns: []*db_models.FieldColumn{{Name: "description", Type: db_models.FieldReference}}},
+						},
+						Tables: []*db_models.Table{
+							{Name: "todos"},
+						},
+					},
+				},
+			}},
 		},
 		{
-			name:   "in subquery",
-			query:  "SELECT user_id IN (SELECT user_id FROM todos) FROM users",
-			fields: []*db_models.Field{{Columns: []*db_models.FieldColumn{{Name: "", Type: db_models.FieldSubquery}}}},
-			tables: []string{},
+			name:  "subquery with EXIST",
+			query: "SELECT id, EXISTS (SELECT * FROM todos WHERE user_id = users.id) FROM users",
+			scopes: []*db_models.StmtScope{{
+				Name: "<root>",
+				Fields: []*db_models.Field{
+					{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+					{Columns: []*db_models.FieldColumn{{ReferenceName: "<field0>", Type: db_models.FieldSubquery}}},
+				},
+				FieldScopes: []*db_models.StmtScope{
+					{
+						Name: "<field0>",
+						Fields: []*db_models.Field{
+							{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
+							{Columns: []*db_models.FieldColumn{
+								{Name: "user_id", Type: db_models.FieldCondition},
+								{Table: "users", Name: "id", Type: db_models.FieldCondition},
+							}},
+						},
+						Tables: []*db_models.Table{
+							{Name: "todos"},
+						},
+					},
+				},
+				Tables: []*db_models.Table{
+					{Name: "users"},
+				},
+			}},
+		},
+		{
+			name:  "subquery with IN",
+			query: "SELECT user_id IN (SELECT user_id FROM todos) FROM users",
+			scopes: []*db_models.StmtScope{{
+				Name: "<root>",
+				Fields: []*db_models.Field{
+					{Columns: []*db_models.FieldColumn{
+						{Name: "user_id", Type: db_models.FieldReference},
+						{ReferenceName: "<field0>", Type: db_models.FieldSubquery},
+					}},
+				},
+				FieldScopes: []*db_models.StmtScope{
+					{
+						Name: "<field0>",
+						Fields: []*db_models.Field{
+							{Columns: []*db_models.FieldColumn{{Name: "user_id", Type: db_models.FieldReference}}},
+						},
+						Tables: []*db_models.Table{
+							{Name: "todos"},
+						},
+					},
+				},
+				Tables: []*db_models.Table{
+					{Name: "users"},
+				},
+			}},
+		},
+		{
+			name: "subquery in SELECT's function",
+			query: `
+SELECT row_to_json(
+  (
+    SELECT t
+    FROM (SELECT id, description FROM todos LIMIT 1) AS t
+  )
+)
+`,
+			scopes: []*db_models.StmtScope{
+				{
+					Name: "<root>",
+					Fields: []*db_models.Field{
+						{Columns: []*db_models.FieldColumn{{ReferenceName: "<field0>", Type: db_models.FieldSubquery}}},
+					},
+					FieldScopes: []*db_models.StmtScope{
+						{
+							Name: "<field0>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Name: "t", Type: db_models.FieldReference}}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "<select0>", AsName: "t"},
+							},
+							Scopes: []*db_models.StmtScope{
+								{
+									Name: "<select0>",
+									Fields: []*db_models.Field{
+										{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+										{Columns: []*db_models.FieldColumn{{Name: "description", Type: db_models.FieldReference}}},
+									},
+									Tables: []*db_models.Table{
+										{Name: "todos"},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "subquery in FROM",
+			query: `
+SELECT *
+FROM (SELECT id, user_id FROM todos)
+`,
+			scopes: []*db_models.StmtScope{
+				{
+					Name: "<root>",
+					Fields: []*db_models.Field{
+						{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
+					},
+					Tables: []*db_models.Table{
+						{Name: "<select0>"},
+					},
+					Scopes: []*db_models.StmtScope{
+						{
+							Name: "<select0>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+								{Columns: []*db_models.FieldColumn{{Name: "user_id", Type: db_models.FieldReference}}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "todos"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "subquery in JOIN",
+			query: `
+SELECT *
+FROM users
+INNER JOIN (SELECT id, user_id FROM todos) AS t ON users.id = t.user_id
+`,
+			scopes: []*db_models.StmtScope{
+				{
+					Name: "<root>",
+					Fields: []*db_models.Field{
+						{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
+						{Columns: []*db_models.FieldColumn{
+							{Table: "users", Name: "id", Type: db_models.FieldCondition},
+							{Table: "t", Name: "user_id", Type: db_models.FieldCondition},
+						}},
+					},
+					Tables: []*db_models.Table{
+						{Name: "users"},
+						{Name: "<select0>", AsName: "t"},
+					},
+					Scopes: []*db_models.StmtScope{
+						{
+							Name: "<select0>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+								{Columns: []*db_models.FieldColumn{{Name: "user_id", Type: db_models.FieldReference}}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "todos"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "subquery using star",
+			query: `
+SELECT description
+FROM
+	(SELECT * FROM todos) AS t
+`,
+			scopes: []*db_models.StmtScope{
+				{
+					Name: "<root>",
+					Fields: []*db_models.Field{
+						{Columns: []*db_models.FieldColumn{
+							{Name: "description", Type: db_models.FieldReference},
+						}},
+					},
+					Tables: []*db_models.Table{
+						{Name: "<select0>", AsName: "t"},
+					},
+					Scopes: []*db_models.StmtScope{
+						{
+							Name: "<select0>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "todos"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "subquery with LATERAL JOIN ",
+			query: `
+SELECT description
+FROM
+	(SELECT id FROM users) AS u
+	LEFT OUTER JOIN LATERAL (SELECT description FROM todos WHERE user_id = u.id) AS t ON u.id = t.user_id
+`,
+			scopes: []*db_models.StmtScope{
+				{
+					Name: "<root>",
+					Fields: []*db_models.Field{
+						{Columns: []*db_models.FieldColumn{
+							{Name: "description", Type: db_models.FieldReference},
+						}},
+						{Columns: []*db_models.FieldColumn{
+							{Table: "u", Name: "id", Type: db_models.FieldCondition},
+							{Table: "t", Name: "user_id", Type: db_models.FieldCondition},
+						}},
+					},
+					Tables: []*db_models.Table{
+						{Name: "<select0>", AsName: "u"},
+						{Name: "<select1>", AsName: "t", IsLateral: true},
+					},
+					Scopes: []*db_models.StmtScope{
+						{
+							Name: "<select0>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "users"},
+							},
+						},
+						{
+							Name: "<select1>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Name: "description", Type: db_models.FieldReference}}},
+								{Columns: []*db_models.FieldColumn{
+									{Name: "user_id", Type: db_models.FieldCondition},
+									{Table: "u", Name: "id", Type: db_models.FieldCondition},
+								}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "todos"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "subquery with aggregate function",
+			query: `
+SELECT json_agg(t)
+FROM (SELECT id FROM todos LIMIT 3) AS t;
+`,
+			scopes: []*db_models.StmtScope{
+				{
+					Name: "<root>",
+					Fields: []*db_models.Field{
+						{Columns: []*db_models.FieldColumn{{Name: "t", Type: db_models.FieldReference}}},
+					},
+					Tables: []*db_models.Table{
+						{AsName: "t", Name: "<select0>"},
+					},
+					Scopes: []*db_models.StmtScope{
+						{
+							Name: "<select0>",
+							Fields: []*db_models.Field{
+								{Columns: []*db_models.FieldColumn{{Name: "id", Type: db_models.FieldReference}}},
+							},
+							Tables: []*db_models.Table{
+								{Name: "todos"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:   "hasura query",
+			query:  tdata.Hasura1.SQL,
+			scopes: tdata.Hasura1.Scopes,
+		},
+		{
+			name:   "hasura query2",
+			query:  tdata.Hasura2.SQL,
+			scopes: tdata.Hasura2.Scopes,
+		},
+		{
+			name:   "hasura query3",
+			query:  tdata.Hasura3.SQL,
+			scopes: tdata.Hasura3.Scopes,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Skipf("Nest not implemented yet")
 			stmt := toStatement(t, tt.query)
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			assert.ElementsMatch(t, tt.fields, actualScopes[0].Fields)
-
-			// TODO
-			//assert.ElementsMatch(t, tt.tables, actualScopes[0].Tables)
+			if diff := cmp.Diff(tt.scopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -424,12 +753,14 @@ func TestCollectStmtScopes_Where(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, []*db_models.Table{tt.table}, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: []*db_models.Table{tt.table},
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -452,13 +783,13 @@ func TestCollectStmtScopes_GroupBy(t *testing.T) {
 		{
 			name:   "group by value",
 			query:  "SELECT COUNT(*) FROM users GROUP BY 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
 			name:   "group by null",
 			query:  "SELECT COUNT(*) FROM users GROUP BY null",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
@@ -506,12 +837,14 @@ func TestCollectStmtScopes_GroupBy(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -549,12 +882,14 @@ func TestCollectStmtScopes_Having(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -577,13 +912,13 @@ func TestCollectStmtScopes_OrderBy(t *testing.T) {
 		{
 			name:   "order by value",
 			query:  "SELECT COUNT(*) FROM users ORDER BY 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
 			name:   "group by null",
 			query:  "SELECT COUNT(*) FROM users ORDER BY null",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
@@ -603,12 +938,14 @@ func TestCollectStmtScopes_OrderBy(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
@@ -623,13 +960,13 @@ func TestCollectStmtScopes_Limit(t *testing.T) {
 		{
 			name:   "simple query",
 			query:  "SELECT 1 FROM users LIMIT 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 		{
 			name:   "offset exists",
 			query:  "SELECT 1 FROM users LIMIT 1 OFFSET 1",
-			fields: []*db_models.Field{},
+			fields: nil,
 			tables: []*db_models.Table{{Name: "users"}},
 		},
 	}
@@ -639,12 +976,14 @@ func TestCollectStmtScopes_Limit(t *testing.T) {
 			actualScopes, errs := collectors.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			require.Equal(t, 1, len(actualScopes))
-			actualScope := actualScopes[0]
-
-			assert.Equal(t, "<root>", actualScope.Name)
-			assert.ElementsMatch(t, tt.fields, actualScope.Fields)
-			assert.ElementsMatch(t, tt.tables, actualScope.Tables)
+			expectedScopes := []*db_models.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }

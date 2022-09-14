@@ -1,46 +1,41 @@
-import { ExplainAnalyzeTree } from "@/components/ExplainTree/ExplainAnalyzeTree";
-import type { IDbAnalyzeData } from "@/types/gr_param";
+import { ExplainTree } from "@/components/ExplainTree/ExplainTree";
+import { MysqlAnalyzeData } from "@/models/explain_data/MysqlAnalyzeData";
 
 describe("ExplainAnalyzeTree", () => {
-  const buildIAnalyzeData = (
+  const buildMysqlExplainData = (
     time: number,
-    children: IDbAnalyzeData[] = null
+    children: MysqlAnalyzeData[] = null
   ) => {
-    return {
-      text: time.toString(),
-      title: "",
-      actualTimeAvg: time,
-      actualLoopCount: 1,
-      children: children,
-    };
+    const data = new MysqlAnalyzeData();
+    data.text = time.toString();
+    data.title = "";
+    data.actualTimeAvg = time;
+    data.actualLoopCount = 1;
+    data.children = children;
+
+    return data;
   };
 
   describe("getSeriesData", () => {
-    const convertXToText = (
-      tree: ExplainAnalyzeTree<IDbAnalyzeData>,
-      x: number
-    ) => {
+    const convertXToText = (tree: ExplainTree<MysqlAnalyzeData>, x: number) => {
       return tree.getFromX(x).prop.IAnalyzeData.text;
     };
 
     it("no data", () => {
-      const tree = new ExplainAnalyzeTree([], true);
+      const tree = new ExplainTree([]);
       expect(tree.getSeriesData()).toEqual([]);
     });
 
     describe("single child only tree", () => {
-      const tree = new ExplainAnalyzeTree(
-        [
-          buildIAnalyzeData(0, [
-            buildIAnalyzeData(1, [
-              buildIAnalyzeData(2, [
-                buildIAnalyzeData(3, [buildIAnalyzeData(4)]),
-              ]),
+      const tree = new ExplainTree([
+        buildMysqlExplainData(0, [
+          buildMysqlExplainData(1, [
+            buildMysqlExplainData(2, [
+              buildMysqlExplainData(3, [buildMysqlExplainData(4)]),
             ]),
           ]),
-        ],
-        true
-      );
+        ]),
+      ]);
 
       it("focus at the bottom", () => {
         const resultTexts = tree
@@ -52,63 +47,60 @@ describe("ExplainAnalyzeTree", () => {
     });
 
     describe("multi child only tree", () => {
-      const tree = new ExplainAnalyzeTree(
-        [
-          buildIAnalyzeData(0, [
-            buildIAnalyzeData(1, [
-              buildIAnalyzeData(2, [
-                buildIAnalyzeData(3, [
-                  buildIAnalyzeData(4),
-                  buildIAnalyzeData(5),
-                ]),
-                buildIAnalyzeData(6, [
-                  buildIAnalyzeData(7),
-                  buildIAnalyzeData(8),
-                ]),
+      const tree = new ExplainTree([
+        buildMysqlExplainData(0, [
+          buildMysqlExplainData(1, [
+            buildMysqlExplainData(2, [
+              buildMysqlExplainData(3, [
+                buildMysqlExplainData(4),
+                buildMysqlExplainData(5),
               ]),
-            ]),
-            buildIAnalyzeData(9, [
-              buildIAnalyzeData(10, [
-                buildIAnalyzeData(11, [
-                  buildIAnalyzeData(12),
-                  buildIAnalyzeData(13),
-                ]),
-                buildIAnalyzeData(14, [
-                  buildIAnalyzeData(15),
-                  buildIAnalyzeData(16),
-                ]),
+              buildMysqlExplainData(6, [
+                buildMysqlExplainData(7),
+                buildMysqlExplainData(8),
               ]),
             ]),
           ]),
-          buildIAnalyzeData(17, [
-            buildIAnalyzeData(18, [
-              buildIAnalyzeData(19, [
-                buildIAnalyzeData(20, [
-                  buildIAnalyzeData(21),
-                  buildIAnalyzeData(22),
-                ]),
-                buildIAnalyzeData(23, [
-                  buildIAnalyzeData(24),
-                  buildIAnalyzeData(25),
-                ]),
+          buildMysqlExplainData(9, [
+            buildMysqlExplainData(10, [
+              buildMysqlExplainData(11, [
+                buildMysqlExplainData(12),
+                buildMysqlExplainData(13),
               ]),
-            ]),
-            buildIAnalyzeData(26, [
-              buildIAnalyzeData(27, [
-                buildIAnalyzeData(28, [
-                  buildIAnalyzeData(29),
-                  buildIAnalyzeData(30),
-                ]),
-                buildIAnalyzeData(31, [
-                  buildIAnalyzeData(32),
-                  buildIAnalyzeData(33),
-                ]),
+              buildMysqlExplainData(14, [
+                buildMysqlExplainData(15),
+                buildMysqlExplainData(16),
               ]),
             ]),
           ]),
-        ],
-        true
-      );
+        ]),
+        buildMysqlExplainData(17, [
+          buildMysqlExplainData(18, [
+            buildMysqlExplainData(19, [
+              buildMysqlExplainData(20, [
+                buildMysqlExplainData(21),
+                buildMysqlExplainData(22),
+              ]),
+              buildMysqlExplainData(23, [
+                buildMysqlExplainData(24),
+                buildMysqlExplainData(25),
+              ]),
+            ]),
+          ]),
+          buildMysqlExplainData(26, [
+            buildMysqlExplainData(27, [
+              buildMysqlExplainData(28, [
+                buildMysqlExplainData(29),
+                buildMysqlExplainData(30),
+              ]),
+              buildMysqlExplainData(31, [
+                buildMysqlExplainData(32),
+                buildMysqlExplainData(33),
+              ]),
+            ]),
+          ]),
+        ]),
+      ]);
 
       it("focus at the top-level", () => {
         const resultTexts = tree

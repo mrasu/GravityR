@@ -3,13 +3,13 @@ package suggest
 import (
 	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/database/mysql"
 	"github.com/mrasu/GravityR/database/mysql/models/collectors"
-	"github.com/mrasu/GravityR/database/rdb"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
-	"github.com/mrasu/GravityR/lib"
+	iMysql "github.com/mrasu/GravityR/infra/mysql"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
@@ -238,12 +238,12 @@ func runMySql() error {
 	*/
 	fmt.Printf("\nQuery: %s\n\n", mysqlVar.query)
 
-	cfg, err := mysql.NewConfigFromEnv()
+	cfg, err := iMysql.NewConfigFromEnv()
 	if err != nil {
 		return err
 	}
 
-	db, err := mysql.OpenMySQLDB(cfg)
+	db, err := iMysql.OpenMySQLDB(cfg)
 	if err != nil {
 		return err
 	}
@@ -279,7 +279,9 @@ func runMySql() error {
 		return err
 	}
 
-	aTree, err := collectors.CollectExplainAnalyzeTree(db, mysqlVar.query)
+	explainLine, err := db.Explain(mysqlVar.query)
+
+	aTree, err := collectors.CollectExplainAnalyzeTree(explainLine)
 	if err != nil {
 		return err
 	}
@@ -310,8 +312,8 @@ func runMySql() error {
 	var er *db_models.ExaminationResult
 	if mysqlVar.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
-		ie := rdb.IndexExaminer{DbType: rdb.MySQL}
-		er, err = ie.Run(db, mysqlVar.query, examinationIdxTargets)
+		ie := mysql.NewIndexExaminer(db, mysqlVar.query)
+		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
 			return err
 		}
@@ -351,25 +353,4 @@ func runMySql() error {
 		}
 	}
 	return nil
-}
-
-func parseIndexTargets(indexTargetTexts []string) ([]*db_models.IndexTarget, error) {
-	var its []*db_models.IndexTarget
-	for _, text := range indexTargetTexts {
-		it, err := db_models.NewIndexTarget(text)
-		if err != nil {
-			return nil, err
-		}
-		its = append(its, it)
-	}
-	return its, nil
-}
-
-func toUniqueIndexTargets(its []*db_models.IndexTargetTable) []*db_models.IndexTarget {
-	var idxTargets []*db_models.IndexTarget
-	for _, it := range its {
-		idxTargets = append(idxTargets, it.ToIndexTarget())
-	}
-
-	return lib.BruteUniq(idxTargets)
 }

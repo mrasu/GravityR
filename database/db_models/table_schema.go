@@ -1,5 +1,10 @@
 package db_models
 
+import (
+	"fmt"
+	"github.com/mrasu/GravityR/lib"
+)
+
 type TableSchema struct {
 	Name        string
 	Columns     []*ColumnSchema
@@ -39,4 +44,14 @@ func CreateTableSchemas[T any](tables []string, vals []T, f func(T) (string, str
 	}
 
 	return res
+}
+
+func (ts *TableSchema) String() string {
+	txt := fmt.Sprintf(
+		"TableSchema(name: %s, columns: [%s], primaryKeys: %s)",
+		ts.Name,
+		lib.JoinF(ts.Columns, ", ", func(c *ColumnSchema) string { return c.String() }),
+		ts.PrimaryKeys,
+	)
+	return txt
 }

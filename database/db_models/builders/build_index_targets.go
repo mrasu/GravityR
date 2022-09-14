@@ -1,66 +1,61 @@
 package builders
 
 import (
-	"fmt"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 type indexTargetBuilder struct {
-	tableSchemas []*db_models.TableSchema
-
 	tableSchemaMap map[string]*db_models.TableSchema
 }
+
+type index []*db_models.IndexField
 
 func newIndexTargetBuilder(tablesSchemas []*db_models.TableSchema) *indexTargetBuilder {
 	tableMap := map[string]*db_models.TableSchema{}
 	for _, t := range tablesSchemas {
 		tableMap[t.Name] = t
 	}
-	return &indexTargetBuilder{tableSchemas: tablesSchemas, tableSchemaMap: tableMap}
+	return &indexTargetBuilder{tableSchemaMap: tableMap}
 }
 
 func BuildIndexTargets(tablesSchemas []*db_models.TableSchema, scopes []*db_models.StmtScope) ([]*db_models.IndexTargetTable, error) {
 	itc := newIndexTargetBuilder(tablesSchemas)
 
-	var targets []*db_models.IndexTargetTable
+	var tables []*db_models.IndexTargetTable
 	for _, scope := range scopes {
 		ts, err := itc.buildFromScope(scope)
 		if err != nil {
 			return nil, err
 		}
 
-		targets = append(targets, ts...)
+		tables = append(tables, ts...)
 	}
 
-	return targets, nil
+	db_models.SortIndexTargetTable(tables)
+	return tables, nil
 }
 
 func (itb *indexTargetBuilder) buildFromScope(scope *db_models.StmtScope) ([]*db_models.IndexTargetTable, error) {
 	var targets []*db_models.IndexTargetTable
 
-	groupedFields, err := itb.groupFieldColumnsByTableName(scope)
+	tableFields, err := buildTableFields(itb.tableSchemaMap, scope)
 	if err != nil {
 		return nil, err
 	}
 
-	for tName, f := range groupedFields {
+	for tName, f := range tableFields {
 		tSchema := itb.tableSchemaMap[tName]
 		if tSchema == nil {
 			return nil, errors.Errorf("unknown table exists: %s", tName)
 		}
-		ifs := itb.buildPossibleIndexFields(lib.NewSetS(f), tSchema.PrimaryKeys)
+		ifs := itb.buildIndexComposition(lib.NewSetS(f), tSchema.PrimaryKeys)
 
 		for _, fs := range ifs {
-			if itb.hasRedundantPk(fs, tSchema.PrimaryKeys) {
-				continue
-			}
 			targets = append(targets, &db_models.IndexTargetTable{
-				TableName:           tName,
-				AffectingTableNames: []string{scope.Name},
-				IndexFields:         fs,
+				TableName:   tName,
+				IndexFields: fs,
 			})
 		}
 	}
@@ -68,174 +63,90 @@ func (itb *indexTargetBuilder) buildFromScope(scope *db_models.StmtScope) ([]*db
 	return targets, nil
 }
 
-func (itb *indexTargetBuilder) groupFieldColumnsByTableName(scope *db_models.StmtScope) (map[string][]*db_models.FieldColumn, error) {
-	columnTableMap := itb.buildColumnTableSchemaMap(scope)
+func (itb *indexTargetBuilder) buildIndexComposition(fieldColumns *lib.Set[*db_models.FieldColumn], pkCols []string) []index {
+	candidateFields := itb.extractEfficientIndexes(fieldColumns)
+	idxFieldList := itb.removePkOnlyFields(pkCols, candidateFields)
 
-	for _, s := range scope.Scopes {
-		// TODO: 内側のselect結果のカラムも候補に加える
-		fmt.Printf("=TODO: recursive: %v", s)
-	}
-
-	aliasTs := map[string]string{}
-	for _, t := range scope.Tables {
-		aliasTs[t.AsName] = t.Name
-	}
-	// TODO: 内側のselect結果のカラムもカラムの情報に加える
-
-	groupedFields := map[string][]*db_models.FieldColumn{}
-	for _, f := range scope.Fields {
-		for _, c := range f.Columns {
-			if c.Table == "" {
-				if t, ok := columnTableMap[c.Name]; ok {
-					groupedFields[t.Name] = append(groupedFields[t.Name], c)
-				} else {
-					return nil, lib.NewInvalidAstError(fmt.Sprintf("no table found for %s", c.Name))
-				}
-			} else {
-				if n, ok := aliasTs[c.Table]; ok {
-					groupedFields[n] = append(groupedFields[n], c)
-				} else {
-					groupedFields[c.Table] = append(groupedFields[c.Table], c)
-				}
-			}
-		}
-	}
-
-	return groupedFields, nil
+	return idxFieldList
 }
 
-func (itb *indexTargetBuilder) buildColumnTableSchemaMap(scope *db_models.StmtScope) map[string]*db_models.TableSchema {
-	res := map[string]*db_models.TableSchema{}
+func (itb *indexTargetBuilder) extractEfficientIndexes(fieldColumns *lib.Set[*db_models.FieldColumn]) []index {
+	compositions := itb.compositeFieldColumns(fieldColumns)
 
-	for _, st := range scope.Tables {
-		tName := st.Name
-		if tName == "" {
-			tName = st.AsName
-		}
-		t := itb.tableSchemaMap[tName]
-		for _, c := range t.Columns {
-			res[c.Name] = t
-		}
-	}
-
-	return res
-}
-
-func (itb *indexTargetBuilder) buildPossibleIndexFields(fColumns *lib.Set[*db_models.FieldColumn], pkCols []string) [][]*db_models.IndexField {
-	candidateFields := itb.buildPossibleIndexFieldsRecursive(fColumns)
-
-	pks := lib.NewSetS(pkCols)
-	var res [][]*db_models.IndexField
-	var refFields [][]*db_models.IndexField
-	for _, fs := range candidateFields {
-		hasRef := false
-		for _, f := range fs {
-			if f.Type == db_models.FieldReference {
-				hasRef = true
+	var efficientIndexFields []index
+	for _, fields := range compositions {
+		for i := 0; i < len(fields); i++ {
+			if fields[i].Type != db_models.FieldReference {
+				continue
 			}
-		}
-		if hasRef {
-			if fColumns.Count() <= len(fs)+len(pkCols) {
-				if itb.isAllMissingColsPk(fs, fColumns, pks) {
-					refFields = append(refFields, fs)
+
+			if len(fields) != fieldColumns.Count() {
+				goto next
+			}
+
+			for j := i + 1; j < len(fields); j++ {
+				if fields[j].Type != db_models.FieldReference {
+					goto next
+				}
+
+				// pick ordered fields only to avoid duplicating index
+				if fields[j-1].Name > fields[j].Name {
+					goto next
 				}
 			}
-			continue
 		}
-		res = append(res, fs)
+		efficientIndexFields = append(efficientIndexFields, fields)
+	next:
 	}
 
-	if len(refFields) > 0 {
-		lib.SortF(refFields, func(fs []*db_models.IndexField) string {
-			var names []string
-			for _, f := range fs {
-				names = append(names, f.Name)
-			}
-			return strings.Join(names, ",")
-		})
-		res = append(res, refFields[0])
-	}
-
-	return res
+	return efficientIndexFields
 }
 
-func (itb *indexTargetBuilder) buildPossibleIndexFieldsRecursive(fColumns *lib.Set[*db_models.FieldColumn]) [][]*db_models.IndexField {
-	var res [][]*db_models.IndexField
+func (itb *indexTargetBuilder) compositeFieldColumns(fColumns *lib.Set[*db_models.FieldColumn]) []index {
+	var compositions []index
 	for _, fc := range fColumns.Values() {
 		if !(fc.Type == db_models.FieldReference || fc.Type == db_models.FieldCondition) {
 			continue
 		}
 
 		fColumns.Delete(fc)
-		res2 := itb.buildPossibleIndexFieldsRecursive(fColumns)
+		res2 := itb.compositeFieldColumns(fColumns)
 		fColumns.Add(fc)
 
-		res = append(res, []*db_models.IndexField{{
+		compositions = append(compositions, index{{
 			Name: fc.Name,
 			Type: fc.Type,
 		}})
 		for _, r := range res2 {
-			if fc.Type == db_models.FieldCondition && r[len(r)-1].Type == db_models.FieldReference {
-				continue
-			}
-
 			r2 := r[:]
 			r2 = append(r2, &db_models.IndexField{
 				Name: fc.Name,
 				Type: fc.Type,
 			})
 
-			res = append(res, r2)
+			compositions = append(compositions, r2)
+		}
+	}
+
+	return compositions
+}
+
+func (itb *indexTargetBuilder) removePkOnlyFields(pkCols []string, indexFieldList []index) []index {
+	pks := lib.NewSetS(pkCols)
+	var res []index
+	for _, fs := range indexFieldList {
+		isAllPk := true
+		for _, f := range fs {
+			if !pks.Contains(f.Name) {
+				isAllPk = false
+				break
+			}
+		}
+
+		if !isAllPk {
+			res = append(res, fs)
 		}
 	}
 
 	return res
-}
-
-func (itb *indexTargetBuilder) isAllMissingColsPk(targetFs []*db_models.IndexField, fColumns *lib.Set[*db_models.FieldColumn], pks *lib.Set[string]) bool {
-	missingCols := lib.SelectF(fColumns.Values(), func(f *db_models.FieldColumn) bool {
-		for _, field := range targetFs {
-			if field.Name == f.Name {
-				return false
-			}
-		}
-		return true
-	})
-	isAllMissingPk := true
-	for _, mc := range missingCols {
-		if !pks.Contains(mc.Name) {
-			isAllMissingPk = false
-			break
-		}
-	}
-
-	return isAllMissingPk
-}
-
-func (itb *indexTargetBuilder) hasRedundantPk(target []*db_models.IndexField, pkCols []string) bool {
-	pks := lib.NewSetS(pkCols)
-	for _, t := range target {
-		if t.Type == db_models.FieldReference && pks.Contains(t.Name) {
-			return true
-		}
-	}
-
-	for i := len(pkCols); i > 0; i-- {
-		if len(target) < i {
-			continue
-		}
-
-		matched := true
-		for j := 0; j < i; j++ {
-			if target[len(target)-i+j].Name != pkCols[j] {
-				matched = false
-				break
-			}
-		}
-		if matched {
-			return true
-		}
-	}
-
-	return false
 }

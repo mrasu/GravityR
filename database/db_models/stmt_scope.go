@@ -5,12 +5,12 @@ import "github.com/mrasu/GravityR/lib"
 const RootScopeName = "<root>"
 
 type StmtScope struct {
-	Name   string
-	Parent *StmtScope
-	Fields []*Field
-	Tables []*Table
-	Scopes map[string]*StmtScope
-	CTEs   map[string]*StmtScope
+	Name        string
+	Fields      []*Field
+	FieldScopes []*StmtScope
+	Tables      []*Table
+	Scopes      []*StmtScope
+	CTEs        map[string]*StmtScope
 }
 
 func (ss *StmtScope) ListAsTableMap() map[string]*lib.Set[string] {

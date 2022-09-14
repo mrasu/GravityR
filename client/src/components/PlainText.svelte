@@ -1,8 +1,8 @@
 <script lang="ts">
-  export let query: string;
+  export let text: string;
 </script>
 
-<div>{query.trim()}</div>
+<div>{text.trim()}</div>
 
 <style>
   div {

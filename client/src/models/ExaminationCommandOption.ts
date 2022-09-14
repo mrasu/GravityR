@@ -5,11 +5,12 @@ export class ExaminationCommandOption {
 
   ToCommandString(): string {
     const dash = this.isShort ? "-" : "--";
+    const escapedValue = `${this.value.replace(/(["$`\\])/g, "\\$1")}`;
 
-    if (this.value.match(/^\w+$/)) {
-      return `${dash}${this.name} ${this.value}`;
+    if (escapedValue.match(/^\w+$/)) {
+      return `${dash}${this.name} ${escapedValue}`;
     } else {
-      return `${dash}${this.name} "${this.value}"`;
+      return `${dash}${this.name} "${escapedValue}"`;
     }
   }
 }

@@ -3,7 +3,11 @@
   import type { IndexTarget } from "@/models/IndexTarget";
   import type { ExaminationCommandOption } from "@/models/ExaminationCommandOption";
 
-  const subCommands = { mysql: "mysql", postgres: "postgres" } as const;
+  const subCommands = {
+    mysql: "mysql",
+    postgres: "postgres",
+    hasura: "hasura",
+  } as const;
   type Subcommand = typeof subCommands[keyof typeof subCommands];
 
   export let subCommand: Subcommand;

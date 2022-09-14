@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-var DbName string
+var DBName string
 var MySQLDsn string
 
 func SetUp() {
-	DbName = "gravityr"
-	MySQLDsn = fmt.Sprintf("%s@/%s", "root", DbName)
+	DBName = "gravityr"
+	MySQLDsn = fmt.Sprintf("%s@/%s", "root", DBName)
 }

@@ -1,0 +1,13 @@
+table:
+  name: users
+  schema: public
+array_relationships:
+  - name: todos
+    using:
+      manual_configuration:
+        column_mapping:
+          id: user_id
+        insertion_order: null
+        remote_table:
+          name: todos
+          schema: public

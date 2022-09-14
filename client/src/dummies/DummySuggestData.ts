@@ -1,5 +1,7 @@
 import analyzeMysqlNodes from "./analyzeMysqlNodes.json";
 import analyzePostgresNodes from "./analyzePostgresNodes.json";
+import analyzeHasuraPostgresNodes from "./analyzeHasuraPostgresNodes.json";
+import hasuraPostgresQuery from "./hasuraPostgresQuery.sql?raw";
 
 const query = `
 with count_tbl as
@@ -61,6 +63,44 @@ JIT:
   Timing: Generation 3.100 ms, Inlining 0.000 ms, Optimization 1.174 ms, Emission 20.082 ms, Total 24.357 ms
 Execution Time: 375.843 ms`;
 
+const gql = `
+query MyQuery($email: String) {
+  todos(where: {user: {email: {_eq: $email}}}) {
+    user {
+      email
+      id
+      name
+    }
+    description
+    id
+    status
+  }
+}
+`;
+
+const hasuraIndexTargets = [
+  { tableName: "todos", columns: [{ name: "user_id" }] },
+  {
+    tableName: "todos",
+    columns: [{ name: "user_id" }, { name: "status" }, { name: "title" }],
+  },
+  { tableName: "users", columns: [{ name: "email" }] },
+  { tableName: "users", columns: [{ name: "email" }, { name: "id" }] },
+  { tableName: "users", columns: [{ name: "id" }, { name: "email" }] },
+  {
+    tableName: "users",
+    columns: [{ name: "email" }, { name: "id" }, { name: "name" }],
+  },
+  {
+    tableName: "users",
+    columns: [{ name: "id" }, { name: "email" }, { name: "name" }],
+  },
+];
+
+const hasuraPostgresPlanningText = `JIT:
+  Functions: 30
+  Options: Inlining false, Optimization false, Expressions true, Deforming true`;
+
 export const dummySuggestData = {
   mysql: {
     query: query,
@@ -82,5 +122,25 @@ export const dummySuggestData = {
       { isShort: true, name: "o", value: "output_examine.html" },
       { isShort: true, name: "q", value: query },
     ],
+  },
+  hasura: {
+    postgres: {
+      gql: gql,
+      gqlVariables: { email: "test1111@example.com" },
+      query: hasuraPostgresQuery,
+      analyzeNodes: analyzeHasuraPostgresNodes,
+      planningText: hasuraPostgresPlanningText,
+      indexTargets: hasuraIndexTargets,
+      examinationResult: null,
+      examinationCommandOptions: [
+        { isShort: true, name: "o", value: "output_examine.html" },
+        { isShort: true, name: "q", value: gql },
+        {
+          isShort: false,
+          name: "variables-json",
+          value: '{"email": "test1112@example.com"}',
+        },
+      ],
+    },
   },
 };

@@ -1,22 +1,23 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { ExplainAnalyzeTree } from "@/components/ExplainTree/ExplainAnalyzeTree";
-  import type { IMysqlAnalyzeData } from "@/types/gr_param";
+  import { ExplainTree } from "@/components/ExplainTree/ExplainTree";
   import { getHighlightIndex } from "@/contexts/HighlightIndexContext";
   import { ExplainTreeChart } from "@/components/ExplainTree/ExplainTreeChart";
   import type { ExplainTreeChartProp } from "@/components/ExplainTree/ExplainTreeChart";
+  import type { MysqlAnalyzeData } from "@/models/explain_data/MysqlAnalyzeData";
 
   export let highlightIndexKey: symbol;
   let highlightIndex = getHighlightIndex(highlightIndexKey);
 
-  export let analyzeNodes: IMysqlAnalyzeData[];
-  $: explainAnalyzeTree = new ExplainAnalyzeTree(analyzeNodes, true);
+  export let chartDescription: string;
+  export let analyzeNodes: MysqlAnalyzeData[];
+  $: explainTree = new ExplainTree(analyzeNodes);
 
   let chartDiv: HTMLElement;
   onMount(() => {
-    const chart = new ExplainTreeChart(chartDiv, explainAnalyzeTree);
+    const chart = new ExplainTreeChart(chartDiv, explainTree, chartDescription);
     chart.onDataPointMouseEnter = (
-      prop: ExplainTreeChartProp<IMysqlAnalyzeData>
+      prop: ExplainTreeChartProp<MysqlAnalyzeData>
     ) => {
       $highlightIndex = prop.xNum;
     };
@@ -28,7 +29,7 @@
     };
   });
 
-  const createTooltip = (prop: ExplainTreeChartProp<IMysqlAnalyzeData>) => {
+  const createTooltip = (prop: ExplainTreeChartProp<MysqlAnalyzeData>) => {
     const trimmedText = prop.IAnalyzeData.text.trim();
     const text =
       trimmedText.length > 50

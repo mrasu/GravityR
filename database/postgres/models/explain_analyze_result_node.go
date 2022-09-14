@@ -29,8 +29,9 @@ type ExplainAnalyzeResultNode struct {
 
 var prefixSpaceReg = regexp.MustCompile(`^\s*`)
 var onReg = regexp.MustCompile(` on (\w+)`)
+var onWithNamespaceReg = regexp.MustCompile(` on "?([\w.]+)"?`)
 var keyReg = regexp.MustCompile(` Key: (\w+)\.`)
-var metricLineReg = regexp.MustCompile(`\(cost=.+\) (\(actual .+\))`)
+var metricLineReg = regexp.MustCompile(`\(cost=.+\)( \(actual .+\))?`)
 var analyzeEstimationReg = regexp.MustCompile(`\(cost=([\d.]+?)\.\.([\d.]+?) rows=(\d+) width=(\d+)\)`)
 var analyzeActualReg = regexp.MustCompile(`\(actual time=([\d.]+?)\.\.([\d.]+?) rows=(\d+) loops=(\d+)\)`)
 
@@ -97,13 +98,18 @@ func ParseExplainAnalyzeResultLineNode(lines []string) (int, *ExplainAnalyzeResu
 		resLine.ActualLoopCount = null.IntFrom(loopNum)
 	}
 
-	spaces := prefixSpaceReg.FindString(mLine)
+	spaces := prefixSpaceReg.FindString(lines[0])
 	return len(spaces), resLine, nil
 }
 
 func extractTableFromExplainAnalyzeResultLine(lines []string) string {
 	for _, line := range lines {
 		m := onReg.FindStringSubmatch(line)
+		if m != nil {
+			return m[1]
+		}
+
+		m = onWithNamespaceReg.FindStringSubmatch(line)
 		if m != nil {
 			return m[1]
 		}

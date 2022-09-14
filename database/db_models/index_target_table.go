@@ -3,12 +3,12 @@ package db_models
 import (
 	"fmt"
 	"github.com/mrasu/GravityR/lib"
+	"sort"
 )
 
 type IndexTargetTable struct {
-	TableName           string
-	AffectingTableNames []string
-	IndexFields         []*IndexField
+	TableName   string
+	IndexFields []*IndexField
 }
 
 func (itt *IndexTargetTable) ToIndexTarget() *IndexTarget {
@@ -23,10 +23,32 @@ func (itt *IndexTargetTable) ToIndexTarget() *IndexTarget {
 
 func (itt *IndexTargetTable) String() string {
 	txt := fmt.Sprintf(
-		"IndexTargetTable(table: %s, affectTable: %s, columns: %s)",
+		"IndexTargetTable(table: %s columns: %s)",
 		itt.TableName,
-		lib.JoinF(itt.AffectingTableNames, ", ", func(t string) string { return t }),
 		lib.JoinF(itt.IndexFields, ", ", func(f *IndexField) string { return f.Name }),
 	)
 	return txt
+}
+
+func SortIndexTargetTable(tables []*IndexTargetTable) {
+	sort.Slice(tables, func(i, j int) bool {
+		if tables[i].TableName != tables[j].TableName {
+			return tables[i].TableName < tables[j].TableName
+		}
+
+		iIndexes := tables[i].IndexFields
+		jIndexes := tables[j].IndexFields
+		if len(iIndexes) != len(jIndexes) {
+			return len(iIndexes) < len(jIndexes)
+		}
+
+		for idx := 0; idx < len(iIndexes); idx++ {
+			if iIndexes[idx].Name == jIndexes[idx].Name {
+				continue
+			}
+			return iIndexes[idx].Name < jIndexes[idx].Name
+		}
+
+		return false
+	})
 }

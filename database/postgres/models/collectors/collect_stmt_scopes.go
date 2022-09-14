@@ -13,12 +13,33 @@ type scopeCollector struct {
 	scopes []*db_models.StmtScope
 	errors []error
 
-	scopeStack *lib.Stack[db_models.StmtScope]
+	scopeStack *lib.Stack[scopeInfo]
 	lastError  error
+
+	foundSelectInfos         map[*tree.Select]*selectInfo
+	foundSelectPrefixCounter map[string]int
+}
+
+type scopeInfo struct {
+	node  interface{}
+	scope *db_models.StmtScope
+}
+
+type selectInfo struct {
+	name    string
+	fieldOf *scopeInfo
+}
+
+func newScopeCollector() *scopeCollector {
+	return &scopeCollector{
+		scopeStack:               lib.NewStack[scopeInfo](),
+		foundSelectInfos:         map[*tree.Select]*selectInfo{},
+		foundSelectPrefixCounter: map[string]int{},
+	}
 }
 
 func CollectStmtScopes(stmt *parser.Statement) ([]*db_models.StmtScope, []error) {
-	sc := &scopeCollector{scopeStack: lib.NewStack[db_models.StmtScope]()}
+	sc := newScopeCollector()
 	if _, ok := stmt.AST.(*tree.Select); !ok {
 		return nil, []error{lib.NewUnsupportedError("only SELECT query is supported")}
 	}
@@ -36,21 +57,18 @@ func CollectStmtScopes(stmt *parser.Statement) ([]*db_models.StmtScope, []error)
 }
 
 func (sc *scopeCollector) Enter(node interface{}) bool {
-	selectNode, ok := node.(*tree.Select)
-	if !ok {
+	scope, selectNode := sc.newStmtScopeIfEnterRequired(node)
+	if selectNode == nil {
 		return false
 	}
+
 	stmt, ok := selectNode.Select.(*tree.SelectClause)
 	if !ok {
 		return false
 	}
 
-	top := sc.scopeStack.Top()
-	var parent *db_models.StmtScope
-	if top != nil {
-		parent = top
-	}
-	scope := &db_models.StmtScope{Parent: parent, Name: db_models.RootScopeName}
+	sc.scopeStack.Push(&scopeInfo{node: node, scope: scope})
+
 	var foundFields []*db_models.Field
 	for _, expr := range stmt.Exprs {
 		cols := sc.collectExprReferences(expr.Expr, db_models.FieldReference)
@@ -137,7 +155,6 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 		}
 	}
 
-	sc.scopeStack.Push(scope)
 	if len(sc.scopes) == 0 {
 		sc.scopes = append(sc.scopes, scope)
 	}
@@ -146,11 +163,49 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 }
 
 func (sc *scopeCollector) Leave(node interface{}) bool {
-	if _, ok := node.(*tree.SelectClause); ok {
+	if sc.scopeStack.Top().node == node {
 		sc.scopeStack.Pop()
 	}
 
 	return false
+}
+
+func (sc *scopeCollector) newStmtScopeIfEnterRequired(node interface{}) (*db_models.StmtScope, *tree.Select) {
+	if s, ok := node.(*tree.Select); ok {
+		if s, ok := sc.foundSelectInfos[s]; ok {
+			if s.fieldOf != nil {
+				// already visited when node is *tree.Subquery
+				return nil, nil
+			}
+		}
+
+		parent := sc.scopeStack.Top()
+		scope := sc.newScope(parent, s)
+		return scope, s
+	}
+
+	if sub, ok := node.(*tree.Subquery); ok {
+		ps, ok := sub.Select.(*tree.ParenSelect)
+		if !ok {
+			return nil, nil
+		}
+		sInfo, ok := sc.foundSelectInfos[ps.Select]
+		if !ok {
+			return nil, nil
+		}
+		if sInfo.fieldOf == nil {
+			// do nothing when subquery is not in fields as it will be visited when node is *tree.Select
+			return nil, nil
+		}
+
+		parent := sInfo.fieldOf
+		scope := &db_models.StmtScope{Name: sInfo.name}
+		parent.scope.FieldScopes = append(parent.scope.FieldScopes, scope)
+
+		return scope, ps.Select
+	}
+
+	return nil, nil
 }
 
 func (sc *scopeCollector) getAndClearLastError() error {
@@ -191,8 +246,19 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType db_m
 		}
 		res = append(res, sc.collectExprReferences(e.Else, defaultType)...)
 	case *tree.Subquery:
-		// ignore the content of subquery as it will be in different scope.Scopes
-		return []*db_models.FieldColumn{{Type: db_models.FieldSubquery}}
+		info, err := sc.newSelectInfo(e, "field")
+		if err != nil {
+			sc.lastError = err
+			break
+		}
+
+		info.fieldOf = sc.scopeStack.Top()
+
+		// ignore the content of subquery as it will be in different StmtScopes
+		return []*db_models.FieldColumn{{
+			Type:          db_models.FieldSubquery,
+			ReferenceName: info.name,
+		}}
 	case *tree.CommentOnColumn:
 		// do nothing as comment doesn't relate to column reference
 	case *tree.NumVal:
@@ -343,7 +409,7 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType db_m
 		res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
 	case *tree.TupleStar:
 		if n, ok := e.Expr.(*tree.UnresolvedName); ok {
-			if n.NumParts > 1 {
+			if sc.isSchemaSpecified(n, 1) {
 				sc.lastError = lib.NewInvalidAstError("schema or catalog/db specification at tuple `(Table).schema.col` is not expected")
 			} else {
 				return []*db_models.FieldColumn{{Table: n.Parts[0], Type: db_models.FieldStar}}
@@ -353,7 +419,7 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType db_m
 		}
 	case *tree.ColumnAccessExpr:
 		if n, ok := e.Expr.(*tree.UnresolvedName); ok {
-			if n.NumParts > 1 {
+			if sc.isSchemaSpecified(n, 1) {
 				sc.lastError = lib.NewInvalidAstError("schema or catalog/db specification at tuple `(Table).schema.col` is not expected")
 			} else {
 				return []*db_models.FieldColumn{{Table: n.Parts[0], Name: e.ColName, Type: defaultType}}
@@ -364,7 +430,7 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType db_m
 	case *tree.IndexedVar:
 		// todo irrelevant?
 	case *tree.UnresolvedName:
-		if e.NumParts > 2 {
+		if sc.isSchemaSpecified(e, 2) {
 			sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 		} else {
 			if e.Star {
@@ -376,13 +442,13 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType db_m
 	case tree.UnqualifiedStar:
 		return []*db_models.FieldColumn{{Table: "", Type: db_models.FieldStar}}
 	case *tree.AllColumnsSelector:
-		if e.TableName.NumParts > 1 {
+		if sc.isSchemaSpecified2(e.TableName, 1) {
 			sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 		} else {
 			return []*db_models.FieldColumn{{Table: e.TableName.Parts[0], Type: db_models.FieldStar}}
 		}
 	case *tree.ColumnItem:
-		if e.TableName.NumParts > 1 {
+		if sc.isSchemaSpecified2(e.TableName, 1) {
 			sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 		} else {
 			return []*db_models.FieldColumn{{Table: e.TableName.Parts[0], Name: e.ColumnName.Normalize()}}
@@ -413,10 +479,24 @@ func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*db_models.Tabl
 	case *tree.AliasedTableExpr:
 		switch tt := t.Expr.(type) {
 		case *tree.Subquery:
-			// ignore the content of subquery as it will be in different scope.Scopes
-			tables = []*db_models.Table{{AsName: t.As.Alias.Normalize()}}
+			info, err := sc.newSelectInfo(tt, "select")
+			if err != nil {
+				sc.lastError = err
+				break
+			}
+			name := ""
+			if info != nil {
+				name = info.name
+			}
+
+			// ignore the content of subquery as it will be in different ScopeStmt
+			tables = []*db_models.Table{{
+				AsName:    t.As.Alias.Normalize(),
+				Name:      name,
+				IsLateral: t.Lateral,
+			}}
 		case *tree.UnresolvedObjectName:
-			if tt.NumParts > 1 {
+			if sc.isSchemaSpecified2(tt, 1) {
 				sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 			} else {
 				tables = []*db_models.Table{{AsName: t.As.Alias.Normalize(), Name: tt.Parts[0]}}
@@ -493,4 +573,67 @@ func (sc *scopeCollector) collectJoinReferences(j *tree.JoinTableExpr) ([]*db_mo
 	}
 
 	return tables, fields
+}
+
+func (sc *scopeCollector) newSelectInfo(t *tree.Subquery, prefix string) (*selectInfo, error) {
+	switch s := t.Select.(type) {
+	case *tree.ParenSelect:
+		cnt := sc.incrementFoundPrefixCounter(prefix)
+		info := &selectInfo{name: fmt.Sprintf("<%s%d>", prefix, cnt)}
+		sc.foundSelectInfos[s.Select] = info
+		return info, nil
+	case *tree.SelectClause:
+		return nil, lib.NewInvalidAstError("a subquery having select clause is unexpected")
+	case *tree.UnionClause:
+		return nil, lib.NewInvalidAstError("a subquery having union clause is unexpected")
+	case *tree.ValuesClause:
+		return nil, lib.NewInvalidAstError("a subquery having values clause is unexpected")
+	case *tree.ValuesClauseWithNames:
+		return nil, lib.NewInvalidAstError("a subquery having values clause is unexpected")
+	default:
+		return nil, lib.NewInvalidAstError("unknown subquery type")
+	}
+}
+
+func (sc *scopeCollector) incrementFoundPrefixCounter(prefix string) int {
+	if _, ok := sc.foundSelectPrefixCounter[prefix]; !ok {
+		sc.foundSelectPrefixCounter[prefix] = 0
+	}
+
+	orig := sc.foundSelectPrefixCounter[prefix]
+	sc.foundSelectPrefixCounter[prefix] = orig + 1
+
+	return orig
+}
+
+func (sc *scopeCollector) newScope(parent *scopeInfo, s *tree.Select) *db_models.StmtScope {
+	name := db_models.RootScopeName
+	if n, ok := sc.foundSelectInfos[s]; ok {
+		name = n.name
+	}
+	scope := &db_models.StmtScope{Name: name}
+
+	if parent != nil {
+		parent.scope.Scopes = append(parent.scope.Scopes, scope)
+	}
+
+	return scope
+}
+
+func (sc *scopeCollector) isSchemaSpecified(un *tree.UnresolvedName, schemaPos int) bool {
+	// public is allowed as this collector assumes schema is always "public"
+	if (un.NumParts == schemaPos+1 && un.Parts[schemaPos] != "public") || un.NumParts > schemaPos+1 {
+		return true
+	}
+
+	return false
+}
+
+func (sc *scopeCollector) isSchemaSpecified2(uon *tree.UnresolvedObjectName, schemaPos int) bool {
+	// public is allowed as this collector assumes schema is always "public"
+	if (uon.NumParts == schemaPos+1 && uon.Parts[schemaPos] != "public") || uon.NumParts > schemaPos+1 {
+		return true
+	}
+
+	return false
 }

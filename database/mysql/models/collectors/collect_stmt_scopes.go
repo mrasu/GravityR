@@ -40,12 +40,7 @@ func (sc *scopeCollector) Enter(in ast.Node) (ast.Node, bool) {
 		return in, false
 	}
 
-	top := sc.scopeStack.Top()
-	var parent *db_models.StmtScope
-	if top != nil {
-		parent = top
-	}
-	scope := &db_models.StmtScope{Parent: parent, Name: db_models.RootScopeName}
+	scope := &db_models.StmtScope{Name: db_models.RootScopeName}
 	var foundFields []*db_models.Field
 	for _, field := range stmt.Fields.Fields {
 		var cols []*db_models.FieldColumn

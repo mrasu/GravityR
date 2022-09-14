@@ -98,7 +98,7 @@ func (tc *tableCollector) isCteTable(name string) bool {
 }
 
 func (tc *tableCollector) addTableIfNotDerived(asName tree.Name, tName *tree.TableName) {
-	if tName.SchemaName != "" || tName.CatalogName != "" {
+	if (tName.SchemaName != "public" && tName.SchemaName != "") || tName.CatalogName != "" {
 		tc.errors = append(tc.errors, lib.NewUnsupportedError(
 			fmt.Sprintf("not supporting query referencing schema or catalog explicitly: %s.%s.%s", tName.CatalogName, tName.SchemaName, tName.TableName),
 		))
