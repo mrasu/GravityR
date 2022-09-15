@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/db_models"
+	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/postgres"
-	"github.com/mrasu/GravityR/database/postgres/models"
-	"github.com/mrasu/GravityR/database/postgres/models/collectors"
+	"github.com/mrasu/GravityR/database/postgres/model"
+	"github.com/mrasu/GravityR/database/postgres/model/collector"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iPostgres "github.com/mrasu/GravityR/infra/postgres"
@@ -66,7 +66,7 @@ func (pr *postgresRunner) run() error {
 		return err
 	}
 
-	aTree, err := collectors.CollectExplainAnalyzeTree(explainLines)
+	aTree, err := collector.CollectExplainAnalyzeTree(explainLines)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func (pr *postgresRunner) run() error {
 		}
 	}
 
-	var er *db_models.ExaminationResult
+	var er *common_model.ExaminationResult
 	if postgresVar.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
 		ie := postgres.NewIndexExaminer(db, postgresVar.query)
@@ -119,7 +119,7 @@ func (pr *postgresRunner) run() error {
 	return nil
 }
 
-func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*db_models.IndexTarget, er *db_models.ExaminationResult, aTree *models.ExplainAnalyzeTree) error {
+func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
 	var vits []*viewmodel.VmIndexTarget
 	for _, it := range idxTargets {
 		vits = append(vits, it.ToViewModel())

@@ -1,11 +1,11 @@
 package tdata
 
-import "github.com/mrasu/GravityR/database/db_models"
+import "github.com/mrasu/GravityR/database/common_model"
 
 type hasuraData struct {
 	GQL    string
 	SQL    string
-	Scopes []*db_models.StmtScope
+	Scopes []*common_model.StmtScope
 }
 
 var Hasura1 = hasuraData{
@@ -81,123 +81,123 @@ FROM
       ) AS "_root.ar.root.todos" ON ('true')
   ) AS "_root"
 `,
-	Scopes: []*db_models.StmtScope{
+	Scopes: []*common_model.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*db_models.Field{
+			Fields: []*common_model.Field{
 				{
 					AsName:  "root",
-					Columns: []*db_models.FieldColumn{{Name: "root", Type: db_models.FieldReference}},
+					Columns: []*common_model.FieldColumn{{Name: "root", Type: common_model.FieldReference}},
 				},
 			},
-			Tables: []*db_models.Table{
+			Tables: []*common_model.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			Scopes: []*db_models.StmtScope{
+			Scopes: []*common_model.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*db_models.Field{
+					Fields: []*common_model.Field{
 						{
 							AsName:  "root",
-							Columns: []*db_models.FieldColumn{{ReferenceName: "<field0>", Type: db_models.FieldSubquery}},
+							Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}},
 						},
 					},
-					FieldScopes: []*db_models.StmtScope{
+					FieldScopes: []*common_model.StmtScope{
 						{
 							Name: "<field0>",
-							Fields: []*db_models.Field{
-								{Columns: []*db_models.FieldColumn{{Name: "_e", Type: db_models.FieldReference}}},
+							Fields: []*common_model.Field{
+								{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 							},
-							Tables: []*db_models.Table{{AsName: "_e", Name: "<select3>"}},
-							Scopes: []*db_models.StmtScope{
+							Tables: []*common_model.Table{{AsName: "_e", Name: "<select3>"}},
+							Scopes: []*common_model.StmtScope{
 								{
 									Name: "<select3>",
-									Fields: []*db_models.Field{
+									Fields: []*common_model.Field{
 										{
 											AsName:  "todos",
-											Columns: []*db_models.FieldColumn{{Table: "_root.ar.root.todos", Name: "todos", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos", Name: "todos", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "email",
-											Columns: []*db_models.FieldColumn{{Table: "_root.base", Name: "email", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "email", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "name",
-											Columns: []*db_models.FieldColumn{{Table: "_root.base", Name: "name", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "name", Type: common_model.FieldReference}},
 										},
 									},
 								},
 							},
 						},
 					},
-					Tables: []*db_models.Table{
+					Tables: []*common_model.Table{
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.ar.root.todos", Name: "<select2>", IsLateral: true},
 					},
-					Scopes: []*db_models.StmtScope{
+					Scopes: []*common_model.StmtScope{
 						{
 							Name: "<select1>",
-							Fields: []*db_models.Field{
-								{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
-								{Columns: []*db_models.FieldColumn{{Table: "users", Name: "email", Type: db_models.FieldCondition}}},
+							Fields: []*common_model.Field{
+								{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+								{Columns: []*common_model.FieldColumn{{Table: "users", Name: "email", Type: common_model.FieldCondition}}},
 							},
-							Tables: []*db_models.Table{{Name: "users"}},
+							Tables: []*common_model.Table{{Name: "users"}},
 						},
 						{
 							Name: "<select2>",
-							Fields: []*db_models.Field{
+							Fields: []*common_model.Field{
 								{
 									AsName:  "todos",
-									Columns: []*db_models.FieldColumn{{Name: "todos", Type: db_models.FieldReference}},
+									Columns: []*common_model.FieldColumn{{Name: "todos", Type: common_model.FieldReference}},
 								},
 							},
-							Tables: []*db_models.Table{{AsName: "_root.ar.root.todos", Name: "<select4>"}},
-							Scopes: []*db_models.StmtScope{
+							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos", Name: "<select4>"}},
+							Scopes: []*common_model.StmtScope{
 								{
 									Name: "<select4>",
-									Fields: []*db_models.Field{
-										{AsName: "todos", Columns: []*db_models.FieldColumn{{ReferenceName: "<field1>", Type: db_models.FieldSubquery}}},
+									Fields: []*common_model.Field{
+										{AsName: "todos", Columns: []*common_model.FieldColumn{{ReferenceName: "<field1>", Type: common_model.FieldSubquery}}},
 									},
-									FieldScopes: []*db_models.StmtScope{
+									FieldScopes: []*common_model.StmtScope{
 										{
 											Name: "<field1>",
-											Fields: []*db_models.Field{
-												{Columns: []*db_models.FieldColumn{{Name: "_e", Type: db_models.FieldReference}}},
+											Fields: []*common_model.Field{
+												{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 											},
-											Tables: []*db_models.Table{{AsName: "_e", Name: "<select6>"}},
-											Scopes: []*db_models.StmtScope{
+											Tables: []*common_model.Table{{AsName: "_e", Name: "<select6>"}},
+											Scopes: []*common_model.StmtScope{
 												{
 													Name: "<select6>",
-													Fields: []*db_models.Field{
+													Fields: []*common_model.Field{
 														{
 															AsName:  "title",
-															Columns: []*db_models.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "title", Type: db_models.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "title", Type: common_model.FieldReference}},
 														},
 														{
 															AsName:  "status",
-															Columns: []*db_models.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "status", Type: db_models.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "status", Type: common_model.FieldReference}},
 														},
 													},
 												},
 											},
 										},
 									},
-									Tables: []*db_models.Table{{AsName: "_root.ar.root.todos.base", Name: "<select5>"}},
-									Scopes: []*db_models.StmtScope{
+									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos.base", Name: "<select5>"}},
+									Scopes: []*common_model.StmtScope{
 										{
 											Name: "<select5>",
-											Fields: []*db_models.Field{
+											Fields: []*common_model.Field{
 												{
-													Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}},
+													Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}},
 												},
 												{
-													Columns: []*db_models.FieldColumn{
-														{Table: "_root.base", Name: "id", Type: db_models.FieldCondition},
-														{Name: "user_id", Type: db_models.FieldCondition},
+													Columns: []*common_model.FieldColumn{
+														{Table: "_root.base", Name: "id", Type: common_model.FieldCondition},
+														{Name: "user_id", Type: common_model.FieldCondition},
 													},
 												},
 											},
-											Tables: []*db_models.Table{{Name: "todos"}},
+											Tables: []*common_model.Table{{Name: "todos"}},
 										},
 									},
 								},
@@ -313,133 +313,133 @@ FROM
   ) AS "_root"
 `,
 
-	Scopes: []*db_models.StmtScope{
+	Scopes: []*common_model.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*db_models.Field{
+			Fields: []*common_model.Field{
 				{
 					AsName:  "root",
-					Columns: []*db_models.FieldColumn{{Name: "root", Type: db_models.FieldReference}},
+					Columns: []*common_model.FieldColumn{{Name: "root", Type: common_model.FieldReference}},
 				},
 			},
-			Tables: []*db_models.Table{
+			Tables: []*common_model.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			Scopes: []*db_models.StmtScope{
+			Scopes: []*common_model.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*db_models.Field{
+					Fields: []*common_model.Field{
 						{
 							AsName:  "root",
-							Columns: []*db_models.FieldColumn{{ReferenceName: "<field0>", Type: db_models.FieldSubquery}},
+							Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}},
 						},
 					},
-					FieldScopes: []*db_models.StmtScope{
+					FieldScopes: []*common_model.StmtScope{
 						{
 							Name: "<field0>",
-							Fields: []*db_models.Field{
-								{Columns: []*db_models.FieldColumn{{Name: "_e", Type: db_models.FieldReference}}},
+							Fields: []*common_model.Field{
+								{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 							},
-							Tables: []*db_models.Table{{AsName: "_e", Name: "<select3>"}},
-							Scopes: []*db_models.StmtScope{
+							Tables: []*common_model.Table{{AsName: "_e", Name: "<select3>"}},
+							Scopes: []*common_model.StmtScope{
 								{
 									Name: "<select3>",
-									Fields: []*db_models.Field{
+									Fields: []*common_model.Field{
 										{
 											AsName:  "user",
-											Columns: []*db_models.FieldColumn{{Table: "_root.or.user", Name: "user", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.or.user", Name: "user", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "description",
-											Columns: []*db_models.FieldColumn{{Table: "_root.base", Name: "description", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "description", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "id",
-											Columns: []*db_models.FieldColumn{{Table: "_root.base", Name: "id", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "id", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "status",
-											Columns: []*db_models.FieldColumn{{Table: "_root.base", Name: "status", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "status", Type: common_model.FieldReference}},
 										},
 									},
 								},
 							},
 						},
 					},
-					Tables: []*db_models.Table{
+					Tables: []*common_model.Table{
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.or.user", Name: "<select2>", IsLateral: true},
 					},
-					Scopes: []*db_models.StmtScope{
+					Scopes: []*common_model.StmtScope{
 						{
 							Name: "<select1>",
-							Fields: []*db_models.Field{
-								{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
-								{Columns: []*db_models.FieldColumn{{ReferenceName: "<field1>", Type: db_models.FieldSubquery}}},
+							Fields: []*common_model.Field{
+								{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+								{Columns: []*common_model.FieldColumn{{ReferenceName: "<field1>", Type: common_model.FieldSubquery}}},
 							},
-							FieldScopes: []*db_models.StmtScope{
+							FieldScopes: []*common_model.StmtScope{
 								{
 									Name: "<field1>",
-									Fields: []*db_models.Field{
-										{Columns: []*db_models.FieldColumn{
-											{Table: "__be_0_users", Name: "id", Type: db_models.FieldCondition},
-											{Table: "todos", Name: "user_id", Type: db_models.FieldCondition},
-											{Table: "__be_0_users", Name: "email", Type: db_models.FieldCondition},
+									Fields: []*common_model.Field{
+										{Columns: []*common_model.FieldColumn{
+											{Table: "__be_0_users", Name: "id", Type: common_model.FieldCondition},
+											{Table: "todos", Name: "user_id", Type: common_model.FieldCondition},
+											{Table: "__be_0_users", Name: "email", Type: common_model.FieldCondition},
 										}},
 									},
-									Tables: []*db_models.Table{{AsName: "__be_0_users", Name: "users"}},
+									Tables: []*common_model.Table{{AsName: "__be_0_users", Name: "users"}},
 								},
 							},
-							Tables: []*db_models.Table{{Name: "todos"}},
+							Tables: []*common_model.Table{{Name: "todos"}},
 						},
 						{
 							Name: "<select2>",
-							Fields: []*db_models.Field{
+							Fields: []*common_model.Field{
 								{
 									AsName:  "user",
-									Columns: []*db_models.FieldColumn{{ReferenceName: "<field2>", Type: db_models.FieldSubquery}},
+									Columns: []*common_model.FieldColumn{{ReferenceName: "<field2>", Type: common_model.FieldSubquery}},
 								},
 							},
-							FieldScopes: []*db_models.StmtScope{
+							FieldScopes: []*common_model.StmtScope{
 								{
 									Name: "<field2>",
-									Fields: []*db_models.Field{
-										{Columns: []*db_models.FieldColumn{{Name: "_e", Type: db_models.FieldReference}}},
+									Fields: []*common_model.Field{
+										{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 									},
-									Tables: []*db_models.Table{{AsName: "_e", Name: "<select5>"}},
-									Scopes: []*db_models.StmtScope{
+									Tables: []*common_model.Table{{AsName: "_e", Name: "<select5>"}},
+									Scopes: []*common_model.StmtScope{
 										{
 											Name: "<select5>",
-											Fields: []*db_models.Field{
+											Fields: []*common_model.Field{
 												{
 													AsName:  "email",
-													Columns: []*db_models.FieldColumn{{Table: "_root.or.user.base", Name: "email", Type: db_models.FieldReference}},
+													Columns: []*common_model.FieldColumn{{Table: "_root.or.user.base", Name: "email", Type: common_model.FieldReference}},
 												},
 												{
 													AsName:  "id",
-													Columns: []*db_models.FieldColumn{{Table: "_root.or.user.base", Name: "id", Type: db_models.FieldReference}},
+													Columns: []*common_model.FieldColumn{{Table: "_root.or.user.base", Name: "id", Type: common_model.FieldReference}},
 												},
 												{
 													AsName:  "name",
-													Columns: []*db_models.FieldColumn{{Table: "_root.or.user.base", Name: "name", Type: db_models.FieldReference}},
+													Columns: []*common_model.FieldColumn{{Table: "_root.or.user.base", Name: "name", Type: common_model.FieldReference}},
 												},
 											},
 										},
 									},
 								},
 							},
-							Tables: []*db_models.Table{{AsName: "_root.or.user.base", Name: "<select4>"}},
-							Scopes: []*db_models.StmtScope{
+							Tables: []*common_model.Table{{AsName: "_root.or.user.base", Name: "<select4>"}},
+							Scopes: []*common_model.StmtScope{
 								{
 									Name: "<select4>",
-									Fields: []*db_models.Field{
-										{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
-										{Columns: []*db_models.FieldColumn{
-											{Table: "_root.base", Name: "user_id", Type: db_models.FieldCondition},
-											{Name: "id", Type: db_models.FieldCondition},
+									Fields: []*common_model.Field{
+										{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+										{Columns: []*common_model.FieldColumn{
+											{Table: "_root.base", Name: "user_id", Type: common_model.FieldCondition},
+											{Name: "id", Type: common_model.FieldCondition},
 										}},
 									},
-									Tables: []*db_models.Table{{Name: "users"}},
+									Tables: []*common_model.Table{{Name: "users"}},
 								},
 							},
 						},
@@ -552,99 +552,99 @@ FROM
           ) AS "_root.ar.root.todos"
       ) AS "_root.ar.root.todos" ON ('true')
   ) AS "_root"`,
-	Scopes: []*db_models.StmtScope{
+	Scopes: []*common_model.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*db_models.Field{
+			Fields: []*common_model.Field{
 				{
 					AsName:  "root",
-					Columns: []*db_models.FieldColumn{{Name: "root", Type: db_models.FieldReference}},
+					Columns: []*common_model.FieldColumn{{Name: "root", Type: common_model.FieldReference}},
 				},
 			},
-			Tables: []*db_models.Table{
+			Tables: []*common_model.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			Scopes: []*db_models.StmtScope{
+			Scopes: []*common_model.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*db_models.Field{
+					Fields: []*common_model.Field{
 						{
 							AsName:  "root",
-							Columns: []*db_models.FieldColumn{{ReferenceName: "<field0>", Type: db_models.FieldSubquery}},
+							Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}},
 						},
 					},
-					FieldScopes: []*db_models.StmtScope{
+					FieldScopes: []*common_model.StmtScope{
 						{
 							Name: "<field0>",
-							Fields: []*db_models.Field{
-								{Columns: []*db_models.FieldColumn{{Name: "_e", Type: db_models.FieldReference}}},
+							Fields: []*common_model.Field{
+								{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 							},
-							Tables: []*db_models.Table{{AsName: "_e", Name: "<select4>"}},
-							Scopes: []*db_models.StmtScope{
+							Tables: []*common_model.Table{{AsName: "_e", Name: "<select4>"}},
+							Scopes: []*common_model.StmtScope{
 								{
 									Name: "<select4>",
-									Fields: []*db_models.Field{
+									Fields: []*common_model.Field{
 										{
 											AsName:  "email",
-											Columns: []*db_models.FieldColumn{{Table: "_root.base", Name: "email", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "email", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "name",
-											Columns: []*db_models.FieldColumn{{Table: "_root.base", Name: "name", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "name", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "todos_aggregate",
-											Columns: []*db_models.FieldColumn{{Table: "_root.ar.root.todos_aggregate", Name: "todos_aggregate", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos_aggregate", Name: "todos_aggregate", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "todos",
-											Columns: []*db_models.FieldColumn{{Table: "_root.ar.root.todos", Name: "todos", Type: db_models.FieldReference}},
+											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos", Name: "todos", Type: common_model.FieldReference}},
 										},
 									},
 								},
 							},
 						},
 					},
-					Tables: []*db_models.Table{
+					Tables: []*common_model.Table{
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.ar.root.todos_aggregate", Name: "<select2>", IsLateral: true},
 						{AsName: "_root.ar.root.todos", Name: "<select3>", IsLateral: true},
 					},
-					Scopes: []*db_models.StmtScope{
+					Scopes: []*common_model.StmtScope{
 						{
 							Name: "<select1>",
-							Fields: []*db_models.Field{
-								{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
-								{Columns: []*db_models.FieldColumn{{Table: "users", Name: "email", Type: db_models.FieldCondition}}},
+							Fields: []*common_model.Field{
+								{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+								{Columns: []*common_model.FieldColumn{{Table: "users", Name: "email", Type: common_model.FieldCondition}}},
 							},
-							Tables: []*db_models.Table{{Name: "users"}},
+							Tables: []*common_model.Table{{Name: "users"}},
 						},
 						{
 							Name: "<select2>",
-							Fields: []*db_models.Field{
-								{AsName: "todos_aggregate", Columns: []*db_models.FieldColumn{{Name: "status", Type: db_models.FieldReference}}},
+							Fields: []*common_model.Field{
+								{AsName: "todos_aggregate", Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
 							},
-							Tables: []*db_models.Table{{AsName: "_root.ar.root.todos_aggregate", Name: "<select5>"}},
-							Scopes: []*db_models.StmtScope{
+							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos_aggregate", Name: "<select5>"}},
+							Scopes: []*common_model.StmtScope{
 								{
 									Name: "<select5>",
-									Fields: []*db_models.Field{
-										{AsName: "status", Columns: []*db_models.FieldColumn{
-											{Table: "_root.ar.root.todos_aggregate.base", Name: "status", Type: db_models.FieldReference},
+									Fields: []*common_model.Field{
+										{AsName: "status", Columns: []*common_model.FieldColumn{
+											{Table: "_root.ar.root.todos_aggregate.base", Name: "status", Type: common_model.FieldReference},
 										}},
 									},
-									Tables: []*db_models.Table{{AsName: "_root.ar.root.todos_aggregate.base", Name: "<select6>"}},
-									Scopes: []*db_models.StmtScope{
+									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos_aggregate.base", Name: "<select6>"}},
+									Scopes: []*common_model.StmtScope{
 										{
 											Name: "<select6>",
-											Fields: []*db_models.Field{
-												{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
-												{Columns: []*db_models.FieldColumn{
-													{Table: "_root.base", Name: "id", Type: db_models.FieldCondition},
-													{Name: "user_id", Type: db_models.FieldCondition},
+											Fields: []*common_model.Field{
+												{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+												{Columns: []*common_model.FieldColumn{
+													{Table: "_root.base", Name: "id", Type: common_model.FieldCondition},
+													{Name: "user_id", Type: common_model.FieldCondition},
 												}},
 											},
-											Tables: []*db_models.Table{{Name: "todos"}},
+											Tables: []*common_model.Table{{Name: "todos"}},
 										},
 									},
 								},
@@ -652,55 +652,55 @@ FROM
 						},
 						{
 							Name: "<select3>",
-							Fields: []*db_models.Field{
+							Fields: []*common_model.Field{
 								{
 									AsName:  "todos",
-									Columns: []*db_models.FieldColumn{{Name: "todos", Type: db_models.FieldReference}},
+									Columns: []*common_model.FieldColumn{{Name: "todos", Type: common_model.FieldReference}},
 								},
 							},
-							Tables: []*db_models.Table{{AsName: "_root.ar.root.todos", Name: "<select7>"}},
-							Scopes: []*db_models.StmtScope{
+							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos", Name: "<select7>"}},
+							Scopes: []*common_model.StmtScope{
 								{
 									Name: "<select7>",
-									Fields: []*db_models.Field{
-										{AsName: "todos", Columns: []*db_models.FieldColumn{{ReferenceName: "<field1>", Type: db_models.FieldSubquery}}},
+									Fields: []*common_model.Field{
+										{AsName: "todos", Columns: []*common_model.FieldColumn{{ReferenceName: "<field1>", Type: common_model.FieldSubquery}}},
 									},
-									FieldScopes: []*db_models.StmtScope{
+									FieldScopes: []*common_model.StmtScope{
 										{
 											Name: "<field1>",
-											Fields: []*db_models.Field{
-												{Columns: []*db_models.FieldColumn{{Name: "_e", Type: db_models.FieldReference}}},
+											Fields: []*common_model.Field{
+												{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 											},
-											Tables: []*db_models.Table{{AsName: "_e", Name: "<select9>"}},
-											Scopes: []*db_models.StmtScope{
+											Tables: []*common_model.Table{{AsName: "_e", Name: "<select9>"}},
+											Scopes: []*common_model.StmtScope{
 												{
 													Name: "<select9>",
-													Fields: []*db_models.Field{
+													Fields: []*common_model.Field{
 														{
 															AsName:  "title",
-															Columns: []*db_models.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "title", Type: db_models.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "title", Type: common_model.FieldReference}},
 														},
 														{
 															AsName:  "description",
-															Columns: []*db_models.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "description", Type: db_models.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "description", Type: common_model.FieldReference}},
 														},
 													},
 												},
 											},
 										},
 									},
-									Tables: []*db_models.Table{{AsName: "_root.ar.root.todos.base", Name: "<select8>"}},
-									Scopes: []*db_models.StmtScope{
+									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos.base", Name: "<select8>"}},
+									Scopes: []*common_model.StmtScope{
 										{
 											Name: "<select8>",
-											Fields: []*db_models.Field{
-												{Columns: []*db_models.FieldColumn{{Type: db_models.FieldStar}}},
-												{Columns: []*db_models.FieldColumn{
-													{Table: "_root.base", Name: "id", Type: db_models.FieldCondition},
-													{Name: "user_id", Type: db_models.FieldCondition},
+											Fields: []*common_model.Field{
+												{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+												{Columns: []*common_model.FieldColumn{
+													{Table: "_root.base", Name: "id", Type: common_model.FieldCondition},
+													{Name: "user_id", Type: common_model.FieldCondition},
 												}},
 											},
-											Tables: []*db_models.Table{{Name: "todos"}},
+											Tables: []*common_model.Table{{Name: "todos"}},
 										},
 									},
 								},

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/db_models"
+	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/mysql"
-	"github.com/mrasu/GravityR/database/mysql/models/collectors"
+	"github.com/mrasu/GravityR/database/mysql/model/collector"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iMysql "github.com/mrasu/GravityR/infra/mysql"
@@ -250,22 +250,22 @@ func runMySql() error {
 	defer db.Close()
 
 	/*
-		idxTargets = []*models.IndexTargetTable{
+		idxTargets = []*model.IndexTargetTable{
 			{
 				TableName: "todos",
-				IndexFields: []*models.IndexField{
+				IndexFields: []*model.IndexField{
 					{Name: "user_id"},
 				},
 			},
 			{
 				TableName: "todos",
-				IndexFields: []*models.IndexField{
+				IndexFields: []*model.IndexField{
 					{Name: "status"},
 				},
 			},
 			{
 				TableName: "todos",
-				IndexFields: []*models.IndexField{
+				IndexFields: []*model.IndexField{
 					{Name: "user_id"},
 					{Name: "status"},
 					{Name: "description"},
@@ -281,7 +281,7 @@ func runMySql() error {
 
 	explainLine, err := db.Explain(mysqlVar.query)
 
-	aTree, err := collectors.CollectExplainAnalyzeTree(explainLine)
+	aTree, err := collector.CollectExplainAnalyzeTree(explainLine)
 	if err != nil {
 		return err
 	}
@@ -309,7 +309,7 @@ func runMySql() error {
 		}
 	}
 
-	var er *db_models.ExaminationResult
+	var er *common_model.ExaminationResult
 	if mysqlVar.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
 		ie := mysql.NewIndexExaminer(db, mysqlVar.query)

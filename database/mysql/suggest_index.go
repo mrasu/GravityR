@@ -2,10 +2,10 @@ package mysql
 
 import (
 	"fmt"
-	"github.com/mrasu/GravityR/database/db_models"
-	"github.com/mrasu/GravityR/database/db_models/builders"
-	"github.com/mrasu/GravityR/database/mysql/models"
-	"github.com/mrasu/GravityR/database/mysql/models/collectors"
+	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database/common_model/builder"
+	"github.com/mrasu/GravityR/database/mysql/model"
+	"github.com/mrasu/GravityR/database/mysql/model/collector"
 	"github.com/mrasu/GravityR/infra/mysql"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pingcap/tidb/parser"
@@ -133,37 +133,37 @@ import (
 */
 
 // TODO: 既存のインデックスと被るものは除外する
-func SuggestIndex(db *mysql.DB, database, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
+func SuggestIndex(db *mysql.DB, database, query string, aTree *model.ExplainAnalyzeTree) ([]*common_model.IndexTargetTable, []error) {
 	rootNode, err := parse(query)
 	if err != nil {
 		return nil, []error{err}
 	}
-	tNames, errs := collectors.CollectTableNames(rootNode)
+	tNames, errs := collector.CollectTableNames(rootNode)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	tables, err := collectors.CollectTableSchemas(db, database, tNames)
+	tables, err := collector.CollectTableSchemas(db, database, tNames)
 	if err != nil {
 		return nil, []error{err}
 	}
 
-	scopes, errs := collectors.CollectStmtScopes(rootNode)
+	scopes, errs := collector.CollectStmtScopes(rootNode)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	idxCandidates, err := builders.BuildIndexTargets(tables, scopes)
+	idxCandidates, err := builder.BuildIndexTargets(tables, scopes)
 	if err != nil {
 		return nil, []error{err}
 	}
-	fmt.Println(lib.Join(idxCandidates, "\n", func(f *db_models.IndexTargetTable) string { return f.String() }))
+	fmt.Println(lib.Join(idxCandidates, "\n", func(f *common_model.IndexTargetTable) string { return f.String() }))
 	fmt.Println()
 
 	tableResults := aTree.ToSingleTableResults()
-	fmt.Println(lib.Join(tableResults, "\n", func(st *db_models.SingleTableExplainResult) string { return st.String() }))
+	fmt.Println(lib.Join(tableResults, "\n", func(st *common_model.SingleTableExplainResult) string { return st.String() }))
 
-	return builders.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
+	return builder.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
 
 func parse(sql string) (ast.StmtNode, error) {

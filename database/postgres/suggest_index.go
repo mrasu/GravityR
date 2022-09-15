@@ -3,27 +3,27 @@ package postgres
 import (
 	"fmt"
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
-	"github.com/mrasu/GravityR/database/db_models"
-	"github.com/mrasu/GravityR/database/db_models/builders"
-	"github.com/mrasu/GravityR/database/postgres/models"
-	"github.com/mrasu/GravityR/database/postgres/models/collectors"
+	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database/common_model/builder"
+	"github.com/mrasu/GravityR/database/postgres/model"
+	"github.com/mrasu/GravityR/database/postgres/model/collector"
 	"github.com/mrasu/GravityR/infra/postgres"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 )
 
 // TODO: 既存のインデックスと被るものは除外する
-func SuggestIndex(db *postgres.DB, schema, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
+func SuggestIndex(db *postgres.DB, schema, query string, aTree *model.ExplainAnalyzeTree) ([]*common_model.IndexTargetTable, []error) {
 	stmt, err := parse(query)
 	if err != nil {
 		return nil, []error{err}
 	}
-	tNames, errs := collectors.CollectTableNames(stmt)
+	tNames, errs := collector.CollectTableNames(stmt)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	tables, err := collectors.CollectTableSchemas(db, schema, tNames)
+	tables, err := collector.CollectTableSchemas(db, schema, tNames)
 	if err != nil {
 		return nil, []error{err}
 	}
@@ -32,22 +32,22 @@ func SuggestIndex(db *postgres.DB, schema, query string, aTree *models.ExplainAn
 		fmt.Println(t)
 	}
 
-	scopes, errs := collectors.CollectStmtScopes(stmt)
+	scopes, errs := collector.CollectStmtScopes(stmt)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	idxCandidates, err := builders.BuildIndexTargets(tables, scopes)
+	idxCandidates, err := builder.BuildIndexTargets(tables, scopes)
 	if err != nil {
 		return nil, []error{err}
 	}
-	fmt.Println(lib.Join(idxCandidates, "\n", func(f *db_models.IndexTargetTable) string { return f.String() }))
+	fmt.Println(lib.Join(idxCandidates, "\n", func(f *common_model.IndexTargetTable) string { return f.String() }))
 	fmt.Println()
 
 	tableResults := aTree.ToSingleTableResults()
-	fmt.Println(lib.Join(tableResults, "\n", func(st *db_models.SingleTableExplainResult) string { return st.String() }))
+	fmt.Println(lib.Join(tableResults, "\n", func(st *common_model.SingleTableExplainResult) string { return st.String() }))
 
-	return builders.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
+	return builder.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
 
 func parse(sql string) (*parser.Statement, error) {

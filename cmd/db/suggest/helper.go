@@ -1,14 +1,14 @@
 package suggest
 
 import (
-	"github.com/mrasu/GravityR/database/db_models"
+	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/lib"
 )
 
-func parseIndexTargets(indexTargetTexts []string) ([]*db_models.IndexTarget, error) {
-	var its []*db_models.IndexTarget
+func parseIndexTargets(indexTargetTexts []string) ([]*common_model.IndexTarget, error) {
+	var its []*common_model.IndexTarget
 	for _, text := range indexTargetTexts {
-		it, err := db_models.NewIndexTarget(text)
+		it, err := common_model.NewIndexTarget(text)
 		if err != nil {
 			return nil, err
 		}
@@ -18,8 +18,8 @@ func parseIndexTargets(indexTargetTexts []string) ([]*db_models.IndexTarget, err
 	return its, nil
 }
 
-func toUniqueIndexTargets(its []*db_models.IndexTargetTable) []*db_models.IndexTarget {
-	var idxTargets []*db_models.IndexTarget
+func toUniqueIndexTargets(its []*common_model.IndexTargetTable) []*common_model.IndexTarget {
+	var idxTargets []*common_model.IndexTarget
 	for _, it := range its {
 		idxTargets = append(idxTargets, it.ToIndexTarget())
 	}

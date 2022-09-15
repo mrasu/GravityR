@@ -2,7 +2,7 @@ package mysql
 
 import (
 	"fmt"
-	"github.com/mrasu/GravityR/database/db_models"
+	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/infra/mysql"
 	"github.com/mrasu/GravityR/lib"
 	"time"
@@ -31,17 +31,17 @@ func (ie *IndexExaminer) Execute() (int64, error) {
 	return elapsed.Milliseconds(), nil
 }
 
-func (ie *IndexExaminer) CreateIndex(name string, it *db_models.IndexTarget) error {
+func (ie *IndexExaminer) CreateIndex(name string, it *common_model.IndexTarget) error {
 	sql := fmt.Sprintf(
 		"ALTER TABLE `%s` ADD INDEX `%s` (%s)",
 		it.TableName, name,
-		lib.Join(it.Columns, ",", func(i *db_models.IndexColumn) string { return "`" + i.SafeName() + "`" }),
+		lib.Join(it.Columns, ",", func(i *common_model.IndexColumn) string { return "`" + i.SafeName() + "`" }),
 	)
 	_, err := ie.db.Exec(sql)
 	return err
 }
 
-func (ie *IndexExaminer) DropIndex(name string, it *db_models.IndexTarget) error {
+func (ie *IndexExaminer) DropIndex(name string, it *common_model.IndexTarget) error {
 	sql := fmt.Sprintf("ALTER TABLE `%s` DROP INDEX `%s`", it.TableName, name)
 	_, err := ie.db.Exec(sql)
 	return err

@@ -1,18 +1,18 @@
 package html
 
 import (
-	"github.com/mrasu/GravityR/injections"
+	"github.com/mrasu/GravityR/injection"
 	"html/template"
 	"io/fs"
 	"os"
 )
 
 func CreateHtml(filename string, bo *BuildOption) error {
-	script, err := fs.ReadFile(injections.ClientDist, "client/dist/assets/main.js")
+	script, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/main.js")
 	if err != nil {
 		return err
 	}
-	style, err := fs.ReadFile(injections.ClientDist, "client/dist/assets/main.css")
+	style, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/main.css")
 	if err != nil {
 		return err
 	}

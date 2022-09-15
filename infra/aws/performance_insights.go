@@ -5,7 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	aPi "github.com/aws/aws-sdk-go-v2/service/pi"
 	"github.com/aws/aws-sdk-go-v2/service/pi/types"
-	"github.com/mrasu/GravityR/infra/aws/models"
+	"github.com/mrasu/GravityR/infra/aws/model"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 	"time"
@@ -25,7 +25,7 @@ func NewPerformanceInsights(cfg aws.Config) *PerformanceInsights {
 	}
 }
 
-func (pi *PerformanceInsights) GetHalfDaySqlMetrics(db *models.RdsDB, start time.Time) ([]*models.PiSQLLoadAvg, error) {
+func (pi *PerformanceInsights) GetHalfDaySqlMetrics(db *model.RdsDB, start time.Time) ([]*model.PiSQLLoadAvg, error) {
 	output, err := pi.getHalfDayMetrics(db, start, sqlGroupName)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (pi *PerformanceInsights) GetHalfDaySqlMetrics(db *models.RdsDB, start time
 	return res, nil
 }
 
-func (pi *PerformanceInsights) GetHalfDayTokenizedSqlMetrics(db *models.RdsDB, start time.Time) ([]*models.PiSQLLoadAvg, error) {
+func (pi *PerformanceInsights) GetHalfDayTokenizedSqlMetrics(db *model.RdsDB, start time.Time) ([]*model.PiSQLLoadAvg, error) {
 	output, err := pi.getHalfDayMetrics(db, start, tokenizedSqlGroupName)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (pi *PerformanceInsights) GetHalfDayTokenizedSqlMetrics(db *models.RdsDB, s
 	return res, nil
 }
 
-func (pi *PerformanceInsights) getHalfDayMetrics(db *models.RdsDB, start time.Time, group string) (*aPi.GetResourceMetricsOutput, error) {
+func (pi *PerformanceInsights) getHalfDayMetrics(db *model.RdsDB, start time.Time, group string) (*aPi.GetResourceMetricsOutput, error) {
 	output, err := pi.client.GetResourceMetrics(context.Background(), &aPi.GetResourceMetricsInput{
 		Identifier: &db.DbiResourceId,
 		MetricQueries: []types.MetricQuery{
@@ -70,8 +70,8 @@ func (pi *PerformanceInsights) getHalfDayMetrics(db *models.RdsDB, start time.Ti
 	return output, nil
 }
 
-func (pi *PerformanceInsights) convertResourceMetricsToAvgs(db *models.RdsDB, output *aPi.GetResourceMetricsOutput, sqlKey, tokenizedIdKey string) []*models.PiSQLLoadAvg {
-	var res []*models.PiSQLLoadAvg
+func (pi *PerformanceInsights) convertResourceMetricsToAvgs(db *model.RdsDB, output *aPi.GetResourceMetricsOutput, sqlKey, tokenizedIdKey string) []*model.PiSQLLoadAvg {
+	var res []*model.PiSQLLoadAvg
 	for _, m := range output.MetricList {
 		if m.Key.Metric == nil || *m.Key.Metric != loadAvgMetricName {
 			continue
@@ -80,7 +80,7 @@ func (pi *PerformanceInsights) convertResourceMetricsToAvgs(db *models.RdsDB, ou
 			continue
 		}
 
-		sla := models.NewPiSQLLoadAvg(
+		sla := model.NewPiSQLLoadAvg(
 			db.InstanceIdentifier,
 			m.Key.Dimensions[sqlKey],
 			m.Key.Dimensions[tokenizedIdKey],
@@ -98,7 +98,7 @@ func (pi *PerformanceInsights) convertResourceMetricsToAvgs(db *models.RdsDB, ou
 			if *dp.Value == 0 {
 				continue
 			}
-			sla.Values = append(sla.Values, &models.PiTimeValue{
+			sla.Values = append(sla.Values, &model.PiTimeValue{
 				Value: *dp.Value,
 				Time:  *dp.Timestamp,
 			})

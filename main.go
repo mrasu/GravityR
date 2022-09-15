@@ -7,7 +7,7 @@ package main
 import (
 	"embed"
 	"github.com/mrasu/GravityR/cmd"
-	"github.com/mrasu/GravityR/injections"
+	"github.com/mrasu/GravityR/injection"
 	"github.com/mrasu/GravityR/lib"
 	"net/http"
 )
@@ -16,7 +16,7 @@ import (
 var clientDist embed.FS
 
 func main() {
-	injections.ClientDist = clientDist
+	injection.ClientDist = clientDist
 	http.DefaultTransport = lib.NewHttpTransport()
 
 	cmd.Execute()

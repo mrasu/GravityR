@@ -3,50 +3,50 @@ package hasura
 import (
 	"fmt"
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
-	"github.com/mrasu/GravityR/database/db_models"
-	"github.com/mrasu/GravityR/database/db_models/builders"
-	"github.com/mrasu/GravityR/database/hasura/models/collectors"
-	"github.com/mrasu/GravityR/database/postgres/models"
-	pCollectors "github.com/mrasu/GravityR/database/postgres/models/collectors"
+	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database/common_model/builder"
+	"github.com/mrasu/GravityR/database/hasura/model/collector"
+	"github.com/mrasu/GravityR/database/postgres/model"
+	pCollector "github.com/mrasu/GravityR/database/postgres/model/collector"
 	"github.com/mrasu/GravityR/infra/hasura"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 )
 
 // TODO: 既存のインデックスと被るものは除外する
-// func SuggestIndex(db *postgres.DB, schema, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
-func SuggestIndex(cli *hasura.Client, query string, aTree *models.ExplainAnalyzeTree) ([]*db_models.IndexTargetTable, []error) {
+// func SuggestIndex(db *postgres.DB, schema, query string, aTree *model.ExplainAnalyzeTree) ([]*common_model.IndexTargetTable, []error) {
+func SuggestIndex(cli *hasura.Client, query string, aTree *model.ExplainAnalyzeTree) ([]*common_model.IndexTargetTable, []error) {
 	stmt, err := parse(query)
 	if err != nil {
 		return nil, []error{err}
 	}
-	tNames, errs := pCollectors.CollectTableNames(stmt)
+	tNames, errs := pCollector.CollectTableNames(stmt)
 	if len(errs) > 0 {
 		return nil, errs
 	}
-	tables, err := collectors.CollectTableSchemas(cli, "public", tNames)
+	tables, err := collector.CollectTableSchemas(cli, "public", tNames)
 	if err != nil {
 		return nil, []error{err}
 	}
 	for _, t := range tables {
 		fmt.Println(t)
 	}
-	scopes, errs := pCollectors.CollectStmtScopes(stmt)
+	scopes, errs := pCollector.CollectStmtScopes(stmt)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	idxCandidates, err := builders.BuildIndexTargets(tables, scopes)
+	idxCandidates, err := builder.BuildIndexTargets(tables, scopes)
 	if err != nil {
 		return nil, []error{err}
 	}
-	fmt.Println(lib.Join(idxCandidates, "\n", func(f *db_models.IndexTargetTable) string { return f.String() }))
+	fmt.Println(lib.Join(idxCandidates, "\n", func(f *common_model.IndexTargetTable) string { return f.String() }))
 	fmt.Println()
 
 	tableResults := aTree.ToSingleTableResults()
-	fmt.Println(lib.Join(tableResults, "\n", func(st *db_models.SingleTableExplainResult) string { return st.String() }))
+	fmt.Println(lib.Join(tableResults, "\n", func(st *common_model.SingleTableExplainResult) string { return st.String() }))
 
-	return builders.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
+	return builder.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
 
 func parse(sql string) (*parser.Statement, error) {

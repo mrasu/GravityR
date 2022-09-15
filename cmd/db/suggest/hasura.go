@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/db_models"
+	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/hasura"
-	"github.com/mrasu/GravityR/database/postgres/models"
-	"github.com/mrasu/GravityR/database/postgres/models/collectors"
+	"github.com/mrasu/GravityR/database/postgres/model"
+	"github.com/mrasu/GravityR/database/postgres/model/collector"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iHasura "github.com/mrasu/GravityR/infra/hasura"
@@ -76,7 +76,7 @@ func (hr *hasuraRunner) run() error {
 	}
 
 	r := res[0]
-	aTree, err := collectors.CollectExplainAnalyzeTree(r.Plan)
+	aTree, err := collector.CollectExplainAnalyzeTree(r.Plan)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func (hr *hasuraRunner) run() error {
 		}
 	}
 
-	var er *db_models.ExaminationResult
+	var er *common_model.ExaminationResult
 	if hasuraVar.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
 		ie := hasura.NewIndexExaminer(cli, hasuraVar.query, v)
@@ -149,8 +149,8 @@ func (hr *hasuraRunner) parseJSONToVariables(jsonStr string) (map[string]interfa
 	return variables, nil
 }
 
-func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*db_models.IndexTarget, er *db_models.ExaminationResult, aTree *models.ExplainAnalyzeTree) error {
-	vits := lo.Map(idxTargets, func(v *db_models.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
+func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
+	vits := lo.Map(idxTargets, func(v *common_model.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
 
 	var ver *viewmodel.VmExaminationResult
 	if er != nil {
