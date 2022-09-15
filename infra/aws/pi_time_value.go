@@ -1,4 +1,4 @@
-package model
+package aws
 
 import "time"
 

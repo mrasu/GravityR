@@ -5,7 +5,6 @@ import (
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/infra/aws"
-	"github.com/mrasu/GravityR/infra/aws/model"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"os"
@@ -60,8 +59,8 @@ func runDig() error {
 		startFrom = t
 	}
 	end := startFrom.Add(7 * 24 * time.Hour)
-	var sqlLoadAvgs []*model.PiSQLLoadAvg
-	var tokenizedSqlLoadAvgs []*model.PiSQLLoadAvg
+	var sqlLoadAvgs []*aws.PiSQLLoadAvg
+	var tokenizedSqlLoadAvgs []*aws.PiSQLLoadAvg
 	for _, db := range dbs {
 		current := startFrom
 		for i := 0; i < 14; i++ {
@@ -83,8 +82,8 @@ func runDig() error {
 		}
 	}
 
-	sqlDbLoads := model.ConvertPiSQLLoadAvgsToVms(startFrom, end, sqlLoadAvgs)
-	tokenizedSqlDbLoads := model.ConvertPiSQLLoadAvgsToVms(startFrom, end, tokenizedSqlLoadAvgs)
+	sqlDbLoads := aws.ConvertPiSQLLoadAvgsToVms(startFrom, end, sqlLoadAvgs)
+	tokenizedSqlDbLoads := aws.ConvertPiSQLLoadAvgsToVms(startFrom, end, tokenizedSqlLoadAvgs)
 	bo := html.NewDigDataBuildOption(sqlDbLoads, tokenizedSqlDbLoads)
 
 	outputPath := flag.DbFlag.Output

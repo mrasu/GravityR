@@ -1,8 +1,8 @@
-package model_test
+package aws_test
 
 import (
 	"github.com/mrasu/GravityR/html/viewmodel"
-	"github.com/mrasu/GravityR/infra/aws/model"
+	"github.com/mrasu/GravityR/infra/aws"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -14,16 +14,16 @@ func TestConvertPiSQLLoadAvgsToVms(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		avgs   []*model.PiSQLLoadAvg
+		avgs   []*aws.PiSQLLoadAvg
 		expVms []*viewmodel.VmTimeDbLoad
 	}{
 		{
 			name: "query same time",
-			avgs: []*model.PiSQLLoadAvg{{
+			avgs: []*aws.PiSQLLoadAvg{{
 				DbName:      "db-x",
 				SQL:         "SELECT * FROM todos...",
 				TokenizedId: "aaa",
-				Values: []*model.PiTimeValue{
+				Values: []*aws.PiTimeValue{
 					{
 						Time:  start,
 						Value: 0.1,
@@ -53,11 +53,11 @@ func TestConvertPiSQLLoadAvgsToVms(t *testing.T) {
 		},
 		{
 			name: "query different period",
-			avgs: []*model.PiSQLLoadAvg{{
+			avgs: []*aws.PiSQLLoadAvg{{
 				DbName:      "db-x",
 				SQL:         "SELECT * FROM todos...",
 				TokenizedId: "aaa",
-				Values: []*model.PiTimeValue{
+				Values: []*aws.PiTimeValue{
 					{
 						Time:  start,
 						Value: 0.1,
@@ -89,7 +89,7 @@ func TestConvertPiSQLLoadAvgsToVms(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualVms := model.ConvertPiSQLLoadAvgsToVms(start, end, tt.avgs)
+			actualVms := aws.ConvertPiSQLLoadAvgsToVms(start, end, tt.avgs)
 			assert.Equal(t, tt.expVms, actualVms)
 		})
 	}

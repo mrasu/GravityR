@@ -1,4 +1,4 @@
-package model
+package aws
 
 type RdsDB struct {
 	InstanceIdentifier string

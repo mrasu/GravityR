@@ -1,4 +1,4 @@
-package model
+package aws
 
 import (
 	"github.com/mrasu/GravityR/html/viewmodel"

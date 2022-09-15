@@ -5,7 +5,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	aRds "github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/aws/aws-sdk-go-v2/service/rds/types"
-	"github.com/mrasu/GravityR/infra/aws/model"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 )
@@ -21,7 +20,7 @@ func NewRds(cfg aws.Config) *Rds {
 	}
 }
 
-func (rds *Rds) GetDBs(engines []string) ([]*model.RdsDB, error) {
+func (rds *Rds) GetDBs(engines []string) ([]*RdsDB, error) {
 	output, err := rds.client.DescribeDBInstances(context.Background(), &aRds.DescribeDBInstancesInput{
 		Filters: []types.Filter{
 			{Name: lib.Ptr("engine"), Values: engines},
@@ -31,9 +30,9 @@ func (rds *Rds) GetDBs(engines []string) ([]*model.RdsDB, error) {
 		return nil, errors.Wrap(err, "failed to describe db instances")
 	}
 
-	var res []*model.RdsDB
+	var res []*RdsDB
 	for _, ins := range output.DBInstances {
-		res = append(res, &model.RdsDB{
+		res = append(res, &RdsDB{
 			InstanceIdentifier: *ins.DBInstanceIdentifier,
 			DbiResourceId:      *ins.DbiResourceId,
 		})

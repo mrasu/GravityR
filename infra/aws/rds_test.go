@@ -4,7 +4,6 @@ import (
 	aAws "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/jarcoal/httpmock"
 	"github.com/mrasu/GravityR/infra/aws"
-	"github.com/mrasu/GravityR/infra/aws/model"
 	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -16,7 +15,7 @@ func TestRds_GetDBs(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	expDBs := []*model.RdsDB{
+	expDBs := []*aws.RdsDB{
 		{
 			InstanceIdentifier: "gravityr1",
 			DbiResourceId:      "db-XXXXXXXXXXXXXXXXXXXXXXXXX1",
