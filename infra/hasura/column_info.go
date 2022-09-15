@@ -45,7 +45,7 @@ func buildColumnFetchQuery(schema string, tableNames []string) (string, error) {
 			return "", errors.Errorf("table name can contains only a-z or _: %s", t)
 		}
 	}
-	ts := lib.JoinF(tableNames, ",", func(v string) string { return fmt.Sprintf("'%s'", v) })
+	ts := lib.Join(tableNames, ",", func(v string) string { return fmt.Sprintf("'%s'", v) })
 	q := strings.Replace(columnFetchQuery, "?", fmt.Sprintf("'%s'", schema), 1)
 	q = strings.Replace(q, "?", ts, 1)
 

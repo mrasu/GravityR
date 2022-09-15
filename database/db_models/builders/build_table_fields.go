@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mrasu/GravityR/database/db_models"
 	"github.com/mrasu/GravityR/lib"
+	"github.com/samber/lo"
 )
 
 type tableFieldColumns map[string][]*db_models.FieldColumn
@@ -78,8 +79,8 @@ func (tfb *tableFieldsBuilder) calculateReferences(scope *db_models.StmtScope, e
 		return nil, nil, err
 	}
 
-	foundCols := lib.NewSetS(lib.Map(outputCols, func(v *outputCol) string { return v.name }))
-	cols = lib.Filter(cols, func(v *outputCol) bool { return foundCols.Contains(v.name) })
+	foundCols := lib.NewSetS(lo.Map(outputCols, func(v *outputCol, _ int) string { return v.name }))
+	cols = lo.Reject(cols, func(v *outputCol, _ int) bool { return foundCols.Contains(v.name) })
 
 	outputCols = append(outputCols, cols...)
 	return outputCols, info.tableFields, nil

@@ -55,12 +55,12 @@ func (iee *IndexEfficiencyExaminer) Run(its []*db_models.IndexTarget) (*db_model
 
 	for tName, rs := range results {
 		fmt.Printf("==Table: %s\n", tName)
-		lib.SortF(rs, func(r *db_models.ExaminationIndexResult) int64 { return r.ExecutionTimeMillis })
+		lib.Sort(rs, func(r *db_models.ExaminationIndexResult) int64 { return r.ExecutionTimeMillis })
 		for _, r := range rs {
 			fmt.Printf("Time: %dms (%.1f%% reduced), Columns(%s)\n",
 				r.ExecutionTimeMillis,
 				(1-float64(r.ExecutionTimeMillis)/float64(origExecTimeMillis))*100,
-				lib.JoinF(r.IndexTarget.Columns, ",", func(i *db_models.IndexColumn) string { return i.SafeName() }),
+				lib.Join(r.IndexTarget.Columns, ",", func(i *db_models.IndexColumn) string { return i.SafeName() }),
 			)
 		}
 	}
@@ -73,7 +73,7 @@ const maxIdxNameLen = 30
 func (iee *IndexEfficiencyExaminer) examine(id string, it *db_models.IndexTarget) (res *db_models.ExaminationIndexResult, err error) {
 	idxName := fmt.Sprintf("%s_%s",
 		id,
-		lib.JoinF(it.Columns, "_", func(i *db_models.IndexColumn) string { return i.SafeName() }),
+		lib.Join(it.Columns, "_", func(i *db_models.IndexColumn) string { return i.SafeName() }),
 	)
 	if len(idxName) > maxIdxNameLen {
 		idxName = fmt.Sprintf("%s_%d", idxName[:maxIdxNameLen], rand.Intn(999999999))

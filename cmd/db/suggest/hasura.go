@@ -12,8 +12,8 @@ import (
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iHasura "github.com/mrasu/GravityR/infra/hasura"
-	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
@@ -150,7 +150,7 @@ func (hr *hasuraRunner) parseJSONToVariables(jsonStr string) (map[string]interfa
 }
 
 func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*db_models.IndexTarget, er *db_models.ExaminationResult, aTree *models.ExplainAnalyzeTree) error {
-	vits := lib.Map(idxTargets, func(v *db_models.IndexTarget) *viewmodel.VmIndexTarget { return v.ToViewModel() })
+	vits := lo.Map(idxTargets, func(v *db_models.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
 
 	var ver *viewmodel.VmExaminationResult
 	if er != nil {

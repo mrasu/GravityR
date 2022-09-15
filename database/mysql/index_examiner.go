@@ -35,7 +35,7 @@ func (ie *IndexExaminer) CreateIndex(name string, it *db_models.IndexTarget) err
 	sql := fmt.Sprintf(
 		"ALTER TABLE `%s` ADD INDEX `%s` (%s)",
 		it.TableName, name,
-		lib.JoinF(it.Columns, ",", func(i *db_models.IndexColumn) string { return "`" + i.SafeName() + "`" }),
+		lib.Join(it.Columns, ",", func(i *db_models.IndexColumn) string { return "`" + i.SafeName() + "`" }),
 	)
 	_, err := ie.db.Exec(sql)
 	return err

@@ -3,8 +3,8 @@ package postgres_test
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/mrasu/GravityR/infra/postgres"
-	"github.com/mrasu/GravityR/lib"
 	"github.com/mrasu/GravityR/thelper"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -85,7 +85,7 @@ func TestDB_GetTableColumns(t *testing.T) {
 		{
 			name:         "one table",
 			tables:       []string{"users"},
-			expectedCols: lib.SelectF(tableColumns, func(v *postgres.ColumnInfo) bool { return v.TableName == "users" }),
+			expectedCols: lo.Filter(tableColumns, func(v *postgres.ColumnInfo, _ int) bool { return v.TableName == "users" }),
 		},
 		{
 			name:         "multiple table",

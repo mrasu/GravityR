@@ -50,17 +50,17 @@ func (pi *PerformanceInsights) getHalfDayMetrics(db *models.RdsDB, start time.Ti
 		Identifier: &db.DbiResourceId,
 		MetricQueries: []types.MetricQuery{
 			{
-				Metric: lib.ToPointer(loadAvgMetricName),
+				Metric: lib.Ptr(loadAvgMetricName),
 				GroupBy: &types.DimensionGroup{
 					Group: &group,
-					Limit: lib.ToPointer(int32(10)),
+					Limit: lib.Ptr(int32(10)),
 				},
 			},
 		},
 		ServiceType:     types.ServiceTypeRds,
 		StartTime:       &start,
-		EndTime:         lib.ToPointer(start.Add(12 * time.Hour)),
-		PeriodInSeconds: lib.ToPointer(int32(300)),
+		EndTime:         lib.Ptr(start.Add(12 * time.Hour)),
+		PeriodInSeconds: lib.Ptr(int32(300)),
 	})
 
 	if err != nil {

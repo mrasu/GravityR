@@ -50,7 +50,7 @@ func (ts *TableSchema) String() string {
 	txt := fmt.Sprintf(
 		"TableSchema(name: %s, columns: [%s], primaryKeys: %s)",
 		ts.Name,
-		lib.JoinF(ts.Columns, ", ", func(c *ColumnSchema) string { return c.String() }),
+		lib.Join(ts.Columns, ", ", func(c *ColumnSchema) string { return c.String() }),
 		ts.PrimaryKeys,
 	)
 	return txt

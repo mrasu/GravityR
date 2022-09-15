@@ -36,7 +36,7 @@ func (ie *IndexExaminer) Execute() (int64, error) {
 func (ie *IndexExaminer) CreateIndex(name string, it *db_models.IndexTarget) error {
 	sql := fmt.Sprintf(`CREATE INDEX "%s" ON "%s" (%s)`,
 		name, it.TableName,
-		lib.JoinF(it.Columns, ",", func(i *db_models.IndexColumn) string { return `"` + i.SafeName() + `"` }),
+		lib.Join(it.Columns, ",", func(i *db_models.IndexColumn) string { return `"` + i.SafeName() + `"` }),
 	)
 	_, err := ie.cli.RunRawSQL(sql)
 	return err

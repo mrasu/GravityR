@@ -25,7 +25,7 @@ func (itt *IndexTargetTable) String() string {
 	txt := fmt.Sprintf(
 		"IndexTargetTable(table: %s columns: %s)",
 		itt.TableName,
-		lib.JoinF(itt.IndexFields, ", ", func(f *IndexField) string { return f.Name }),
+		lib.Join(itt.IndexFields, ", ", func(f *IndexField) string { return f.Name }),
 	)
 	return txt
 }

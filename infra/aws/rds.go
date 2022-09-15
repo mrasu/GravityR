@@ -24,7 +24,7 @@ func NewRds(cfg aws.Config) *Rds {
 func (rds *Rds) GetDBs(engines []string) ([]*models.RdsDB, error) {
 	output, err := rds.client.DescribeDBInstances(context.Background(), &aRds.DescribeDBInstancesInput{
 		Filters: []types.Filter{
-			{Name: lib.ToPointer("engine"), Values: engines},
+			{Name: lib.Ptr("engine"), Values: engines},
 		},
 	})
 	if err != nil {

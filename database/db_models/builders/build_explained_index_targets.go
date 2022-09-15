@@ -18,7 +18,7 @@ func BuildExplainedIndexTargets(idxCandidates []*db_models.IndexTargetTable, sco
 			}
 		}
 	}
-	lib.SortF(explainResults, func(t *db_models.SingleTableExplainResult) float64 {
+	lib.Sort(explainResults, func(t *db_models.SingleTableExplainResult) float64 {
 		return t.EstimatedTotalTime * -1
 	})
 

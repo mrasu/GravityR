@@ -157,11 +157,11 @@ func SuggestIndex(db *mysql.DB, database, query string, aTree *models.ExplainAna
 	if err != nil {
 		return nil, []error{err}
 	}
-	fmt.Println(lib.JoinF(idxCandidates, "\n", func(f *db_models.IndexTargetTable) string { return f.String() }))
+	fmt.Println(lib.Join(idxCandidates, "\n", func(f *db_models.IndexTargetTable) string { return f.String() }))
 	fmt.Println()
 
 	tableResults := aTree.ToSingleTableResults()
-	fmt.Println(lib.JoinF(tableResults, "\n", func(st *db_models.SingleTableExplainResult) string { return st.String() }))
+	fmt.Println(lib.Join(tableResults, "\n", func(st *db_models.SingleTableExplainResult) string { return st.String() }))
 
 	return builders.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
