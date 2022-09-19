@@ -39,18 +39,18 @@ func ParseAnalyzeResult(line string) (*AnalyzeResultLine, error) {
 	em := analyzeEstimationReg.FindStringSubmatch(line)
 	if em != nil {
 		if em[2] == "" {
-			cost, err := strconv.ParseFloat(em[1], 10)
+			cost, err := strconv.ParseFloat(em[1], 64)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[1], line))
 			}
 			res.EstimatedCost = cost
 		} else {
-			initCost, err := strconv.ParseFloat(em[1], 10)
+			initCost, err := strconv.ParseFloat(em[1], 64)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[1], line))
 			}
 			res.EstimatedInitCost = initCost
-			cost, err := strconv.ParseFloat(em[3], 10)
+			cost, err := strconv.ParseFloat(em[3], 64)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[3], line))
 			}
@@ -67,13 +67,13 @@ func ParseAnalyzeResult(line string) (*AnalyzeResultLine, error) {
 	// c.f.) https://github.com/mysql/mysql-server/blob/6846e6b2f72931991cc9fd589dc9946ea2ab58c9/sql/iterators/timing_iterator.h#L159
 	am := analyzeActualReg.FindStringSubmatch(line)
 	if am != nil {
-		timeFirst, err := strconv.ParseFloat(am[1], 10)
+		timeFirst, err := strconv.ParseFloat(am[1], 64)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[1], line))
 		}
 		res.ActualTimeFirstRow = timeFirst
 
-		time, err := strconv.ParseFloat(am[2], 10)
+		time, err := strconv.ParseFloat(am[2], 64)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[2], line))
 		}

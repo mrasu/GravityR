@@ -37,7 +37,10 @@ func init() {
 	flg.StringArrayVarP(&mysqlVar.indexTargets, "index", "i", []string{}, "Specify index")
 
 	flg.StringVarP(&mysqlVar.query, "query", "q", "", "[Required] Query to check")
-	cobra.MarkFlagRequired(flg, "query")
+	err := cobra.MarkFlagRequired(flg, "query")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func runMySql() error {
@@ -280,6 +283,9 @@ func runMySql() error {
 	}
 
 	explainLine, err := db.Explain(mysqlVar.query)
+	if err != nil {
+		return err
+	}
 
 	aTree, err := collector.CollectExplainAnalyzeTree(explainLine)
 	if err != nil {

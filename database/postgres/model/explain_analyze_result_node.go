@@ -45,24 +45,24 @@ func ParseExplainAnalyzeResultLineNode(lines []string) (int, *ExplainAnalyzeResu
 	// c.f.) https://github.com/postgres/postgres/blob/REL_14_5/src/backend/commands/explain.c#L1583
 	em := analyzeEstimationReg.FindStringSubmatch(mLine)
 	if em != nil {
-		initCost, err := strconv.ParseFloat(em[1], 10)
+		initCost, err := strconv.ParseFloat(em[1], 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[1], mLine))
 		}
 		resLine.EstimatedInitCost = null.FloatFrom(initCost)
-		cost, err := strconv.ParseFloat(em[2], 10)
+		cost, err := strconv.ParseFloat(em[2], 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[2], mLine))
 		}
 		resLine.EstimatedCost = null.FloatFrom(cost)
 
-		eRowNum, err := strconv.ParseInt(em[3], 10, 0)
+		eRowNum, err := strconv.ParseInt(em[3], 10, 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[3], mLine))
 		}
 		resLine.EstimatedReturnedRows = null.IntFrom(eRowNum)
 
-		eWidth, err := strconv.ParseInt(em[4], 10, 0)
+		eWidth, err := strconv.ParseInt(em[4], 10, 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[4], mLine))
 		}
@@ -73,25 +73,25 @@ func ParseExplainAnalyzeResultLineNode(lines []string) (int, *ExplainAnalyzeResu
 	//	https://github.com/postgres/postgres/blob/REL_14_5/src/backend/commands/explain.c#L1624
 	am := analyzeActualReg.FindStringSubmatch(mLine)
 	if am != nil {
-		timeFirst, err := strconv.ParseFloat(am[1], 10)
+		timeFirst, err := strconv.ParseFloat(am[1], 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[1], mLine))
 		}
 		resLine.ActualTimeFirstRow = null.FloatFrom(timeFirst)
 
-		time, err := strconv.ParseFloat(am[2], 10)
+		time, err := strconv.ParseFloat(am[2], 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[2], mLine))
 		}
 		resLine.ActualTimeAvg = null.FloatFrom(time)
 
-		rowNum, err := strconv.ParseInt(am[3], 10, 0)
+		rowNum, err := strconv.ParseInt(am[3], 10, 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[3], mLine))
 		}
 		resLine.ActualReturnedRows = null.IntFrom(rowNum)
 
-		loopNum, err := strconv.ParseInt(am[4], 10, 0)
+		loopNum, err := strconv.ParseInt(am[4], 10, 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[4], mLine))
 		}

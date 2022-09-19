@@ -555,9 +555,7 @@ func (sc *scopeCollector) collectJoinReferences(j *tree.JoinTableExpr) ([]*commo
 	if j.Cond != nil {
 		switch c := j.Cond.(type) {
 		case tree.NaturalJoinCond:
-			sc.lastError = lib.NewUnsupportedError(
-				fmt.Sprintf("not supporting NATURAL JOIN"),
-			)
+			sc.lastError = lib.NewUnsupportedError("not supporting NATURAL JOIN")
 		case *tree.OnJoinCond:
 			fields = append(fields, &common_model.Field{Columns: sc.collectExprReferences(c.Expr, common_model.FieldCondition)})
 		case *tree.UsingJoinCond:

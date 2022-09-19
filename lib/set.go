@@ -34,7 +34,7 @@ func (s *Set[T]) Delete(val T) {
 
 func (s *Set[T]) Values() []T {
 	var vals []T
-	for val, _ := range s.vals {
+	for val := range s.vals {
 		vals = append(vals, val)
 	}
 

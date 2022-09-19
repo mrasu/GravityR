@@ -34,9 +34,7 @@ func walk(walker walker, stmt *parser.Statement) []error {
 		errs = append(errs, errors.Wrap(err, "failed to parse query"))
 	}
 
-	for _, e := range w.GetUnknownErrs() {
-		errs = append(errs, e)
-	}
+	errs = append(errs, w.GetUnknownErrs()...)
 	return errs
 }
 

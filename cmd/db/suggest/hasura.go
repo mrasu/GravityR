@@ -44,7 +44,10 @@ func init() {
 
 	flg.StringVarP(&hasuraVar.query, "query", "q", "", "[Required] Query of GraphQL to check")
 	flg.StringVar(&hasuraVar.jsonVariables, "json-variables", "{}", "JSON of variables for the query")
-	cobra.MarkFlagRequired(flg, "query")
+	err := cobra.MarkFlagRequired(flg, "query")
+	if err != nil {
+		panic(err)
+	}
 }
 
 type hasuraRunner struct{}

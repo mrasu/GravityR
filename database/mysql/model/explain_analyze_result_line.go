@@ -45,18 +45,18 @@ func ParseExplainAnalyzeResultLine(line string) (int, *ExplainAnalyzeResultLine,
 	em := analyzeEstimationReg.FindStringSubmatch(line)
 	if em != nil {
 		if em[2] == "" {
-			cost, err := strconv.ParseFloat(em[1], 10)
+			cost, err := strconv.ParseFloat(em[1], 64)
 			if err != nil {
 				return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[1], line))
 			}
 			resLine.EstimatedCost = null.FloatFrom(cost)
 		} else {
-			initCost, err := strconv.ParseFloat(em[1], 10)
+			initCost, err := strconv.ParseFloat(em[1], 64)
 			if err != nil {
 				return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[1], line))
 			}
 			resLine.EstimatedInitCost = null.FloatFrom(initCost)
-			cost, err := strconv.ParseFloat(em[3], 10)
+			cost, err := strconv.ParseFloat(em[3], 64)
 			if err != nil {
 				return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[3], line))
 			}
@@ -64,7 +64,7 @@ func ParseExplainAnalyzeResultLine(line string) (int, *ExplainAnalyzeResultLine,
 		}
 
 		if em[4] != "" {
-			eRowNum, err := strconv.ParseInt(em[5], 10, 0)
+			eRowNum, err := strconv.ParseInt(em[5], 10, 64)
 			if err != nil {
 				return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", em[4], line))
 			}
@@ -75,25 +75,25 @@ func ParseExplainAnalyzeResultLine(line string) (int, *ExplainAnalyzeResultLine,
 	// c.f.) https://github.com/mysql/mysql-server/blob/6846e6b2f72931991cc9fd589dc9946ea2ab58c9/sql/iterators/timing_iterator.h#L159
 	am := analyzeActualReg.FindStringSubmatch(line)
 	if am != nil {
-		timeFirst, err := strconv.ParseFloat(am[1], 10)
+		timeFirst, err := strconv.ParseFloat(am[1], 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[1], line))
 		}
 		resLine.ActualTimeFirstRow = null.FloatFrom(timeFirst)
 
-		time, err := strconv.ParseFloat(am[2], 10)
+		time, err := strconv.ParseFloat(am[2], 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[2], line))
 		}
 		resLine.ActualTimeAvg = null.FloatFrom(time)
 
-		rowNum, err := strconv.ParseInt(am[3], 10, 0)
+		rowNum, err := strconv.ParseInt(am[3], 10, 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[3], line))
 		}
 		resLine.ActualReturnedRows = null.IntFrom(rowNum)
 
-		loopNum, err := strconv.ParseInt(am[4], 10, 0)
+		loopNum, err := strconv.ParseInt(am[4], 10, 64)
 		if err != nil {
 			return 0, nil, errors.Wrap(err, fmt.Sprintf("failed to parse analyze(%s): %s", am[4], line))
 		}
@@ -151,8 +151,8 @@ func (l *ExplainAnalyzeResultLine) String() string {
 	)
 }
 
-var titleReg = regexp.MustCompile("->\\s+(.+)\\s+\\(")
-var titleWordReg = regexp.MustCompile("\\w+")
+var titleReg = regexp.MustCompile(`->\s+(.+)\s+\(`)
+var titleWordReg = regexp.MustCompile(`\w+`)
 
 func (l *ExplainAnalyzeResultLine) Title() string {
 	m := titleReg.FindStringSubmatch(l.Text)

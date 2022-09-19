@@ -2,7 +2,7 @@ package thelper
 
 import (
 	"github.com/stretchr/testify/require"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -13,7 +13,7 @@ func ReadFromFiles(t *testing.T, filename string) string {
 
 	_, b, _, _ := runtime.Caller(0)
 	p := filepath.Join(filepath.Dir(b), "../", "./testdata/files/", filename)
-	txt, err := ioutil.ReadFile(p)
+	txt, err := os.ReadFile(p)
 	require.NoError(t, err)
 
 	return string(txt)

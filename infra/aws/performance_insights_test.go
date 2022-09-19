@@ -7,7 +7,7 @@ import (
 	"github.com/mrasu/GravityR/infra/aws"
 	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 	"time"
@@ -199,7 +199,7 @@ func buildPI(t *testing.T) *aws.PerformanceInsights {
 func unmarshalPIBody(t *testing.T, req *http.Request) awsPiReqBody {
 	t.Helper()
 
-	out, err := ioutil.ReadAll(req.Body)
+	out, err := io.ReadAll(req.Body)
 	assert.NoError(t, err)
 	reqBody := awsPiReqBody{}
 	err = json.Unmarshal(out, &reqBody)

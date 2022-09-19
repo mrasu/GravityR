@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"path"
@@ -117,7 +117,7 @@ func (c *Client) post(pathname string, body interface{}) ([]byte, error) {
 
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
-		text, err := ioutil.ReadAll(res.Body)
+		text, err := io.ReadAll(res.Body)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("Request to Hasura failed (Status=%d)", res.StatusCode))
 		}
@@ -125,7 +125,7 @@ func (c *Client) post(pathname string, body interface{}) ([]byte, error) {
 		return nil, errors.Errorf("Request to Hasura failed (Status=%d): %s", res.StatusCode, string(text))
 	}
 
-	return ioutil.ReadAll(res.Body)
+	return io.ReadAll(res.Body)
 }
 
 func (c *Client) resolveURL(pathname string) string {

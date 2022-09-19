@@ -18,5 +18,8 @@ func init() {
 
 	flg := dbCmd.PersistentFlags()
 	flg.StringVarP(&flag.DbFlag.Output, "output", "o", "", "[Required] File name to output result html")
-	cobra.MarkFlagRequired(flg, "output")
+	err := cobra.MarkFlagRequired(flg, "output")
+	if err != nil {
+		panic(err)
+	}
 }

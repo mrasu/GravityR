@@ -8,6 +8,9 @@ export HASURA_ADMIN_SECRET := myadminsecretkey
 devSetup:
 	go install github.com/spf13/cobra-cli@latest
 
+lint:
+	golangci-lint run --fix
+
 test:
 	go test ./...
 

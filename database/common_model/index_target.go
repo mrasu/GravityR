@@ -14,7 +14,7 @@ type IndexTarget struct {
 	Columns   []*IndexColumn
 }
 
-var indexTargetReg = regexp.MustCompile("(.+?):((.+?(\\\\+)?)+)")
+var indexTargetReg = regexp.MustCompile(`(.+?):((.+?(\+)?)+)`)
 var wordOnlyReg = regexp.MustCompile(`\A\w+\z`)
 
 const indexTargetColumnSeparator = "+"

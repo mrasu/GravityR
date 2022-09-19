@@ -39,7 +39,10 @@ func init() {
 	flg.StringArrayVarP(&postgresVar.indexTargets, "index", "i", []string{}, "Specify index")
 
 	flg.StringVarP(&postgresVar.query, "query", "q", "", "[Required] Query to check")
-	cobra.MarkFlagRequired(flg, "query")
+	err := cobra.MarkFlagRequired(flg, "query")
+	if err != nil {
+		panic(err)
+	}
 }
 
 type postgresRunner struct{}
