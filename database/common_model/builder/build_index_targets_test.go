@@ -282,7 +282,7 @@ func TestBuildIndexTargets_MultipleTables(t *testing.T) {
 				},
 				{
 					Columns: []*common_model.FieldColumn{
-						{Table: "users", Name: "id", Type: common_model.FieldCondition},
+						{Table: "u", Name: "id", Type: common_model.FieldCondition},
 						{Table: "todos", Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
@@ -349,6 +349,7 @@ func TestBuildIndexTargets_MultipleTables(t *testing.T) {
 				Name: common_model.RootScopeName,
 				Tables: []*common_model.Table{
 					{AsName: tt.asTableName, Name: "users"},
+					{Name: "todos"},
 				},
 				Fields: tt.scopeFields,
 			}
@@ -362,7 +363,7 @@ func TestBuildIndexTargets_MultipleTables(t *testing.T) {
 	}
 }
 
-func TestBuildIndexTargets_Nested(t *testing.T) {
+func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 	tables := []*common_model.TableSchema{
 		{
 			Name:        "users",
@@ -393,26 +394,8 @@ func TestBuildIndexTargets_Nested(t *testing.T) {
 		expectedIndexTarget []*common_model.IndexTargetTable
 	}{
 		{
-			name: "SELECT (SELECT user_id FROM todos limit 1)",
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
-					},
-					FieldScopes: []*common_model.StmtScope{
-						{
-							Name: "<field0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:   "subquery in SELECT",
+			scopes: tdata.PostgresSubqueryInSelectData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
 					TableName: "todos",
@@ -423,36 +406,13 @@ func TestBuildIndexTargets_Nested(t *testing.T) {
 			},
 		},
 		{
-			name: "SELECT name, is_admin, (SELECT COUNT(description) FROM todos) AS description_count FROM users",
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "name", Type: common_model.FieldReference}}},
-						{Columns: []*common_model.FieldColumn{{Name: "is_admin", Type: common_model.FieldReference}}},
-						{AsName: "description_count", Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
-					},
-					FieldScopes: []*common_model.StmtScope{
-						{
-							Name: "<field0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-					Tables: []*common_model.Table{
-						{Name: "users"},
-					},
-				},
-			},
+			name:   "subquery in SELECT's aliased field",
+			scopes: tdata.PostgresSubqueryInSelectAliasedFieldData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
 					TableName: "todos",
 					IndexFields: []*common_model.IndexField{
-						{Name: "description", Type: common_model.FieldReference},
+						{Name: "status", Type: common_model.FieldReference},
 					},
 				},
 				{
@@ -465,159 +425,190 @@ func TestBuildIndexTargets_Nested(t *testing.T) {
 			},
 		},
 		{
-			name: "subquery in JOIN",
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-						{Columns: []*common_model.FieldColumn{
-							{Table: "users", Name: "email", Type: common_model.FieldCondition},
-							{Table: "t", Name: "user_id", Type: common_model.FieldCondition},
-						}},
-					},
-					Tables: []*common_model.Table{
-						{Name: "users"},
-						{Name: "<select0>", AsName: "t"},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
-								{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:   "subquery with comparison",
+			scopes: tdata.PostgresSubqueryWithComparisonData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
 					TableName: "todos",
 					IndexFields: []*common_model.IndexField{
+						{Name: "description", Type: common_model.FieldReference},
 						{Name: "status", Type: common_model.FieldReference},
-						{Name: "user_id", Type: common_model.FieldReference},
-					},
-				},
-				{
-					TableName: "users",
-					IndexFields: []*common_model.IndexField{
-						{Name: "email", Type: common_model.FieldCondition},
 					},
 				},
 			},
 		},
 		{
-			name: "subquery using star",
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{
-							{Name: "description", Type: common_model.FieldReference},
-						}},
-					},
-					Tables: []*common_model.Table{
-						{Name: "<select0>", AsName: "t"},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:   "subquery in SELECT's function",
+			scopes: tdata.PostgresSubqueryInSelectFunctionData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
 					TableName: "todos",
 					IndexFields: []*common_model.IndexField{
 						{Name: "description", Type: common_model.FieldReference},
-					},
-				},
-			},
-		},
-		{
-			name: "subquery with LATERAL JOIN",
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{
-							{Name: "description", Type: common_model.FieldReference},
-						}},
-						{Columns: []*common_model.FieldColumn{
-							{Table: "u", Name: "id", Type: common_model.FieldCondition},
-							{Table: "t", Name: "user_id", Type: common_model.FieldCondition},
-						}},
-					},
-					Tables: []*common_model.Table{
-						{Name: "<select0>", AsName: "u"},
-						{Name: "<select1>", AsName: "t", IsLateral: true},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{
-									{Name: "email", Type: common_model.FieldReference},
-									{Name: "id", Type: common_model.FieldReference},
-								}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "users"},
-							},
-						},
-						{
-							Name: "<select1>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
-								{Columns: []*common_model.FieldColumn{
-									{Name: "user_id", Type: common_model.FieldCondition},
-									{Table: "u", Name: "id", Type: common_model.FieldCondition},
-								}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
-			expectedIndexTarget: []*common_model.IndexTargetTable{
-				{
-					TableName: "todos",
-					IndexFields: []*common_model.IndexField{
-						{Name: "user_id", Type: common_model.FieldCondition},
-					},
-				},
-				{
-					TableName: "todos",
-					IndexFields: []*common_model.IndexField{
-						{Name: "user_id", Type: common_model.FieldCondition},
-						{Name: "description", Type: common_model.FieldReference},
-					},
-				},
-				{
-					TableName: "users",
-					IndexFields: []*common_model.IndexField{
-						{Name: "email", Type: common_model.FieldReference},
 						{Name: "id", Type: common_model.FieldReference},
 					},
 				},
 			},
 		},
 		{
-			name:   "hasura query",
-			scopes: tdata.Hasura1.Scopes,
+			name:   "subquery in FROM",
+			scopes: tdata.PostgresSubqueryInFromData.Scopes,
+			expectedIndexTarget: []*common_model.IndexTargetTable{
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "id", Type: common_model.FieldReference},
+						{Name: "user_id", Type: common_model.FieldReference},
+					},
+				},
+			},
+		},
+		{
+			name:   "subquery in JOIN",
+			scopes: tdata.PostgresSubqueryInJoinData.Scopes,
+			expectedIndexTarget: []*common_model.IndexTargetTable{
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "user_id", Type: common_model.FieldCondition},
+					},
+				},
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "user_id", Type: common_model.FieldCondition},
+						{Name: "id", Type: common_model.FieldReference},
+					},
+				},
+				{
+					TableName: "users",
+					IndexFields: []*common_model.IndexField{
+						{Name: "id", Type: common_model.FieldCondition},
+						{Name: "name", Type: common_model.FieldReference},
+					},
+				},
+			},
+		},
+		{
+			name:   "subquery using star",
+			scopes: tdata.PostgresSubqueryUsingStarData.Scopes,
+			expectedIndexTarget: []*common_model.IndexTargetTable{
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "description", Type: common_model.FieldReference},
+					},
+				},
+			},
+		},
+		{
+			name:   "subquery with LATERAL JOIN",
+			scopes: tdata.PostgresSubqueryWithLateralJoinData.Scopes,
+			expectedIndexTarget: []*common_model.IndexTargetTable{
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "user_id", Type: common_model.FieldCondition},
+					},
+				},
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "user_id", Type: common_model.FieldCondition},
+						{Name: "description", Type: common_model.FieldReference},
+					},
+				},
+			},
+		},
+		{
+			name:   "subquery with LATERAL object reference",
+			scopes: tdata.PostgresSubqueryWithLateralObjectReferenceData.Scopes,
+			expectedIndexTarget: []*common_model.IndexTargetTable{
+				{
+					TableName: "users",
+					IndexFields: []*common_model.IndexField{
+						{Name: "name", Type: common_model.FieldReference},
+					},
+				},
+			},
+		},
+		{
+			name:   "subquery with aggregate function",
+			scopes: tdata.PostgresSubqueryWithAggregateFunctionData.Scopes,
+			expectedIndexTarget: []*common_model.IndexTargetTable{
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "description", Type: common_model.FieldReference},
+					},
+				},
+			},
+		},
+		{
+			name:   "correlated subquery",
+			scopes: tdata.PostgresCorrelatedSubqueryData.Scopes,
+			expectedIndexTarget: []*common_model.IndexTargetTable{
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "user_id", Type: common_model.FieldCondition},
+					},
+				},
+				{
+					TableName: "todos",
+					IndexFields: []*common_model.IndexField{
+						{Name: "user_id", Type: common_model.FieldCondition},
+						{Name: "description", Type: common_model.FieldReference},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actualTargets, err := builder.BuildIndexTargets(tables, tt.scopes)
+			require.NoError(t, err)
+
+			if diff := cmp.Diff(tt.expectedIndexTarget, actualTargets); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestBuildIndexTargets_HasuraSubquery(t *testing.T) {
+	tables := []*common_model.TableSchema{
+		{
+			Name:        "users",
+			PrimaryKeys: []string{"id"},
+			Columns: []*common_model.ColumnSchema{
+				{Name: "id"},
+				{Name: "name"},
+				{Name: "is_admin"},
+				{Name: "email"},
+			},
+		},
+		{
+			Name:        "todos",
+			PrimaryKeys: []string{"id"},
+			Columns: []*common_model.ColumnSchema{
+				{Name: "id"},
+				{Name: "user_id"},
+				{Name: "title"},
+				{Name: "status"},
+				{Name: "description"},
+			},
+		},
+	}
+
+	tests := []struct {
+		name                string
+		scopes              []*common_model.StmtScope
+		expectedIndexTarget []*common_model.IndexTargetTable
+	}{
+		{
+			name:   "subquery with where",
+			scopes: tdata.HasuraSubqueryWithWhereData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
 					TableName: "todos",
@@ -672,8 +663,8 @@ func TestBuildIndexTargets_Nested(t *testing.T) {
 			},
 		},
 		{
-			name:   "hasura query2",
-			scopes: tdata.Hasura2.Scopes,
+			name:   "subquery with variables",
+			scopes: tdata.HasuraSubqueryWithVariablesData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
 					TableName: "todos",
@@ -729,8 +720,8 @@ func TestBuildIndexTargets_Nested(t *testing.T) {
 			},
 		},
 		{
-			name:   "hasura query3",
-			scopes: tdata.Hasura3.Scopes,
+			name:   "subquery with aggregation",
+			scopes: tdata.HasuraSubqueryWithAggregationData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
 					TableName: "todos",

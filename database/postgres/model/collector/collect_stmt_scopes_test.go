@@ -295,392 +295,120 @@ func TestCollectStmtScopes_Joins(t *testing.T) {
 	}
 }
 
-func TestCollectStmtScopes_Subquery(t *testing.T) {
+func TestCollectStmtScopes_PostgresSubquery(t *testing.T) {
 	tests := []struct {
-		name   string
-		query  string
-		scopes []*common_model.StmtScope
+		name           string
+		sql            string
+		expectedScopes []*common_model.StmtScope
 	}{
 		{
-			name:  "subquery in SELECT",
-			query: "SELECT (SELECT id FROM todos limit 1)",
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
-					},
-					FieldScopes: []*common_model.StmtScope{
-						{
-							Name: "<field0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:           "subquery in SELECT",
+			sql:            tdata.PostgresSubqueryInSelectData.SQL,
+			expectedScopes: tdata.PostgresSubqueryInSelectData.Scopes,
 		},
 		{
-			name:  "subquery in SELECT's aliased field",
-			query: "SELECT id, (SELECT COUNT(status) FROM todos) AS status_count FROM users",
-			scopes: []*common_model.StmtScope{{
-				Name: "<root>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-					{AsName: "status_count", Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
-				},
-				FieldScopes: []*common_model.StmtScope{
-					{
-						Name: "<field0>",
-						Fields: []*common_model.Field{
-							{Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
-						},
-						Tables: []*common_model.Table{
-							{Name: "todos"},
-						},
-					},
-				},
-				Tables: []*common_model.Table{
-					{Name: "users"},
-				},
-			}},
+			name:           "subquery in SELECT's aliased field",
+			sql:            tdata.PostgresSubqueryInSelectAliasedFieldData.SQL,
+			expectedScopes: tdata.PostgresSubqueryInSelectAliasedFieldData.Scopes,
 		},
 		{
-			name:  "subquery with comparison",
-			query: "SELECT (SELECT COUNT(status) FROM todos) - (SELECT COUNT(description) FROM todos) AS no_desc_count",
-			scopes: []*common_model.StmtScope{{
-				Name: "<root>",
-				Fields: []*common_model.Field{
-					{AsName: "no_desc_count", Columns: []*common_model.FieldColumn{
-						{ReferenceName: "<field0>", Type: common_model.FieldSubquery},
-						{ReferenceName: "<field1>", Type: common_model.FieldSubquery},
-					}},
-				},
-				FieldScopes: []*common_model.StmtScope{
-					{
-						Name: "<field0>",
-						Fields: []*common_model.Field{
-							{Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
-						},
-						Tables: []*common_model.Table{
-							{Name: "todos"},
-						},
-					},
-					{
-						Name: "<field1>",
-						Fields: []*common_model.Field{
-							{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
-						},
-						Tables: []*common_model.Table{
-							{Name: "todos"},
-						},
-					},
-				},
-			}},
+			name:           "subquery with comparison",
+			sql:            tdata.PostgresSubqueryWithComparisonData.SQL,
+			expectedScopes: tdata.PostgresSubqueryWithComparisonData.Scopes,
 		},
 		{
-			name:  "subquery with EXIST",
-			query: "SELECT id, EXISTS (SELECT * FROM todos WHERE user_id = users.id) FROM users",
-			scopes: []*common_model.StmtScope{{
-				Name: "<root>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-					{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
-				},
-				FieldScopes: []*common_model.StmtScope{
-					{
-						Name: "<field0>",
-						Fields: []*common_model.Field{
-							{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-							{Columns: []*common_model.FieldColumn{
-								{Name: "user_id", Type: common_model.FieldCondition},
-								{Table: "users", Name: "id", Type: common_model.FieldCondition},
-							}},
-						},
-						Tables: []*common_model.Table{
-							{Name: "todos"},
-						},
-					},
-				},
-				Tables: []*common_model.Table{
-					{Name: "users"},
-				},
-			}},
+			name:           "subquery with EXIST",
+			sql:            tdata.PostgresSubqueryWithExistData.SQL,
+			expectedScopes: tdata.PostgresSubqueryWithExistData.Scopes,
 		},
 		{
-			name:  "subquery with IN",
-			query: "SELECT user_id IN (SELECT user_id FROM todos) FROM users",
-			scopes: []*common_model.StmtScope{{
-				Name: "<root>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{
-						{Name: "user_id", Type: common_model.FieldReference},
-						{ReferenceName: "<field0>", Type: common_model.FieldSubquery},
-					}},
-				},
-				FieldScopes: []*common_model.StmtScope{
-					{
-						Name: "<field0>",
-						Fields: []*common_model.Field{
-							{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
-						},
-						Tables: []*common_model.Table{
-							{Name: "todos"},
-						},
-					},
-				},
-				Tables: []*common_model.Table{
-					{Name: "users"},
-				},
-			}},
+			name:           "subquery with IN",
+			sql:            tdata.PostgresSubqueryWithInData.SQL,
+			expectedScopes: tdata.PostgresSubqueryWithInData.Scopes,
 		},
 		{
-			name: "subquery in SELECT's function",
-			query: `
-SELECT row_to_json(
-  (
-    SELECT t
-    FROM (SELECT id, description FROM todos LIMIT 1) AS t
-  )
-)
-`,
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
-					},
-					FieldScopes: []*common_model.StmtScope{
-						{
-							Name: "<field0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "t", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "<select0>", AsName: "t"},
-							},
-							Scopes: []*common_model.StmtScope{
-								{
-									Name: "<select0>",
-									Fields: []*common_model.Field{
-										{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-										{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
-									},
-									Tables: []*common_model.Table{
-										{Name: "todos"},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			name:           "subquery in SELECT's function",
+			sql:            tdata.PostgresSubqueryInSelectFunctionData.SQL,
+			expectedScopes: tdata.PostgresSubqueryInSelectFunctionData.Scopes,
 		},
 		{
-			name: "subquery in FROM",
-			query: `
-SELECT *
-FROM (SELECT id, user_id FROM todos)
-`,
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-					},
-					Tables: []*common_model.Table{
-						{Name: "<select0>"},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-								{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:           "subquery in FROM",
+			sql:            tdata.PostgresSubqueryInFromData.SQL,
+			expectedScopes: tdata.PostgresSubqueryInFromData.Scopes,
 		},
 		{
-			name: "subquery in JOIN",
-			query: `
-SELECT *
-FROM users
-INNER JOIN (SELECT id, user_id FROM todos) AS t ON users.id = t.user_id
-`,
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-						{Columns: []*common_model.FieldColumn{
-							{Table: "users", Name: "id", Type: common_model.FieldCondition},
-							{Table: "t", Name: "user_id", Type: common_model.FieldCondition},
-						}},
-					},
-					Tables: []*common_model.Table{
-						{Name: "users"},
-						{Name: "<select0>", AsName: "t"},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-								{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:           "subquery in JOIN",
+			sql:            tdata.PostgresSubqueryInJoinData.SQL,
+			expectedScopes: tdata.PostgresSubqueryInJoinData.Scopes,
 		},
 		{
-			name: "subquery using star",
-			query: `
-SELECT description
-FROM
-	(SELECT * FROM todos) AS t
-`,
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{
-							{Name: "description", Type: common_model.FieldReference},
-						}},
-					},
-					Tables: []*common_model.Table{
-						{Name: "<select0>", AsName: "t"},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:           "subquery using star",
+			sql:            tdata.PostgresSubqueryUsingStarData.SQL,
+			expectedScopes: tdata.PostgresSubqueryUsingStarData.Scopes,
 		},
 		{
-			name: "subquery with LATERAL JOIN ",
-			query: `
-SELECT description
-FROM
-	(SELECT id FROM users) AS u
-	LEFT OUTER JOIN LATERAL (SELECT description FROM todos WHERE user_id = u.id) AS t ON u.id = t.user_id
-`,
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{
-							{Name: "description", Type: common_model.FieldReference},
-						}},
-						{Columns: []*common_model.FieldColumn{
-							{Table: "u", Name: "id", Type: common_model.FieldCondition},
-							{Table: "t", Name: "user_id", Type: common_model.FieldCondition},
-						}},
-					},
-					Tables: []*common_model.Table{
-						{Name: "<select0>", AsName: "u"},
-						{Name: "<select1>", AsName: "t", IsLateral: true},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "users"},
-							},
-						},
-						{
-							Name: "<select1>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
-								{Columns: []*common_model.FieldColumn{
-									{Name: "user_id", Type: common_model.FieldCondition},
-									{Table: "u", Name: "id", Type: common_model.FieldCondition},
-								}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:           "subquery with LATERAL JOIN",
+			sql:            tdata.PostgresSubqueryWithLateralJoinData.SQL,
+			expectedScopes: tdata.PostgresSubqueryWithLateralJoinData.Scopes,
 		},
 		{
-			name: "subquery with aggregate function",
-			query: `
-SELECT json_agg(t)
-FROM (SELECT id FROM todos LIMIT 3) AS t;
-`,
-			scopes: []*common_model.StmtScope{
-				{
-					Name: "<root>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "t", Type: common_model.FieldReference}}},
-					},
-					Tables: []*common_model.Table{
-						{AsName: "t", Name: "<select0>"},
-					},
-					Scopes: []*common_model.StmtScope{
-						{
-							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-							},
-							Tables: []*common_model.Table{
-								{Name: "todos"},
-							},
-						},
-					},
-				},
-			},
+			name:           "subquery with LATERAL object reference",
+			sql:            tdata.PostgresSubqueryWithLateralObjectReferenceData.SQL,
+			expectedScopes: tdata.PostgresSubqueryWithLateralObjectReferenceData.Scopes,
 		},
 		{
-			name:   "hasura query",
-			query:  tdata.Hasura1.SQL,
-			scopes: tdata.Hasura1.Scopes,
+			name:           "subquery with aggregate function",
+			sql:            tdata.PostgresSubqueryWithAggregateFunctionData.SQL,
+			expectedScopes: tdata.PostgresSubqueryWithAggregateFunctionData.Scopes,
 		},
 		{
-			name:   "hasura query2",
-			query:  tdata.Hasura2.SQL,
-			scopes: tdata.Hasura2.Scopes,
-		},
-		{
-			name:   "hasura query3",
-			query:  tdata.Hasura3.SQL,
-			scopes: tdata.Hasura3.Scopes,
+			name:           "correlated subquery",
+			sql:            tdata.PostgresCorrelatedSubqueryData.SQL,
+			expectedScopes: tdata.PostgresCorrelatedSubqueryData.Scopes,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			stmt := toStatement(t, tt.query)
+			stmt := toStatement(t, tt.sql)
 			actualScopes, errs := collector.CollectStmtScopes(stmt)
 			require.Empty(t, errs)
 
-			if diff := cmp.Diff(tt.scopes, actualScopes); diff != "" {
+			if diff := cmp.Diff(tt.expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestCollectStmtScopes_HasuraSubquery(t *testing.T) {
+	tests := []struct {
+		name           string
+		sql            string
+		expectedScopes []*common_model.StmtScope
+	}{
+		{
+			name:           "subquery with where",
+			sql:            tdata.HasuraSubqueryWithWhereData.SQL,
+			expectedScopes: tdata.HasuraSubqueryWithWhereData.Scopes,
+		},
+		{
+			name:           "subquery with variables",
+			sql:            tdata.HasuraSubqueryWithVariablesData.SQL,
+			expectedScopes: tdata.HasuraSubqueryWithVariablesData.Scopes,
+		},
+		{
+			name:           "subquery with aggregation",
+			sql:            tdata.HasuraSubqueryWithAggregationData.SQL,
+			expectedScopes: tdata.HasuraSubqueryWithAggregationData.Scopes,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			stmt := toStatement(t, tt.sql)
+			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			require.Empty(t, errs)
+
+			if diff := cmp.Diff(tt.expectedScopes, actualScopes); diff != "" {
 				t.Errorf(diff)
 			}
 		})

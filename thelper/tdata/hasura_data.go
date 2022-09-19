@@ -8,7 +8,7 @@ type hasuraData struct {
 	Scopes []*common_model.StmtScope
 }
 
-var Hasura1 = hasuraData{
+var HasuraSubqueryWithWhereData = &hasuraData{
 	GQL: `
 query MyQuery {
   users(where: {email: {_eq: "test33333@example.com"}}) {
@@ -93,7 +93,7 @@ FROM
 			Tables: []*common_model.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			Scopes: []*common_model.StmtScope{
+			SubScopes: []*common_model.StmtScope{
 				{
 					Name: "<select0>",
 					Fields: []*common_model.Field{
@@ -109,7 +109,7 @@ FROM
 								{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 							},
 							Tables: []*common_model.Table{{AsName: "_e", Name: "<select3>"}},
-							Scopes: []*common_model.StmtScope{
+							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select3>",
 									Fields: []*common_model.Field{
@@ -134,7 +134,7 @@ FROM
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.ar.root.todos", Name: "<select2>", IsLateral: true},
 					},
-					Scopes: []*common_model.StmtScope{
+					SubScopes: []*common_model.StmtScope{
 						{
 							Name: "<select1>",
 							Fields: []*common_model.Field{
@@ -152,7 +152,7 @@ FROM
 								},
 							},
 							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos", Name: "<select4>"}},
-							Scopes: []*common_model.StmtScope{
+							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select4>",
 									Fields: []*common_model.Field{
@@ -165,7 +165,7 @@ FROM
 												{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 											},
 											Tables: []*common_model.Table{{AsName: "_e", Name: "<select6>"}},
-											Scopes: []*common_model.StmtScope{
+											SubScopes: []*common_model.StmtScope{
 												{
 													Name: "<select6>",
 													Fields: []*common_model.Field{
@@ -183,7 +183,7 @@ FROM
 										},
 									},
 									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos.base", Name: "<select5>"}},
-									Scopes: []*common_model.StmtScope{
+									SubScopes: []*common_model.StmtScope{
 										{
 											Name: "<select5>",
 											Fields: []*common_model.Field{
@@ -210,7 +210,7 @@ FROM
 	},
 }
 
-var Hasura2 = hasuraData{
+var HasuraSubqueryWithVariablesData = &hasuraData{
 	GQL: `query MyQuery($email: String) {
   todos(where: {user: {email: {_eq: $email}}}) {
     user {
@@ -312,7 +312,6 @@ FROM
       ) AS "_root.or.user" ON ('true')
   ) AS "_root"
 `,
-
 	Scopes: []*common_model.StmtScope{
 		{
 			Name: "<root>",
@@ -325,7 +324,7 @@ FROM
 			Tables: []*common_model.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			Scopes: []*common_model.StmtScope{
+			SubScopes: []*common_model.StmtScope{
 				{
 					Name: "<select0>",
 					Fields: []*common_model.Field{
@@ -341,7 +340,7 @@ FROM
 								{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 							},
 							Tables: []*common_model.Table{{AsName: "_e", Name: "<select3>"}},
-							Scopes: []*common_model.StmtScope{
+							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select3>",
 									Fields: []*common_model.Field{
@@ -370,7 +369,7 @@ FROM
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.or.user", Name: "<select2>", IsLateral: true},
 					},
-					Scopes: []*common_model.StmtScope{
+					SubScopes: []*common_model.StmtScope{
 						{
 							Name: "<select1>",
 							Fields: []*common_model.Field{
@@ -407,7 +406,7 @@ FROM
 										{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 									},
 									Tables: []*common_model.Table{{AsName: "_e", Name: "<select5>"}},
-									Scopes: []*common_model.StmtScope{
+									SubScopes: []*common_model.StmtScope{
 										{
 											Name: "<select5>",
 											Fields: []*common_model.Field{
@@ -429,7 +428,7 @@ FROM
 								},
 							},
 							Tables: []*common_model.Table{{AsName: "_root.or.user.base", Name: "<select4>"}},
-							Scopes: []*common_model.StmtScope{
+							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select4>",
 									Fields: []*common_model.Field{
@@ -450,7 +449,7 @@ FROM
 	},
 }
 
-var Hasura3 = hasuraData{
+var HasuraSubqueryWithAggregationData = &hasuraData{
 	GQL: `query MyQuery($email: String) {
   users(where: {email: {_eq: $email}}) {
     email
@@ -564,7 +563,7 @@ FROM
 			Tables: []*common_model.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			Scopes: []*common_model.StmtScope{
+			SubScopes: []*common_model.StmtScope{
 				{
 					Name: "<select0>",
 					Fields: []*common_model.Field{
@@ -580,7 +579,7 @@ FROM
 								{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 							},
 							Tables: []*common_model.Table{{AsName: "_e", Name: "<select4>"}},
-							Scopes: []*common_model.StmtScope{
+							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select4>",
 									Fields: []*common_model.Field{
@@ -610,7 +609,7 @@ FROM
 						{AsName: "_root.ar.root.todos_aggregate", Name: "<select2>", IsLateral: true},
 						{AsName: "_root.ar.root.todos", Name: "<select3>", IsLateral: true},
 					},
-					Scopes: []*common_model.StmtScope{
+					SubScopes: []*common_model.StmtScope{
 						{
 							Name: "<select1>",
 							Fields: []*common_model.Field{
@@ -625,7 +624,7 @@ FROM
 								{AsName: "todos_aggregate", Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
 							},
 							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos_aggregate", Name: "<select5>"}},
-							Scopes: []*common_model.StmtScope{
+							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select5>",
 									Fields: []*common_model.Field{
@@ -634,7 +633,7 @@ FROM
 										}},
 									},
 									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos_aggregate.base", Name: "<select6>"}},
-									Scopes: []*common_model.StmtScope{
+									SubScopes: []*common_model.StmtScope{
 										{
 											Name: "<select6>",
 											Fields: []*common_model.Field{
@@ -659,7 +658,7 @@ FROM
 								},
 							},
 							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos", Name: "<select7>"}},
-							Scopes: []*common_model.StmtScope{
+							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select7>",
 									Fields: []*common_model.Field{
@@ -672,7 +671,7 @@ FROM
 												{Columns: []*common_model.FieldColumn{{Name: "_e", Type: common_model.FieldReference}}},
 											},
 											Tables: []*common_model.Table{{AsName: "_e", Name: "<select9>"}},
-											Scopes: []*common_model.StmtScope{
+											SubScopes: []*common_model.StmtScope{
 												{
 													Name: "<select9>",
 													Fields: []*common_model.Field{
@@ -690,7 +689,7 @@ FROM
 										},
 									},
 									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos.base", Name: "<select8>"}},
-									Scopes: []*common_model.StmtScope{
+									SubScopes: []*common_model.StmtScope{
 										{
 											Name: "<select8>",
 											Fields: []*common_model.Field{

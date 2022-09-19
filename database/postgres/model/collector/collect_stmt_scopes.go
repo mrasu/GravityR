@@ -614,7 +614,7 @@ func (sc *scopeCollector) newScope(parent *scopeInfo, s *tree.Select) *common_mo
 	scope := &common_model.StmtScope{Name: name}
 
 	if parent != nil {
-		parent.scope.Scopes = append(parent.scope.Scopes, scope)
+		parent.scope.SubScopes = append(parent.scope.SubScopes, scope)
 	}
 
 	return scope

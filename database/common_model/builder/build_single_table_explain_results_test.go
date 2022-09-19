@@ -71,7 +71,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 			},
 		},
 		{
-			name: "multiple tables",
+			name: "multiple refTables",
 			nodes: []*explainNode{
 				{
 					tableName:          "",

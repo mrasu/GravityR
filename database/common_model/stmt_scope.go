@@ -9,7 +9,7 @@ type StmtScope struct {
 	Fields      []*Field
 	FieldScopes []*StmtScope
 	Tables      []*Table
-	Scopes      []*StmtScope
+	SubScopes   []*StmtScope
 	CTEs        map[string]*StmtScope
 }
 
@@ -19,7 +19,7 @@ func (ss *StmtScope) ListAsTableMap() map[string]*lib.Set[string] {
 		res[t.AsName] = lib.NewSetS([]string{t.Name})
 	}
 
-	for _, s := range ss.Scopes {
+	for _, s := range ss.SubScopes {
 		asTableMap := s.ListAsTableMap()
 		ts := lib.NewSet[string]()
 		for name, tNames := range asTableMap {
