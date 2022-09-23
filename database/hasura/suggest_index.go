@@ -31,7 +31,7 @@ func SuggestIndex(cli *hasura.Client, query string, aTree *model.ExplainAnalyzeT
 	for _, t := range tables {
 		fmt.Println(t)
 	}
-	scopes, errs := pCollector.CollectStmtScopes(stmt)
+	scopes, errs := pCollector.CollectStmtScopes(stmt, "public")
 	if len(errs) > 0 {
 		return nil, errs
 	}

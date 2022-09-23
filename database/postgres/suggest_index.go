@@ -32,7 +32,7 @@ func SuggestIndex(db *postgres.DB, schema, query string, aTree *model.ExplainAna
 		fmt.Println(t)
 	}
 
-	scopes, errs := collector.CollectStmtScopes(stmt)
+	scopes, errs := collector.CollectStmtScopes(stmt, "public")
 	if len(errs) > 0 {
 		return nil, errs
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/postgres/model/collector"
 	"github.com/mrasu/GravityR/thelper/tdata"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -198,7 +199,7 @@ func TestCollectStmtScopes_SingleField(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.query)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			expectedScopes := []*common_model.StmtScope{{
@@ -280,7 +281,7 @@ func TestCollectStmtScopes_Joins(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.query)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			expectedScopes := []*common_model.StmtScope{{
@@ -370,7 +371,7 @@ func TestCollectStmtScopes_PostgresSubquery(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.sql)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			if diff := cmp.Diff(tt.expectedScopes, actualScopes); diff != "" {
@@ -405,7 +406,7 @@ func TestCollectStmtScopes_HasuraSubquery(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.sql)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			if diff := cmp.Diff(tt.expectedScopes, actualScopes); diff != "" {
@@ -478,7 +479,7 @@ func TestCollectStmtScopes_Where(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.query)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			expectedScopes := []*common_model.StmtScope{{
@@ -562,7 +563,7 @@ func TestCollectStmtScopes_GroupBy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.query)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			expectedScopes := []*common_model.StmtScope{{
@@ -607,7 +608,7 @@ func TestCollectStmtScopes_Having(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.query)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			expectedScopes := []*common_model.StmtScope{{
@@ -663,7 +664,7 @@ func TestCollectStmtScopes_OrderBy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.query)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			expectedScopes := []*common_model.StmtScope{{
@@ -701,7 +702,7 @@ func TestCollectStmtScopes_Limit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			stmt := toStatement(t, tt.query)
-			actualScopes, errs := collector.CollectStmtScopes(stmt)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
 			require.Empty(t, errs)
 
 			expectedScopes := []*common_model.StmtScope{{
@@ -711,6 +712,81 @@ func TestCollectStmtScopes_Limit(t *testing.T) {
 			}}
 			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
 				t.Errorf(diff)
+			}
+		})
+	}
+}
+
+func TestCollectStmtScopes_SchemaSpecified(t *testing.T) {
+	tests := []struct {
+		name   string
+		query  string
+		fields []*common_model.Field
+		tables []*common_model.Table
+		errMsg string
+	}{
+		{
+			name:  "specifying table name in expression",
+			query: "SELECT users.id FROM users",
+			fields: []*common_model.Field{
+				{Columns: []*common_model.FieldColumn{{Table: "users", Name: "id", Type: common_model.FieldReference}}},
+			},
+			tables: []*common_model.Table{{Name: "users"}},
+		},
+		{
+			name:  "specifying schema name, public, in expression",
+			query: "SELECT public.users.id FROM users",
+			fields: []*common_model.Field{
+				{Columns: []*common_model.FieldColumn{{Table: "users", Name: "id", Type: common_model.FieldReference}}},
+			},
+			tables: []*common_model.Table{{Name: "users"}},
+		},
+		{
+			name:   "specifying invalid schema name in expression",
+			query:  "SELECT dummy.users.id FROM users",
+			errMsg: "schema or catalog/db specification is not supported",
+		},
+		{
+			name:   "specifying catalog name in table name",
+			query:  "SELECT foo.public.users.id FROM users",
+			errMsg: "schema or catalog/db specification is not supported",
+		},
+		{
+			name:  "specifying schema name, public, in table name",
+			query: "SELECT id FROM public.users",
+			fields: []*common_model.Field{
+				{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
+			},
+			tables: []*common_model.Table{{Name: "users"}},
+		},
+		{
+			name:   "specifying invalid schema name in table name",
+			query:  "SELECT id FROM dummy.users",
+			errMsg: "schema or catalog/db specification is not supported",
+		},
+		{
+			name:   "specifying catalog name in table name",
+			query:  "SELECT id FROM foo.public.users",
+			errMsg: "schema or catalog/db specification is not supported",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			stmt := toStatement(t, tt.query)
+			actualScopes, errs := collector.CollectStmtScopes(stmt, "public")
+			if tt.errMsg != "" {
+				require.Equal(t, 1, len(errs))
+				assert.Contains(t, errs[0].Error(), tt.errMsg)
+			} else {
+				require.Empty(t, errs)
+				expectedScopes := []*common_model.StmtScope{{
+					Name:   "<root>",
+					Fields: tt.fields,
+					Tables: tt.tables,
+				}}
+				if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+					t.Errorf(diff)
+				}
 			}
 		})
 	}

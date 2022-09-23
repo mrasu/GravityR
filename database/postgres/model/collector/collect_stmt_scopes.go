@@ -10,6 +10,8 @@ import (
 )
 
 type scopeCollector struct {
+	targetSchema string
+
 	scopes []*common_model.StmtScope
 	errors []error
 
@@ -30,16 +32,17 @@ type selectInfo struct {
 	fieldOf *scopeInfo
 }
 
-func newScopeCollector() *scopeCollector {
+func newScopeCollector(targetSchema string) *scopeCollector {
 	return &scopeCollector{
+		targetSchema:             targetSchema,
 		scopeStack:               lib.NewStack[scopeInfo](),
 		foundSelectInfos:         map[*tree.Select]*selectInfo{},
 		foundSelectPrefixCounter: map[string]int{},
 	}
 }
 
-func CollectStmtScopes(stmt *parser.Statement) ([]*common_model.StmtScope, []error) {
-	sc := newScopeCollector()
+func CollectStmtScopes(stmt *parser.Statement, targetSchema string) ([]*common_model.StmtScope, []error) {
+	sc := newScopeCollector(targetSchema)
 	if _, ok := stmt.AST.(*tree.Select); !ok {
 		return nil, []error{lib.NewUnsupportedError("only SELECT query is supported")}
 	}
@@ -515,7 +518,11 @@ func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*common_model.T
 				fields = append(fields, &common_model.Field{Columns: fcs})
 			}
 		case *tree.TableName:
-			tables = []*common_model.Table{{AsName: t.As.Alias.Normalize(), Name: tt.Table()}}
+			if sc.isSchemaSpecifiedTableName(tt) {
+				sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
+			} else {
+				tables = []*common_model.Table{{AsName: t.As.Alias.Normalize(), Name: tt.Table()}}
+			}
 		case *tree.TableRef:
 			sc.lastError = lib.NewUnsupportedError("numeric table reference is not supported")
 		}
@@ -619,8 +626,7 @@ func (sc *scopeCollector) newScope(parent *scopeInfo, s *tree.Select) *common_mo
 }
 
 func (sc *scopeCollector) isSchemaSpecified(un *tree.UnresolvedName, schemaPos int) bool {
-	// public is allowed as this collector assumes schema is always "public"
-	if (un.NumParts == schemaPos+1 && un.Parts[schemaPos] != "public") || un.NumParts > schemaPos+1 {
+	if (un.NumParts == schemaPos+1 && un.Parts[schemaPos] != sc.targetSchema) || un.NumParts > schemaPos+1 {
 		return true
 	}
 
@@ -628,10 +634,22 @@ func (sc *scopeCollector) isSchemaSpecified(un *tree.UnresolvedName, schemaPos i
 }
 
 func (sc *scopeCollector) isSchemaSpecified2(uon *tree.UnresolvedObjectName, schemaPos int) bool {
-	// public is allowed as this collector assumes schema is always "public"
-	if (uon.NumParts == schemaPos+1 && uon.Parts[schemaPos] != "public") || uon.NumParts > schemaPos+1 {
+	if (uon.NumParts == schemaPos+1 && uon.Parts[schemaPos] != sc.targetSchema) || uon.NumParts > schemaPos+1 {
 		return true
 	}
 
 	return false
+}
+
+func (sc *scopeCollector) isSchemaSpecifiedTableName(tt *tree.TableName) bool {
+	if tt.CatalogName != "" {
+		return true
+	}
+
+	sName := tt.SchemaName.Normalize()
+	if sName == "" || sName == sc.targetSchema {
+		return false
+	}
+
+	return true
 }
