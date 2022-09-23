@@ -14,13 +14,13 @@
 
 <main>
   {#if suggestData.query}
-    <DetailsCard title="SQL" open>
+    <DetailsCard title="SQL" open testId="sql">
       <PlainText text={suggestData.query} />
     </DetailsCard>
   {/if}
 
   {#if suggestData.analyzeNodes}
-    <DetailsCard title="Explain Tree" open>
+    <DetailsCard title="Explain Tree" open testId="explain">
       <ExplainText
         {highlightIndexKey}
         analyzeNodes={suggestData.analyzeNodes}
@@ -29,7 +29,7 @@
   {/if}
 
   {#if suggestData.analyzeNodes}
-    <DetailsCard title="Execution Timeline" open>
+    <DetailsCard title="Execution Timeline" open testId="explainChart">
       <ExplainAnalyzeChart
         {highlightIndexKey}
         chartDescription="Execution time based timeline from EXPLAIN ANALYZE"
@@ -39,7 +39,11 @@
   {/if}
 
   {#if suggestData.indexTargets}
-    <DetailsCard title="Index suggestion" open={!suggestData.examinationResult}>
+    <DetailsCard
+      title="Index suggestion"
+      open={!suggestData.examinationResult}
+      testId="suggest"
+    >
       <IndexSuggestion
         subCommand="mysql"
         examinationCommandOptions={suggestData.examinationCommandOptions}
@@ -49,7 +53,7 @@
   {/if}
 
   {#if suggestData.examinationResult}
-    <DetailsCard title="Examination Result" open>
+    <DetailsCard title="Examination Result" open testId="examination">
       <ExaminationResultTable result={suggestData.examinationResult} />
     </DetailsCard>
   {/if}

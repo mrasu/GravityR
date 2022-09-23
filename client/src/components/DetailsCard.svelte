@@ -3,10 +3,11 @@
 
   export let title: string;
   export let open = false;
+  export let testId = "";
 </script>
 
 <div class="details-card">
-  <Details class="card" {open}>
+  <Details class="card" {open} data-testid={testId || null}>
     <span slot="summary">{title}</span>
     <slot />
   </Details>

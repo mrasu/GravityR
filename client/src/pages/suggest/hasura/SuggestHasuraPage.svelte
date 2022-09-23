@@ -18,19 +18,19 @@ ${JSON.stringify(suggestData.gqlVariables)}`;
 
 <main>
   {#if suggestData.gql}
-    <DetailsCard title="GraphQL query" open>
+    <DetailsCard title="GraphQL query" open testId="query">
       <PlainText text={gqlText} />
     </DetailsCard>
   {/if}
 
   {#if suggestData.query}
-    <DetailsCard title="SQL">
+    <DetailsCard title="SQL" testId="sql">
       <PlainText text={suggestData.query} />
     </DetailsCard>
   {/if}
 
   {#if suggestData.analyzeNodes}
-    <DetailsCard title="Explain Tree" open>
+    <DetailsCard title="Explain Tree" open testId="explain">
       <ExplainText
         {highlightIndexKey}
         analyzeNodes={suggestData.analyzeNodes}
@@ -40,7 +40,7 @@ ${JSON.stringify(suggestData.gqlVariables)}`;
   {/if}
 
   {#if suggestData.analyzeNodes}
-    <DetailsCard title="Estimated Timeline" open>
+    <DetailsCard title="Estimated Timeline" open testId="explainChart">
       <ExplainChart
         {highlightIndexKey}
         chartDescription="Estimated cost based timeline from EXPLAIN"
@@ -50,7 +50,11 @@ ${JSON.stringify(suggestData.gqlVariables)}`;
   {/if}
 
   {#if suggestData.indexTargets}
-    <DetailsCard title="Index suggestion" open={!suggestData.examinationResult}>
+    <DetailsCard
+      title="Index suggestion"
+      open={!suggestData.examinationResult}
+      testId="suggest"
+    >
       <IndexSuggestion
         subCommand="hasura"
         examinationCommandOptions={suggestData.examinationCommandOptions}
@@ -60,7 +64,7 @@ ${JSON.stringify(suggestData.gqlVariables)}`;
   {/if}
 
   {#if suggestData.examinationResult}
-    <DetailsCard title="Examination Result" open>
+    <DetailsCard title="Examination Result" open testId="examination">
       <ExaminationResultTable result={suggestData.examinationResult} />
     </DetailsCard>
   {/if}

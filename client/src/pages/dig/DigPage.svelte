@@ -19,14 +19,14 @@
 
 {#if activeTab === "plain"}
   <div class="details-card">
-    <Details class="card" open>
+    <Details class="card" open data-testid="sqls">
       <span slot="summary">Heaviest SQLs</span>
       <HeaviestSqlRanking timeDbLoads={digData.sqlDbLoads} />
     </Details>
   </div>
 
   <div class="details-card">
-    <Details class="card" open>
+    <Details class="card" open data-testid="timeline">
       <span slot="summary">Heavy SQL Timeline</span>
       <HeavySqlTimeline timeDbLoads={digData.sqlDbLoads} />
     </Details>
