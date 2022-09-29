@@ -1,5 +1,7 @@
 package injection
 
-import "embed"
+import (
+	"io/fs"
+)
 
-var ClientDist embed.FS
+var ClientDist fs.FS

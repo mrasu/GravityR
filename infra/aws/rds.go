@@ -10,11 +10,15 @@ import (
 )
 
 type Rds struct {
-	client *aRds.Client
+	client aRds.DescribeDBInstancesAPIClient
 }
 
 func NewRds(cfg aws.Config) *Rds {
 	cli := aRds.NewFromConfig(cfg)
+	return NewRdsWithCli(cli)
+}
+
+func NewRdsWithCli(cli aRds.DescribeDBInstancesAPIClient) *Rds {
 	return &Rds{
 		client: cli,
 	}

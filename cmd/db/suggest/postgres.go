@@ -59,12 +59,16 @@ func (pr *postgresRunner) run() error {
 	}
 	defer db.Close()
 
-	examinationIdxTargets, err := parseIndexTargets(postgresVar.indexTargets)
+	return pr.runSuggest(postgresVar, flag.DbFlag.Output, db, cfg.GetSearchPathOrPublic())
+}
+
+func (pr *postgresRunner) runSuggest(v postgresVarS, outputPath string, db *iPostgres.DB, schema string) error {
+	examinationIdxTargets, err := parseIndexTargets(v.indexTargets)
 	if err != nil {
 		return err
 	}
 
-	explainLines, err := db.ExplainWithAnalyze(postgresVar.query)
+	explainLines, err := db.ExplainWithAnalyze(v.query)
 	if err != nil {
 		return err
 	}
@@ -74,7 +78,7 @@ func (pr *postgresRunner) run() error {
 		return err
 	}
 
-	its, errs := postgres.SuggestIndex(db, cfg.GetSearchPathOrPublic(), postgresVar.query, aTree)
+	its, errs := postgres.SuggestIndex(db, schema, v.query, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
@@ -98,18 +102,17 @@ func (pr *postgresRunner) run() error {
 	}
 
 	var er *common_model.ExaminationResult
-	if postgresVar.runsExamination {
+	if v.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
-		ie := postgres.NewIndexExaminer(db, postgresVar.query)
+		ie := postgres.NewIndexExaminer(db, v.query)
 		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
 			return err
 		}
 	}
 
-	outputPath := flag.DbFlag.Output
 	if outputPath != "" {
-		err := pr.createHTML(outputPath, idxTargets, er, aTree)
+		err := pr.createHTML(v, outputPath, idxTargets, er, aTree)
 		if err != nil {
 			return err
 		}
@@ -122,7 +125,7 @@ func (pr *postgresRunner) run() error {
 	return nil
 }
 
-func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
+func (pr *postgresRunner) createHTML(v postgresVarS, outputPath string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
 	var vits []*viewmodel.VmIndexTarget
 	for _, it := range idxTargets {
 		vits = append(vits, it.ToViewModel())
@@ -134,13 +137,13 @@ func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*common_mod
 	}
 
 	bo := html.NewSuggestPostgresDataBuildOption(
-		postgresVar.query,
+		v.query,
 		aTree.ToViewModel(),
 		aTree.SummaryText,
 		vits,
 		[]*viewmodel.VmExaminationCommandOption{
-			viewmodel.CreateOutputExaminationOption(!postgresVar.runsExamination, outputPath),
-			{IsShort: true, Name: "q", Value: postgresVar.query},
+			viewmodel.CreateOutputExaminationOption(!v.runsExamination, outputPath),
+			{IsShort: true, Name: "q", Value: v.query},
 		},
 		ver,
 	)

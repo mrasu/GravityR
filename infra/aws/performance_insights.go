@@ -15,12 +15,16 @@ const sqlGroupName = "db.sql"
 const tokenizedSqlGroupName = "db.sql_tokenized"
 
 type PerformanceInsights struct {
-	client *aPi.Client
+	client aPi.GetResourceMetricsAPIClient
 }
 
 func NewPerformanceInsights(cfg aws.Config) *PerformanceInsights {
+	return NewPerformanceInsightsWithCli(aPi.NewFromConfig(cfg))
+}
+
+func NewPerformanceInsightsWithCli(cli aPi.GetResourceMetricsAPIClient) *PerformanceInsights {
 	return &PerformanceInsights{
-		client: aPi.NewFromConfig(cfg),
+		client: cli,
 	}
 }
 

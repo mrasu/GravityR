@@ -276,13 +276,16 @@ func runMySql() error {
 			},
 		}
 	*/
+	return runMysqlSuggest(mysqlVar, flag.DbFlag.Output, db, cfg.GetDBName())
+}
 
-	examinationIdxTargets, err := parseIndexTargets(mysqlVar.indexTargets)
+func runMysqlSuggest(v mysqlVarS, outputPath string, db *iMysql.DB, dbName string) error {
+	examinationIdxTargets, err := parseIndexTargets(v.indexTargets)
 	if err != nil {
 		return err
 	}
 
-	explainLine, err := db.Explain(mysqlVar.query)
+	explainLine, err := db.Explain(v.query)
 	if err != nil {
 		return err
 	}
@@ -292,7 +295,7 @@ func runMySql() error {
 		return err
 	}
 
-	its, errs := mysql.SuggestIndex(db, cfg.GetDBName(), mysqlVar.query, aTree)
+	its, errs := mysql.SuggestIndex(db, dbName, v.query, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
@@ -316,16 +319,15 @@ func runMySql() error {
 	}
 
 	var er *common_model.ExaminationResult
-	if mysqlVar.runsExamination {
+	if v.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
-		ie := mysql.NewIndexExaminer(db, mysqlVar.query)
+		ie := mysql.NewIndexExaminer(db, v.query)
 		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
 			return err
 		}
 	}
 
-	outputPath := flag.DbFlag.Output
 	if outputPath != "" {
 		var vits []*viewmodel.VmIndexTarget
 		for _, it := range idxTargets {
@@ -338,12 +340,12 @@ func runMySql() error {
 		}
 
 		bo := html.NewSuggestMySQLDataBuildOption(
-			mysqlVar.query,
+			v.query,
 			aTree.ToViewModel(),
 			vits,
 			[]*viewmodel.VmExaminationCommandOption{
-				viewmodel.CreateOutputExaminationOption(!mysqlVar.runsExamination, outputPath),
-				{IsShort: true, Name: "q", Value: mysqlVar.query},
+				viewmodel.CreateOutputExaminationOption(!v.runsExamination, outputPath),
+				{IsShort: true, Name: "q", Value: v.query},
 			},
 			ver,
 		)

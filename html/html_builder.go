@@ -2,6 +2,7 @@ package html
 
 import (
 	"github.com/mrasu/GravityR/injection"
+	"github.com/pkg/errors"
 	"html/template"
 	"io/fs"
 	"os"
@@ -10,11 +11,11 @@ import (
 func CreateHtml(filename string, bo *BuildOption) error {
 	script, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/main.js")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to open file")
 	}
 	style, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/main.css")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to open file")
 	}
 
 	tmpl := `
@@ -37,7 +38,7 @@ func CreateHtml(filename string, bo *BuildOption) error {
 `
 	tpl, err := template.New("").Parse(tmpl)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed create template")
 	}
 	m := map[string]interface{}{
 		"script": template.JS(script),
@@ -47,12 +48,12 @@ func CreateHtml(filename string, bo *BuildOption) error {
 
 	f, err := os.Create(filename)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to create html file")
 	}
 
 	err = tpl.Execute(f, m)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to write template to html")
 	}
 
 	return nil

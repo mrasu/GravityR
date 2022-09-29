@@ -39,20 +39,21 @@ func runDig() error {
 		return err
 	}
 
-	cli := aws.NewRds(cfg)
-	dbs, err := cli.GetDBs([]string{"mysql"})
-	if err != nil {
-		return err
-	}
+	rdsCli := aws.NewRds(cfg)
+	piCli := aws.NewPerformanceInsights(cfg)
 
-	client := aws.NewPerformanceInsights(cfg)
+	return runPerformanceInsightsDig(piVar, flag.DbFlag.Output, rdsCli, piCli)
+}
+
+func runPerformanceInsightsDig(v piVarS, outputPath string, rdsCli *aws.Rds, piCli *aws.PerformanceInsights) error {
+	dbs, err := rdsCli.GetDBs([]string{"mysql"})
 	if err != nil {
 		return err
 	}
 
 	startFrom := time.Now().Add(-7 * 24 * time.Hour)
-	if piVar.start != "" {
-		t, err := time.Parse(time.RFC3339, piVar.start)
+	if v.start != "" {
+		t, err := time.Parse(time.RFC3339, v.start)
 		if err != nil {
 			return errors.Wrap(err, "Invalid format")
 		}
@@ -66,13 +67,13 @@ func runDig() error {
 		for i := 0; i < 14; i++ {
 			fmt.Printf("Getting data for %s\n", current.Format(time.RFC3339))
 
-			avgs, err := client.GetHalfDaySqlMetrics(db, current)
+			avgs, err := piCli.GetHalfDaySqlMetrics(db, current)
 			if err != nil {
 				return err
 			}
 			sqlLoadAvgs = append(sqlLoadAvgs, avgs...)
 
-			tAvgs, err := client.GetHalfDayTokenizedSqlMetrics(db, current)
+			tAvgs, err := piCli.GetHalfDayTokenizedSqlMetrics(db, current)
 			if err != nil {
 				return err
 			}
@@ -86,7 +87,6 @@ func runDig() error {
 	tokenizedSqlDbLoads := aws.ConvertPiSQLLoadAvgsToVms(startFrom, end, tokenizedSqlLoadAvgs)
 	bo := html.NewDigDataBuildOption(sqlDbLoads, tokenizedSqlDbLoads)
 
-	outputPath := flag.DbFlag.Output
 	err = html.CreateHtml(outputPath, bo)
 	if err != nil {
 		return err
