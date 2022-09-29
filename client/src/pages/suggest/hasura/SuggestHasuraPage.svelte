@@ -34,7 +34,7 @@ ${JSON.stringify(suggestData.gqlVariables)}`;
       <ExplainText
         {highlightIndexKey}
         analyzeNodes={suggestData.analyzeNodes}
-        trailingText={suggestData.planningText}
+        trailingText={suggestData.summaryText}
       />
     </DetailsCard>
   {/if}

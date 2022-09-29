@@ -54,7 +54,7 @@ const examinationResult = {
   ],
 };
 
-const postgresPlanningText = `Planning:
+const postgresSummaryText = `Planning:
   Buffers: shared hit=6
 Planning Time: 0.167 ms
 JIT:
@@ -97,7 +97,7 @@ const hasuraIndexTargets = [
   },
 ];
 
-const hasuraPostgresPlanningText = `JIT:
+const hasuraPostgresSummaryText = `JIT:
   Functions: 30
   Options: Inlining false, Optimization false, Expressions true, Deforming true`;
 
@@ -115,7 +115,7 @@ export const dummySuggestData = {
   postgres: {
     query: query,
     analyzeNodes: analyzePostgresNodes,
-    planningText: postgresPlanningText,
+    summaryText: postgresSummaryText,
     indexTargets: indexTargets,
     examinationResult: examinationResult,
     examinationCommandOptions: [
@@ -129,7 +129,7 @@ export const dummySuggestData = {
       gqlVariables: { email: "test1111@example.com" },
       query: hasuraPostgresQuery,
       analyzeNodes: analyzeHasuraPostgresNodes,
-      planningText: hasuraPostgresPlanningText,
+      summaryText: hasuraPostgresSummaryText,
       indexTargets: hasuraIndexTargets,
       examinationResult: null,
       examinationCommandOptions: [

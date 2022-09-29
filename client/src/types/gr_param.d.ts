@@ -23,7 +23,7 @@ export interface IMysqlSuggestData extends IDbSuggestData {
 
 export interface IPostgresSuggestData extends IDbSuggestData {
   analyzeNodes?: IPostgresAnalyzeData[];
-  planningText: string;
+  summaryText: string;
 }
 
 export interface IHasuraSuggestData {
@@ -34,7 +34,7 @@ export interface IHasuraPostgresSuggestData extends IDbSuggestData {
   gql: string;
   gqlVariables: Record<string, any>;
   analyzeNodes?: IPostgresExplainData[];
-  planningText: string;
+  summaryText: string;
 }
 
 export interface IDigData {

@@ -19,7 +19,7 @@ describe("SuggestPostgresPage", () => {
         indexResults: [],
       },
       analyzeNodes: [],
-      planningText: "",
+      summaryText: "",
     });
 
     it("renders sql", () => {

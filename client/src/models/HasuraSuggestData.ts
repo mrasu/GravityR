@@ -15,7 +15,7 @@ export class HasuraSuggestData extends BaseSuggestData {
   gql: string;
   gqlVariables: Record<string, any>;
   analyzeNodes?: PostgresExplainData[];
-  planningText: string;
+  summaryText: string;
 
   constructor(hasuraData: IHasuraSuggestData) {
     const suggestData = hasuraData.postgres;
@@ -25,7 +25,7 @@ export class HasuraSuggestData extends BaseSuggestData {
       language: "postgresql",
     });
 
-    this.planningText = suggestData.planningText;
+    this.summaryText = suggestData.summaryText;
 
     this.gql = suggestData.gql;
     this.gqlVariables = suggestData.gqlVariables;

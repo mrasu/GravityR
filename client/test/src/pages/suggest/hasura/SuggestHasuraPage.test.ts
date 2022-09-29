@@ -22,7 +22,7 @@ describe("SuggestHasuraPage", () => {
           indexResults: [],
         },
         analyzeNodes: [],
-        planningText: "a",
+        summaryText: "a",
       },
     });
 

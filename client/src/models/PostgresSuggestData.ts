@@ -12,7 +12,7 @@ import { PostgresAnalyzeData } from "@/models/explain_data/PostgresAnalyzeData";
 
 export class PostgresSuggestData extends BaseSuggestData {
   analyzeNodes?: PostgresAnalyzeData[];
-  planningText: string;
+  summaryText: string;
 
   constructor(suggestData: IPostgresSuggestData) {
     super(suggestData);
@@ -21,7 +21,7 @@ export class PostgresSuggestData extends BaseSuggestData {
       PostgresAnalyzeData,
       suggestData.analyzeNodes
     );
-    this.planningText = suggestData.planningText;
+    this.summaryText = suggestData.summaryText;
   }
 
   protected createIndexTargets(targets?: IIndexTarget[] | null): IndexTarget[] {
