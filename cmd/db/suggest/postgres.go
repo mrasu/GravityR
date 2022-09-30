@@ -1,7 +1,6 @@
 package suggest
 
 import (
-	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/common_model"
@@ -11,6 +10,7 @@ import (
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iPostgres "github.com/mrasu/GravityR/infra/postgres"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
@@ -81,13 +81,13 @@ func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema st
 	}
 	idxTargets := toUniqueIndexTargets(its)
 
-	fmt.Println("======suggest index by order-------")
 	if len(idxTargets) > 0 {
-		for _, it := range idxTargets {
-			fmt.Println(it)
+		log.Debug().Msg("Found possibly efficient index combinations:")
+		for i, it := range idxTargets {
+			log.Printf("\t%d.%s", i, it.CombinationString())
 		}
 	} else {
-		fmt.Println("No suggestion. Perhaps already indexed?")
+		log.Debug().Msg("No possibly efficient index found. Perhaps already indexed?")
 	}
 
 	if len(examinationIdxTargets) == 0 {
@@ -100,7 +100,7 @@ func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema st
 
 	var er *common_model.ExaminationResult
 	if pr.runsExamination {
-		fmt.Printf("\n======going to examine-------\n")
+		log.Info().Msg("Start examination...")
 		ie := postgres.NewIndexExaminer(db, pr.query)
 		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
@@ -116,7 +116,7 @@ func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema st
 
 		wd, err := os.Getwd()
 		if err == nil {
-			fmt.Printf("Result html is at: %s\n", path.Join(wd, outputPath))
+			log.Info().Msg("Result html is at: " + path.Join(wd, outputPath))
 		}
 	}
 	return nil

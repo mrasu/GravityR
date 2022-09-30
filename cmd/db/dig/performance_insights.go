@@ -6,6 +6,7 @@ import (
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/infra/aws"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
@@ -31,8 +32,6 @@ type piRunner struct {
 }
 
 func (pr *piRunner) run() error {
-	fmt.Printf("mocked?: %t\n", flag.GlobalFlag.UseMock)
-
 	gFlg := flag.GlobalFlag
 	cfg, err := aws.NewAwsConfig(gFlg.UseMock, gFlg.Verbose)
 	if err != nil {
@@ -65,7 +64,7 @@ func (pr *piRunner) dig(outputPath string, rdsCli *aws.Rds, piCli *aws.Performan
 	for _, db := range dbs {
 		current := startFrom
 		for i := 0; i < 14; i++ {
-			fmt.Printf("Getting data for %s\n", current.Format(time.RFC3339))
+			log.Info().Msg(fmt.Sprintf("Getting data for %s", current.Format(time.RFC3339)))
 
 			avgs, err := piCli.GetHalfDaySqlMetrics(db, current)
 			if err != nil {
@@ -94,7 +93,7 @@ func (pr *piRunner) dig(outputPath string, rdsCli *aws.Rds, piCli *aws.Performan
 
 	wd, err := os.Getwd()
 	if err == nil {
-		fmt.Printf("Result html is at: %s\n", path.Join(wd, outputPath))
+		log.Info().Msg("Result html is at: " + path.Join(wd, outputPath))
 	}
 
 	return nil

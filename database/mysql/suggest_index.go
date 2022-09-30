@@ -1,13 +1,11 @@
 package mysql
 
 import (
-	"fmt"
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/common_model/builder"
 	"github.com/mrasu/GravityR/database/mysql/model"
 	"github.com/mrasu/GravityR/database/mysql/model/collector"
 	"github.com/mrasu/GravityR/infra/mysql"
-	"github.com/mrasu/GravityR/lib"
 	"github.com/pingcap/tidb/parser"
 	"github.com/pingcap/tidb/parser/ast"
 )
@@ -157,12 +155,8 @@ func SuggestIndex(db *mysql.DB, database, query string, aTree *model.ExplainAnal
 	if err != nil {
 		return nil, []error{err}
 	}
-	fmt.Println(lib.Join(idxCandidates, "\n", func(f *common_model.IndexTargetTable) string { return f.String() }))
-	fmt.Println()
 
 	tableResults := aTree.ToSingleTableResults()
-	fmt.Println(lib.Join(tableResults, "\n", func(st *common_model.SingleTableExplainResult) string { return st.String() }))
-
 	return builder.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
 

@@ -5,6 +5,7 @@ import (
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -50,14 +51,14 @@ func (iee *IndexEfficiencyExaminer) Run(its []*common_model.IndexTarget) (*commo
 	}
 	er := common_model.NewExaminationResult(irs, origExecTimeMillis)
 
-	fmt.Printf("\n\n====RESULT====\n")
-	fmt.Printf("Original Time: %dms\n", origExecTimeMillis)
+	log.Debug().Msg("====RESULT====")
+	log.Printf("Original Time: %dms", origExecTimeMillis)
 
 	for tName, rs := range results {
-		fmt.Printf("==Table: %s\n", tName)
+		log.Debug().Msg("==Table: " + tName)
 		lib.Sort(rs, func(r *common_model.ExaminationIndexResult) int64 { return r.ExecutionTimeMillis })
 		for _, r := range rs {
-			fmt.Printf("Time: %dms (%.1f%% reduced), Columns(%s)\n",
+			log.Printf("Time: %dms (%.1f%% reduced), Columns(%s)",
 				r.ExecutionTimeMillis,
 				(1-float64(r.ExecutionTimeMillis)/float64(origExecTimeMillis))*100,
 				lib.Join(r.IndexTarget.Columns, ",", func(i *common_model.IndexColumn) string { return i.SafeName() }),
@@ -79,14 +80,14 @@ func (iee *IndexEfficiencyExaminer) examine(id string, it *common_model.IndexTar
 		idxName = fmt.Sprintf("%s_%d", idxName[:maxIdxNameLen], rand.Intn(999999999))
 	}
 
-	fmt.Printf("Creating index(%s)...\n", idxName)
+	log.Info().Msg(fmt.Sprintf("Creating index(%s)...", idxName))
 	err = iee.ie.CreateIndex(idxName, it)
 	if err != nil {
 		return nil, err
 	}
 
 	defer func() {
-		fmt.Printf("Dropping index(%s)...\n", idxName)
+		log.Info().Msg(fmt.Sprintf("Dropping index(%s)...", idxName))
 		err2 := iee.ie.DropIndex(idxName, it)
 		if err == nil {
 			err = errors.Wrap(err2, "failed to drop index")
@@ -102,6 +103,6 @@ func (iee *IndexEfficiencyExaminer) examine(id string, it *common_model.IndexTar
 }
 
 func (iee *IndexEfficiencyExaminer) execute() (int64, error) {
-	fmt.Println("Executing query...")
+	log.Info().Msg("Executing query...")
 	return iee.ie.Execute()
 }

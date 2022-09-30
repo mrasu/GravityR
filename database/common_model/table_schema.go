@@ -46,11 +46,11 @@ func CreateTableSchemas[T any](tables []string, vals []T, f func(T) (string, str
 	return res
 }
 
-func (ts *TableSchema) String() string {
+func (ts *TableSchema) TableDescription() string {
 	txt := fmt.Sprintf(
-		"TableSchema(name: %s, columns: [%s], primaryKeys: %s)",
+		"Table(name: %s, columns: [%s], primaryKeys: %s)",
 		ts.Name,
-		lib.Join(ts.Columns, ", ", func(c *ColumnSchema) string { return c.String() }),
+		lib.Join(ts.Columns, ", ", func(c *ColumnSchema) string { return c.Name }),
 		ts.PrimaryKeys,
 	)
 	return txt

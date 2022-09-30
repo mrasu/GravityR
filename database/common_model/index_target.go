@@ -54,9 +54,9 @@ func (it *IndexTarget) ToViewModel() *viewmodel.VmIndexTarget {
 	return vm
 }
 
-func (it *IndexTarget) String() string {
+func (it *IndexTarget) CombinationString() string {
 	txt := fmt.Sprintf(
-		"IndexTargetTable(table: %s, columns: [%s])",
+		"table: %s, columns: [%s])",
 		it.TableName,
 		lib.Join(it.Columns, ", ", func(f *IndexColumn) string { return f.name }),
 	)

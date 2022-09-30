@@ -1,7 +1,6 @@
 package hasura
 
 import (
-	"fmt"
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/common_model/builder"
@@ -9,7 +8,6 @@ import (
 	"github.com/mrasu/GravityR/database/postgres/model"
 	pCollector "github.com/mrasu/GravityR/database/postgres/model/collector"
 	"github.com/mrasu/GravityR/infra/hasura"
-	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 )
 
@@ -28,9 +26,7 @@ func SuggestIndex(cli *hasura.Client, query string, aTree *model.ExplainAnalyzeT
 	if err != nil {
 		return nil, []error{err}
 	}
-	for _, t := range tables {
-		fmt.Println(t)
-	}
+
 	scopes, errs := pCollector.CollectStmtScopes(stmt, "public")
 	if len(errs) > 0 {
 		return nil, errs
@@ -40,12 +36,8 @@ func SuggestIndex(cli *hasura.Client, query string, aTree *model.ExplainAnalyzeT
 	if err != nil {
 		return nil, []error{err}
 	}
-	fmt.Println(lib.Join(idxCandidates, "\n", func(f *common_model.IndexTargetTable) string { return f.String() }))
-	fmt.Println()
 
 	tableResults := aTree.ToSingleTableResults()
-	fmt.Println(lib.Join(tableResults, "\n", func(st *common_model.SingleTableExplainResult) string { return st.String() }))
-
 	return builder.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
 

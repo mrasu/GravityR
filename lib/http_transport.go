@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"log"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"time"
 )

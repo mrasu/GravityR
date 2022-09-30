@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -15,6 +17,18 @@ var rootCmd = &cobra.Command{
 This exists to remove bottleneck in your application without help of experts.
 And also this is to help experts solving problems faster and easily.  
 `,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+		if flag.GlobalFlag.Verbose {
+			zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		} else {
+			zerolog.SetGlobalLevel(zerolog.InfoLevel)
+		}
+
+		if flag.GlobalFlag.UseMock {
+			log.Info().Msg("NOTE: Using mock")
+		}
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

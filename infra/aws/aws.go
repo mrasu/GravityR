@@ -10,7 +10,7 @@ import (
 )
 
 const mockEndpoint = "http://localhost:8080"
-const verboseMode = aws.LogRetries | aws.LogRequestWithBody | aws.LogResponseWithBody
+const verboseMode = aws.LogRetries | aws.LogRequest | aws.LogResponse
 
 func NewAwsConfig(useMock bool, verbose bool) (aws.Config, error) {
 	if useMock {

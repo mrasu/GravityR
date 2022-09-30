@@ -2,7 +2,6 @@ package suggest
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/common_model"
@@ -13,6 +12,7 @@ import (
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iHasura "github.com/mrasu/GravityR/infra/hasura"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"os"
@@ -85,11 +85,6 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 		return err
 	}
 
-	fmt.Println("======explain-------")
-	for _, p := range r.Plan {
-		fmt.Println(p)
-	}
-
 	its, errs := hasura.SuggestIndex(cli, r.SQL, aTree)
 	if len(errs) > 0 {
 		return errs[0]
@@ -97,13 +92,13 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 
 	idxTargets := toUniqueIndexTargets(its)
 
-	fmt.Println("======suggest index by order-------")
 	if len(idxTargets) > 0 {
-		for _, it := range idxTargets {
-			fmt.Println(it)
+		log.Debug().Msg("Found possibly efficient index combinations:")
+		for i, it := range idxTargets {
+			log.Printf("\t%d.%s", i, it.CombinationString())
 		}
 	} else {
-		fmt.Println("No suggestion. Perhaps already indexed?")
+		log.Debug().Msg("No possibly efficient index found. Perhaps already indexed?")
 	}
 
 	examinationIdxTargets, err := parseIndexTargets(hr.indexTargets)
@@ -121,7 +116,7 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 
 	var er *common_model.ExaminationResult
 	if hr.runsExamination {
-		fmt.Printf("\n======going to examine-------\n")
+		log.Info().Msg("Start examination...")
 		ie := hasura.NewIndexExaminer(cli, hr.query, v)
 		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
@@ -137,7 +132,7 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 
 		wd, err := os.Getwd()
 		if err == nil {
-			fmt.Printf("Result html is at: %s\n", path.Join(wd, outputPath))
+			log.Info().Msg("Result html is at: " + path.Join(wd, outputPath))
 		}
 	}
 	return nil
