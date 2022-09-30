@@ -12,7 +12,7 @@ import (
 )
 
 func Test_runHasuraSuggest(t *testing.T) {
-	v := hasuraVarS{
+	hr := hasuraRunner{
 		query: `
 query MyQuery($$email: String) {
   users(where: {email: {_eq: $$email}}) {
@@ -36,8 +36,7 @@ query MyQuery($$email: String) {
 	m := hasuraMock{}
 	m.mockAll(func() {
 		thelper.CreateTemp(t, "tmp.html", func(tmpfile *os.File) {
-			hr := hasuraRunner{}
-			err := hr.suggest(v, tmpfile.Name(), cli)
+			err := hr.suggest(tmpfile.Name(), cli)
 			require.NoError(t, err)
 
 			html, err := os.ReadFile(tmpfile.Name())

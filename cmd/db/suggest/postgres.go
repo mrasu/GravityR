@@ -16,36 +16,33 @@ import (
 	"path"
 )
 
-type postgresVarS struct {
-	runsExamination bool
-	indexTargets    []string
-	query           string
-}
-
 var PostgresCmd = &cobra.Command{
 	Use:   "postgres",
 	Short: "Suggest ways to increase PostgreSQL's performance",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		r := postgresRunner{}
-		return r.run()
+		return postgresR.run()
 	},
 }
 
-var postgresVar = postgresVarS{}
-
 func init() {
 	flg := PostgresCmd.Flags()
-	flg.BoolVar(&postgresVar.runsExamination, "with-examine", false, "Examine query by adding index")
-	flg.StringArrayVarP(&postgresVar.indexTargets, "index", "i", []string{}, "Specify index")
+	flg.BoolVar(&postgresR.runsExamination, "with-examine", false, "Examine query by adding index")
+	flg.StringArrayVarP(&postgresR.indexTargets, "index", "i", []string{}, "Specify index")
 
-	flg.StringVarP(&postgresVar.query, "query", "q", "", "[Required] Query to check")
+	flg.StringVarP(&postgresR.query, "query", "q", "", "[Required] Query to check")
 	err := cobra.MarkFlagRequired(flg, "query")
 	if err != nil {
 		panic(err)
 	}
 }
 
-type postgresRunner struct{}
+var postgresR = postgresRunner{}
+
+type postgresRunner struct {
+	runsExamination bool
+	indexTargets    []string
+	query           string
+}
 
 func (pr *postgresRunner) run() error {
 	cfg, err := iPostgres.NewConfigFromEnv()
@@ -59,16 +56,16 @@ func (pr *postgresRunner) run() error {
 	}
 	defer db.Close()
 
-	return pr.runSuggest(postgresVar, flag.DbFlag.Output, db, cfg.GetSearchPathOrPublic())
+	return pr.suggest(flag.DbFlag.Output, db, cfg.GetSearchPathOrPublic())
 }
 
-func (pr *postgresRunner) runSuggest(v postgresVarS, outputPath string, db *iPostgres.DB, schema string) error {
-	examinationIdxTargets, err := parseIndexTargets(v.indexTargets)
+func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema string) error {
+	examinationIdxTargets, err := parseIndexTargets(pr.indexTargets)
 	if err != nil {
 		return err
 	}
 
-	explainLines, err := db.ExplainWithAnalyze(v.query)
+	explainLines, err := db.ExplainWithAnalyze(pr.query)
 	if err != nil {
 		return err
 	}
@@ -78,7 +75,7 @@ func (pr *postgresRunner) runSuggest(v postgresVarS, outputPath string, db *iPos
 		return err
 	}
 
-	its, errs := postgres.SuggestIndex(db, schema, v.query, aTree)
+	its, errs := postgres.SuggestIndex(db, schema, pr.query, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
@@ -102,9 +99,9 @@ func (pr *postgresRunner) runSuggest(v postgresVarS, outputPath string, db *iPos
 	}
 
 	var er *common_model.ExaminationResult
-	if v.runsExamination {
+	if pr.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
-		ie := postgres.NewIndexExaminer(db, v.query)
+		ie := postgres.NewIndexExaminer(db, pr.query)
 		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
 			return err
@@ -112,7 +109,7 @@ func (pr *postgresRunner) runSuggest(v postgresVarS, outputPath string, db *iPos
 	}
 
 	if outputPath != "" {
-		err := pr.createHTML(v, outputPath, idxTargets, er, aTree)
+		err := pr.createHTML(outputPath, idxTargets, er, aTree)
 		if err != nil {
 			return err
 		}
@@ -125,7 +122,7 @@ func (pr *postgresRunner) runSuggest(v postgresVarS, outputPath string, db *iPos
 	return nil
 }
 
-func (pr *postgresRunner) createHTML(v postgresVarS, outputPath string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
+func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
 	var vits []*viewmodel.VmIndexTarget
 	for _, it := range idxTargets {
 		vits = append(vits, it.ToViewModel())
@@ -137,13 +134,13 @@ func (pr *postgresRunner) createHTML(v postgresVarS, outputPath string, idxTarge
 	}
 
 	bo := html.NewSuggestPostgresDataBuildOption(
-		v.query,
+		pr.query,
 		aTree.ToViewModel(),
 		aTree.SummaryText,
 		vits,
 		[]*viewmodel.VmExaminationCommandOption{
-			viewmodel.CreateOutputExaminationOption(!v.runsExamination, outputPath),
-			{IsShort: true, Name: "q", Value: v.query},
+			viewmodel.CreateOutputExaminationOption(!pr.runsExamination, outputPath),
+			{IsShort: true, Name: "q", Value: pr.query},
 		},
 		ver,
 	)

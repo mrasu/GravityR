@@ -11,7 +11,7 @@ import (
 )
 
 func Test_runPostgresSuggest(t *testing.T) {
-	v := postgresVarS{
+	pr := postgresRunner{
 		query: `
 SELECT
 	name,
@@ -29,11 +29,10 @@ WHERE
 	thelper.InjectClientDist()
 	thelper.MockPostgresDB(t, func(db *postgres.DB, mock sqlmock.Sqlmock) {
 		m := postgresMock{}
-		m.mockAll(mock, v.query)
+		m.mockAll(mock, pr.query)
 
 		thelper.CreateTemp(t, "tmp.html", func(tmpfile *os.File) {
-			pr := postgresRunner{}
-			err := pr.runSuggest(v, tmpfile.Name(), db, "test_db")
+			err := pr.suggest(tmpfile.Name(), db, "test_db")
 			require.NoError(t, err)
 
 			html, err := os.ReadFile(tmpfile.Name())

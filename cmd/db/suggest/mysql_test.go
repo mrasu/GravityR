@@ -11,7 +11,7 @@ import (
 )
 
 func Test_runMysqlSuggest(t *testing.T) {
-	v := mysqlVarS{
+	mr := mysqlRunner{
 		query: `
 SELECT
 	name,
@@ -29,10 +29,10 @@ WHERE
 	thelper.InjectClientDist()
 	thelper.MockMysqlDB(t, func(db *mysql.DB, mock sqlmock.Sqlmock) {
 		m := mysqlMock{}
-		m.mockAll(mock, v.query)
+		m.mockAll(mock, mr.query)
 
 		thelper.CreateTemp(t, "tmp.html", func(tmpfile *os.File) {
-			err := runMysqlSuggest(v, tmpfile.Name(), db, "test_db")
+			err := mr.suggest(tmpfile.Name(), db, "test_db")
 			require.NoError(t, err)
 
 			html, err := os.ReadFile(tmpfile.Name())

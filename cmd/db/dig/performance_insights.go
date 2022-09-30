@@ -16,21 +16,21 @@ var PerformanceInsightsCmd = &cobra.Command{
 	Use:   "performance-insights",
 	Short: "Dig database behavior with AWS' PerformanceInsights",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return runDig()
+		return piR.run()
 	},
 }
 
-type piVarS struct {
+func init() {
+	PerformanceInsightsCmd.Flags().StringVar(&piR.start, "start-from", "", "Date dig from (RFC3339) (Default: 7 days ago)")
+}
+
+var piR = piRunner{}
+
+type piRunner struct {
 	start string
 }
 
-var piVar = piVarS{}
-
-func init() {
-	PerformanceInsightsCmd.Flags().StringVar(&piVar.start, "start-from", "", "Date dig from (RFC3339) (Default: 7 days ago)")
-}
-
-func runDig() error {
+func (pr *piRunner) run() error {
 	fmt.Printf("mocked?: %t\n", flag.GlobalFlag.UseMock)
 
 	gFlg := flag.GlobalFlag
@@ -42,18 +42,18 @@ func runDig() error {
 	rdsCli := aws.NewRds(cfg)
 	piCli := aws.NewPerformanceInsights(cfg)
 
-	return runPerformanceInsightsDig(piVar, flag.DbFlag.Output, rdsCli, piCli)
+	return pr.dig(flag.DbFlag.Output, rdsCli, piCli)
 }
 
-func runPerformanceInsightsDig(v piVarS, outputPath string, rdsCli *aws.Rds, piCli *aws.PerformanceInsights) error {
+func (pr *piRunner) dig(outputPath string, rdsCli *aws.Rds, piCli *aws.PerformanceInsights) error {
 	dbs, err := rdsCli.GetDBs([]string{"mysql"})
 	if err != nil {
 		return err
 	}
 
 	startFrom := time.Now().Add(-7 * 24 * time.Hour)
-	if v.start != "" {
-		t, err := time.Parse(time.RFC3339, v.start)
+	if pr.start != "" {
+		t, err := time.Parse(time.RFC3339, pr.start)
 		if err != nil {
 			return errors.Wrap(err, "Invalid format")
 		}

@@ -23,35 +23,31 @@ var HasuraCmd = &cobra.Command{
 	Use:   "hasura",
 	Short: "Suggest ways to increase Hasura's performance",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		r := hasuraRunner{}
-		return r.run()
+		return hasuraR.run()
 	},
 }
 
-type hasuraVarS struct {
-	runsExamination bool
-	indexTargets    []string
-	query           string
-	jsonVariables   string
-}
-
-// todo: encapsulate hasuraVar inside hasuraRunner
-var hasuraVar = hasuraVarS{}
-
 func init() {
 	flg := HasuraCmd.Flags()
-	flg.BoolVar(&hasuraVar.runsExamination, "with-examine", false, "Examine query by adding index")
-	flg.StringArrayVarP(&hasuraVar.indexTargets, "index", "i", []string{}, "Specify index")
+	flg.BoolVar(&hasuraR.runsExamination, "with-examine", false, "Examine query by adding index")
+	flg.StringArrayVarP(&hasuraR.indexTargets, "index", "i", []string{}, "Specify index")
 
-	flg.StringVarP(&hasuraVar.query, "query", "q", "", "[Required] Query of GraphQL to check")
-	flg.StringVar(&hasuraVar.jsonVariables, "json-variables", "{}", "JSON of variables for the query")
+	flg.StringVarP(&hasuraR.query, "query", "q", "", "[Required] Query of GraphQL to check")
+	flg.StringVar(&hasuraR.jsonVariables, "json-variables", "{}", "JSON of variables for the query")
 	err := cobra.MarkFlagRequired(flg, "query")
 	if err != nil {
 		panic(err)
 	}
 }
 
-type hasuraRunner struct{}
+var hasuraR = hasuraRunner{}
+
+type hasuraRunner struct {
+	runsExamination bool
+	indexTargets    []string
+	query           string
+	jsonVariables   string
+}
 
 func (hr *hasuraRunner) run() error {
 	cfg, err := iHasura.NewConfigFromEnv()
@@ -60,18 +56,18 @@ func (hr *hasuraRunner) run() error {
 	}
 	cli := iHasura.NewClient(cfg)
 
-	return hr.suggest(hasuraVar, flag.DbFlag.Output, cli)
+	return hr.suggest(flag.DbFlag.Output, cli)
 }
 
-func (hr *hasuraRunner) suggest(hv hasuraVarS, outputPath string, cli *iHasura.Client) error {
-	v, err := hr.parseJSONToVariables(hv.jsonVariables)
+func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
+	v, err := hr.parseJSONToVariables(hr.jsonVariables)
 	if err != nil {
 		return err
 	}
 
 	q := &iHasura.ExplainRequestBody{
 		Query: &iHasura.Query{
-			Query:     hv.query,
+			Query:     hr.query,
 			Variables: v,
 		},
 	}
@@ -110,7 +106,7 @@ func (hr *hasuraRunner) suggest(hv hasuraVarS, outputPath string, cli *iHasura.C
 		fmt.Println("No suggestion. Perhaps already indexed?")
 	}
 
-	examinationIdxTargets, err := parseIndexTargets(hv.indexTargets)
+	examinationIdxTargets, err := parseIndexTargets(hr.indexTargets)
 	if err != nil {
 		return err
 	}
@@ -124,9 +120,9 @@ func (hr *hasuraRunner) suggest(hv hasuraVarS, outputPath string, cli *iHasura.C
 	}
 
 	var er *common_model.ExaminationResult
-	if hv.runsExamination {
+	if hr.runsExamination {
 		fmt.Printf("\n======going to examine-------\n")
-		ie := hasura.NewIndexExaminer(cli, hv.query, v)
+		ie := hasura.NewIndexExaminer(cli, hr.query, v)
 		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
 		if err != nil {
 			return err
@@ -134,7 +130,7 @@ func (hr *hasuraRunner) suggest(hv hasuraVarS, outputPath string, cli *iHasura.C
 	}
 
 	if outputPath != "" {
-		err := hr.createHTML(hv, outputPath, v, r.SQL, idxTargets, er, aTree)
+		err := hr.createHTML(outputPath, v, r.SQL, idxTargets, er, aTree)
 		if err != nil {
 			return err
 		}
@@ -156,7 +152,7 @@ func (hr *hasuraRunner) parseJSONToVariables(jsonStr string) (map[string]interfa
 	return variables, nil
 }
 
-func (hr *hasuraRunner) createHTML(hv hasuraVarS, outputPath string, variables map[string]interface{}, sql string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
+func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
 	vits := lo.Map(idxTargets, func(v *common_model.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
 
 	var ver *viewmodel.VmExaminationResult
@@ -165,16 +161,16 @@ func (hr *hasuraRunner) createHTML(hv hasuraVarS, outputPath string, variables m
 	}
 
 	bo := html.NewSuggestHasuraDataBuildOption(
-		hv.query,
+		hr.query,
 		variables,
 		sql,
 		aTree.ToViewModel(),
 		aTree.SummaryText,
 		vits,
 		[]*viewmodel.VmExaminationCommandOption{
-			viewmodel.CreateOutputExaminationOption(!hv.runsExamination, outputPath),
-			{IsShort: true, Name: "q", Value: hv.query},
-			{IsShort: false, Name: "json-variables", Value: hv.jsonVariables},
+			viewmodel.CreateOutputExaminationOption(!hr.runsExamination, outputPath),
+			{IsShort: true, Name: "q", Value: hr.query},
+			{IsShort: false, Name: "json-variables", Value: hr.jsonVariables},
 		},
 		ver,
 	)

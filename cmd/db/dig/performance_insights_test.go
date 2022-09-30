@@ -19,7 +19,7 @@ import (
 
 func Test_runPerformanceInsightsDig(t *testing.T) {
 	start := time.Date(2001, 2, 3, 4, 0, 0, 0, time.UTC)
-	v := piVarS{
+	pr := piRunner{
 		start: start.Format(time.RFC3339),
 	}
 
@@ -29,7 +29,7 @@ func Test_runPerformanceInsightsDig(t *testing.T) {
 
 	thelper.InjectClientDist()
 	thelper.CreateTemp(t, "tmp.html", func(tmpfile *os.File) {
-		err := runPerformanceInsightsDig(v, tmpfile.Name(), rdsCli, piCli)
+		err := pr.dig(tmpfile.Name(), rdsCli, piCli)
 		require.NoError(t, err)
 
 		html, err := os.ReadFile(tmpfile.Name())
