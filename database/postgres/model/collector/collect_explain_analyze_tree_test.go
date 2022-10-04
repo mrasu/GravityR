@@ -53,12 +53,12 @@ Execution Time: 6.023 ms`,
 			},
 		},
 		{
-			name: "single join(SELECT name FROM users INNER JOIN todos ON ...)",
+			name: "single join(SELECT name FROM users INNER JOIN tasks ON ...)",
 			explainResult: `
 Hash Join  (cost=2219.56..86842.45 rows=1351260 width=9) (actual time=19.873..1520.060 rows=6553600 loops=1)
-  Hash Cond: (todos.user_id = users.id)
+  Hash Cond: (tasks.user_id = users.id)
   Buffers: shared hit=12235 read=56073 dirtied=58571 written=55345
-  ->  Seq Scan on todos  (cost=0.00..81075.60 rows=1351260 width=4) (actual time=0.011..551.193 rows=6553600 loops=1)
+  ->  Seq Scan on tasks  (cost=0.00..81075.60 rows=1351260 width=4) (actual time=0.011..551.193 rows=6553600 loops=1)
         Buffers: shared hit=12186 read=55377 dirtied=58571 written=55345
   ->  Hash  (cost=1400.36..1400.36 rows=65536 width=13) (actual time=19.813..19.815 rows=65536 loops=1)
         Buckets: 65536  Batches: 1  Memory Usage: 3581kB
@@ -80,7 +80,7 @@ Execution Time: 1693.383 ms`,
 							AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 								Lines: []string{
 									"Hash Join  (cost=2219.56..86842.45 rows=1351260 width=9) (actual time=19.873..1520.060 rows=6553600 loops=1)",
-									"  Hash Cond: (todos.user_id = users.id)",
+									"  Hash Cond: (tasks.user_id = users.id)",
 									"  Buffers: shared hit=12235 read=56073 dirtied=58571 written=55345",
 								},
 								TableName:             "",
@@ -98,10 +98,10 @@ Execution Time: 1693.383 ms`,
 									SpaceSize: 2,
 									AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 										Lines: []string{
-											"  ->  Seq Scan on todos  (cost=0.00..81075.60 rows=1351260 width=4) (actual time=0.011..551.193 rows=6553600 loops=1)",
+											"  ->  Seq Scan on tasks  (cost=0.00..81075.60 rows=1351260 width=4) (actual time=0.011..551.193 rows=6553600 loops=1)",
 											"        Buffers: shared hit=12186 read=55377 dirtied=58571 written=55345",
 										},
-										TableName:             "todos",
+										TableName:             "tasks",
 										EstimatedInitCost:     null.FloatFrom(0.00),
 										EstimatedCost:         null.FloatFrom(81075.60),
 										EstimatedReturnedRows: null.IntFrom(1351260),
@@ -158,12 +158,12 @@ Execution Time: 1693.383 ms`,
 			},
 		},
 		{
-			name: "single join(SELECT name FROM users INNER JOIN todos ON ... WHERE todos.description = 'a')",
+			name: "single join(SELECT name FROM users INNER JOIN tasks ON ... WHERE tasks.description = 'a')",
 			explainResult: `
 Hash Join  (cost=2219.56..168906.66 rows=6553586 width=9) (actual time=24.270..1442.547 rows=6553600 loops=1)
-  Hash Cond: (todos.user_id = users.id)
+  Hash Cond: (tasks.user_id = users.id)
   Buffers: shared hit=13123 read=55185
-  ->  Seq Scan on todos  (cost=0.00..149482.83 rows=6553586 width=4) (actual time=5.663..630.542 rows=6553600 loops=1)
+  ->  Seq Scan on tasks  (cost=0.00..149482.83 rows=6553586 width=4) (actual time=5.663..630.542 rows=6553600 loops=1)
         Filter: ((description)::text = 'test description'::text)
         Buffers: shared hit=12378 read=55185
   ->  Hash  (cost=1400.36..1400.36 rows=65536 width=13) (actual time=18.456..18.458 rows=65536 loops=1)
@@ -198,7 +198,7 @@ Execution Time: 1609.370 ms`,
 							AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 								Lines: []string{
 									"Hash Join  (cost=2219.56..168906.66 rows=6553586 width=9) (actual time=24.270..1442.547 rows=6553600 loops=1)",
-									"  Hash Cond: (todos.user_id = users.id)",
+									"  Hash Cond: (tasks.user_id = users.id)",
 									"  Buffers: shared hit=13123 read=55185",
 								},
 								TableName:             "",
@@ -216,11 +216,11 @@ Execution Time: 1609.370 ms`,
 									SpaceSize: 2,
 									AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 										Lines: []string{
-											"  ->  Seq Scan on todos  (cost=0.00..149482.83 rows=6553586 width=4) (actual time=5.663..630.542 rows=6553600 loops=1)",
+											"  ->  Seq Scan on tasks  (cost=0.00..149482.83 rows=6553586 width=4) (actual time=5.663..630.542 rows=6553600 loops=1)",
 											"        Filter: ((description)::text = 'test description'::text)",
 											"        Buffers: shared hit=12378 read=55185",
 										},
-										TableName:             "todos",
+										TableName:             "tasks",
 										EstimatedInitCost:     null.FloatFrom(0.00),
 										EstimatedCost:         null.FloatFrom(149482.83),
 										EstimatedReturnedRows: null.IntFrom(6553586),
@@ -280,33 +280,33 @@ Execution Time: 1609.370 ms`,
 			name: "CTE explain",
 			explainResult: `
 Sort  (cost=107094.02..107094.02 rows=1 width=64) (actual time=749.870..755.470 rows=2 loops=1)
-  Sort Key: (CASE WHEN (count_tbl.status = 1) THEN 'Todo'::text WHEN (count_tbl.status = 2) THEN 'Doing'::text WHEN (count_tbl.status = 3) THEN 'Done'::text ELSE NULL::text END) DESC
+  Sort Key: (CASE WHEN (count_tbl.status = 1) THEN 'Pending'::text WHEN (count_tbl.status = 2) THEN 'Doing'::text WHEN (count_tbl.status = 3) THEN 'Done'::text ELSE NULL::text END) DESC
   Sort Method: quicksort  Memory: 25kB
   Buffers: shared hit=1529 read=68308
   CTE count_tbl
     ->  Finalize GroupAggregate  (cost=107093.08..107093.84 rows=3 width=10) (actual time=749.833..755.432 rows=3 loops=1)
-          Group Key: todos.status
+          Group Key: tasks.status
           Buffers: shared hit=1526 read=68308
           ->  Gather Merge  (cost=107093.08..107093.78 rows=6 width=10) (actual time=749.826..755.424 rows=9 loops=1)
                 Workers Planned: 2
                 Workers Launched: 2
                 Buffers: shared hit=1526 read=68308
                 ->  Sort  (cost=106093.05..106093.06 rows=3 width=10) (actual time=733.773..733.775 rows=3 loops=3)
-                      Sort Key: todos.status
+                      Sort Key: tasks.status
                       Sort Method: quicksort  Memory: 25kB
                       Buffers: shared hit=1526 read=68308
                       Worker 0:  Sort Method: quicksort  Memory: 25kB
                       Worker 1:  Sort Method: quicksort  Memory: 25kB
                       ->  Partial HashAggregate  (cost=106093.00..106093.03 rows=3 width=10) (actual time=733.758..733.760 rows=3 loops=3)
-                            Group Key: todos.status
+                            Group Key: tasks.status
                             Batches: 1  Memory Usage: 24kB
                             Buffers: shared hit=1512 read=68308
                             Worker 0:  Batches: 1  Memory Usage: 24kB
                             Worker 1:  Batches: 1  Memory Usage: 24kB
                             ->  Hash Join  (cost=2014.32..104052.38 rows=408124 width=2) (actual time=28.492..698.394 rows=325800 loops=3)
-                                  Hash Cond: (todos.user_id = users.id)
+                                  Hash Cond: (tasks.user_id = users.id)
                                   Buffers: shared hit=1512 read=68308
-                                  ->  Parallel Seq Scan on todos  (cost=0.00..94869.61 rows=2730661 width=6) (actual time=0.262..489.041 rows=2184533 loops=3)
+                                  ->  Parallel Seq Scan on tasks  (cost=0.00..94869.61 rows=2730661 width=6) (actual time=0.262..489.041 rows=2184533 loops=3)
                                         Buffers: shared read=67563
                                   ->  Hash  (cost=1891.88..1891.88 rows=9795 width=4) (actual time=27.080..27.081 rows=9774 loops=3)
                                         Buckets: 16384  Batches: 1  Memory Usage: 472kB
@@ -349,7 +349,7 @@ Execution Time: 821.344 ms`,
 							AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 								Lines: []string{
 									"Sort  (cost=107094.02..107094.02 rows=1 width=64) (actual time=749.870..755.470 rows=2 loops=1)",
-									"  Sort Key: (CASE WHEN (count_tbl.status = 1) THEN 'Todo'::text WHEN (count_tbl.status = 2) THEN 'Doing'::text WHEN (count_tbl.status = 3) THEN 'Done'::text ELSE NULL::text END) DESC",
+									"  Sort Key: (CASE WHEN (count_tbl.status = 1) THEN 'Pending'::text WHEN (count_tbl.status = 2) THEN 'Doing'::text WHEN (count_tbl.status = 3) THEN 'Done'::text ELSE NULL::text END) DESC",
 									"  Sort Method: quicksort  Memory: 25kB",
 									"  Buffers: shared hit=1529 read=68308",
 								},
@@ -370,10 +370,10 @@ Execution Time: 821.344 ms`,
 										Lines: []string{
 											"  CTE count_tbl",
 											"    ->  Finalize GroupAggregate  (cost=107093.08..107093.84 rows=3 width=10) (actual time=749.833..755.432 rows=3 loops=1)",
-											"          Group Key: todos.status",
+											"          Group Key: tasks.status",
 											"          Buffers: shared hit=1526 read=68308",
 										},
-										TableName:             "todos",
+										TableName:             "tasks",
 										EstimatedInitCost:     null.FloatFrom(107093.08),
 										EstimatedCost:         null.FloatFrom(107093.84),
 										EstimatedReturnedRows: null.IntFrom(3),
@@ -409,13 +409,13 @@ Execution Time: 821.344 ms`,
 													AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 														Lines: []string{
 															"                ->  Sort  (cost=106093.05..106093.06 rows=3 width=10) (actual time=733.773..733.775 rows=3 loops=3)",
-															"                      Sort Key: todos.status",
+															"                      Sort Key: tasks.status",
 															"                      Sort Method: quicksort  Memory: 25kB",
 															"                      Buffers: shared hit=1526 read=68308",
 															"                      Worker 0:  Sort Method: quicksort  Memory: 25kB",
 															"                      Worker 1:  Sort Method: quicksort  Memory: 25kB",
 														},
-														TableName:             "todos",
+														TableName:             "tasks",
 														EstimatedInitCost:     null.FloatFrom(106093.05),
 														EstimatedCost:         null.FloatFrom(106093.06),
 														EstimatedReturnedRows: null.IntFrom(3),
@@ -431,13 +431,13 @@ Execution Time: 821.344 ms`,
 															AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 																Lines: []string{
 																	"                      ->  Partial HashAggregate  (cost=106093.00..106093.03 rows=3 width=10) (actual time=733.758..733.760 rows=3 loops=3)",
-																	"                            Group Key: todos.status",
+																	"                            Group Key: tasks.status",
 																	"                            Batches: 1  Memory Usage: 24kB",
 																	"                            Buffers: shared hit=1512 read=68308",
 																	"                            Worker 0:  Batches: 1  Memory Usage: 24kB",
 																	"                            Worker 1:  Batches: 1  Memory Usage: 24kB",
 																},
-																TableName:             "todos",
+																TableName:             "tasks",
 																EstimatedInitCost:     null.FloatFrom(106093.00),
 																EstimatedCost:         null.FloatFrom(106093.03),
 																EstimatedReturnedRows: null.IntFrom(3),
@@ -453,7 +453,7 @@ Execution Time: 821.344 ms`,
 																	AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 																		Lines: []string{
 																			"                            ->  Hash Join  (cost=2014.32..104052.38 rows=408124 width=2) (actual time=28.492..698.394 rows=325800 loops=3)",
-																			"                                  Hash Cond: (todos.user_id = users.id)",
+																			"                                  Hash Cond: (tasks.user_id = users.id)",
 																			"                                  Buffers: shared hit=1512 read=68308",
 																		},
 																		TableName:             "",
@@ -471,10 +471,10 @@ Execution Time: 821.344 ms`,
 																			SpaceSize: 34,
 																			AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 																				Lines: []string{
-																					"                                  ->  Parallel Seq Scan on todos  (cost=0.00..94869.61 rows=2730661 width=6) (actual time=0.262..489.041 rows=2184533 loops=3)",
+																					"                                  ->  Parallel Seq Scan on tasks  (cost=0.00..94869.61 rows=2730661 width=6) (actual time=0.262..489.041 rows=2184533 loops=3)",
 																					"                                        Buffers: shared read=67563",
 																				},
-																				TableName:             "todos",
+																				TableName:             "tasks",
 																				EstimatedInitCost:     null.FloatFrom(0.00),
 																				EstimatedCost:         null.FloatFrom(94869.61),
 																				EstimatedReturnedRows: null.IntFrom(2730661),
@@ -626,15 +626,15 @@ Aggregate  (cost=105447.85..105447.86 rows=1 width=32)
         ->  Gather  (cost=2564.21..104612.35 rows=100 width=27)
               Workers Planned: 2
               ->  Hash Join  (cost=1564.21..103602.35 rows=42 width=27)
-                    Hash Cond: (todos.user_id = __be_0_users.id)
-                    ->  Parallel Seq Scan on todos  (cost=0.00..94869.67 rows=2730667 width=27)
+                    Hash Cond: (tasks.user_id = __be_0_users.id)
+                    ->  Parallel Seq Scan on tasks  (cost=0.00..94869.67 rows=2730667 width=27)
                     ->  Hash  (cost=1564.20..1564.20 rows=1 width=4)
                           ->  Seq Scan on users __be_0_users  (cost=0.00..1564.20 rows=1 width=4)
                                 Filter: ((email)::text = 'test1111@example.com'::text)
         ->  Subquery Scan on "_root.or.user.base"  (cost=0.29..8.33 rows=1 width=32)
               ->  Limit  (cost=0.29..8.31 rows=1 width=566)
                     ->  Index Scan using users_pkey on users  (cost=0.29..8.31 rows=1 width=566)
-                          Index Cond: (id = todos.user_id)
+                          Index Cond: (id = tasks.user_id)
               SubPlan 1
                 ->  Result  (cost=0.00..0.01 rows=1 width=32)
   SubPlan 2
@@ -708,7 +708,7 @@ JIT:
 													AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 														Lines: []string{
 															"              ->  Hash Join  (cost=1564.21..103602.35 rows=42 width=27)",
-															"                    Hash Cond: (todos.user_id = __be_0_users.id)",
+															"                    Hash Cond: (tasks.user_id = __be_0_users.id)",
 														},
 														TableName:             "",
 														EstimatedInitCost:     null.FloatFrom(1564.21),
@@ -725,9 +725,9 @@ JIT:
 															SpaceSize: 20,
 															AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 																Lines: []string{
-																	"                    ->  Parallel Seq Scan on todos  (cost=0.00..94869.67 rows=2730667 width=27)",
+																	"                    ->  Parallel Seq Scan on tasks  (cost=0.00..94869.67 rows=2730667 width=27)",
 																},
-																TableName:             "todos",
+																TableName:             "tasks",
 																EstimatedInitCost:     null.FloatFrom(0.00),
 																EstimatedCost:         null.FloatFrom(94869.67),
 																EstimatedReturnedRows: null.IntFrom(2730667),
@@ -818,7 +818,7 @@ JIT:
 															AnalyzeResultNode: &model.ExplainAnalyzeResultNode{
 																Lines: []string{
 																	"                    ->  Index Scan using users_pkey on users  (cost=0.29..8.31 rows=1 width=566)",
-																	"                          Index Cond: (id = todos.user_id)",
+																	"                          Index Cond: (id = tasks.user_id)",
 																},
 																TableName:             "users",
 																EstimatedInitCost:     null.FloatFrom(0.29),

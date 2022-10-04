@@ -8,7 +8,7 @@ type postgresData struct {
 }
 
 var PostgresSubqueryInSelectData = &postgresData{
-	SQL: "SELECT (SELECT user_id FROM todos limit 1)",
+	SQL: "SELECT (SELECT user_id FROM tasks limit 1)",
 	Scopes: []*common_model.StmtScope{
 		{
 			Name: "<root>",
@@ -22,7 +22,7 @@ var PostgresSubqueryInSelectData = &postgresData{
 						{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
 					},
 					Tables: []*common_model.Table{
-						{Name: "todos"},
+						{Name: "tasks"},
 					},
 				},
 			},
@@ -31,7 +31,7 @@ var PostgresSubqueryInSelectData = &postgresData{
 }
 
 var PostgresSubqueryInSelectAliasedFieldData = &postgresData{
-	SQL: "SELECT name, is_admin, (SELECT COUNT(status) FROM todos) AS status_count FROM users",
+	SQL: "SELECT name, is_admin, (SELECT COUNT(status) FROM tasks) AS status_count FROM users",
 	Scopes: []*common_model.StmtScope{{
 		Name: "<root>",
 		Fields: []*common_model.Field{
@@ -46,7 +46,7 @@ var PostgresSubqueryInSelectAliasedFieldData = &postgresData{
 					{Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
 				},
 				Tables: []*common_model.Table{
-					{Name: "todos"},
+					{Name: "tasks"},
 				},
 			},
 		},
@@ -57,7 +57,7 @@ var PostgresSubqueryInSelectAliasedFieldData = &postgresData{
 }
 
 var PostgresSubqueryWithComparisonData = &postgresData{
-	SQL: "SELECT (SELECT COUNT(status) FROM todos) - (SELECT COUNT(description) FROM todos) AS no_desc_count",
+	SQL: "SELECT (SELECT COUNT(status) FROM tasks) - (SELECT COUNT(description) FROM tasks) AS no_desc_count",
 	Scopes: []*common_model.StmtScope{{
 		Name: "<root>",
 		Fields: []*common_model.Field{
@@ -73,7 +73,7 @@ var PostgresSubqueryWithComparisonData = &postgresData{
 					{Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
 				},
 				Tables: []*common_model.Table{
-					{Name: "todos"},
+					{Name: "tasks"},
 				},
 			},
 			{
@@ -82,7 +82,7 @@ var PostgresSubqueryWithComparisonData = &postgresData{
 					{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
 				},
 				Tables: []*common_model.Table{
-					{Name: "todos"},
+					{Name: "tasks"},
 				},
 			},
 		},
@@ -90,7 +90,7 @@ var PostgresSubqueryWithComparisonData = &postgresData{
 }
 
 var PostgresSubqueryWithExistData = &postgresData{
-	SQL: "SELECT name, EXISTS (SELECT * FROM todos WHERE user_id = users.id) FROM users",
+	SQL: "SELECT name, EXISTS (SELECT * FROM tasks WHERE user_id = users.id) FROM users",
 	Scopes: []*common_model.StmtScope{{
 		Name: "<root>",
 		Fields: []*common_model.Field{
@@ -108,7 +108,7 @@ var PostgresSubqueryWithExistData = &postgresData{
 					}},
 				},
 				Tables: []*common_model.Table{
-					{Name: "todos"},
+					{Name: "tasks"},
 				},
 			},
 		},
@@ -119,7 +119,7 @@ var PostgresSubqueryWithExistData = &postgresData{
 }
 
 var PostgresSubqueryWithInData = &postgresData{
-	SQL: "SELECT user_id IN (SELECT user_id FROM todos) FROM users",
+	SQL: "SELECT user_id IN (SELECT user_id FROM tasks) FROM users",
 	Scopes: []*common_model.StmtScope{{
 		Name: "<root>",
 		Fields: []*common_model.Field{
@@ -135,7 +135,7 @@ var PostgresSubqueryWithInData = &postgresData{
 					{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
 				},
 				Tables: []*common_model.Table{
-					{Name: "todos"},
+					{Name: "tasks"},
 				},
 			},
 		},
@@ -150,7 +150,7 @@ var PostgresSubqueryInSelectFunctionData = &postgresData{
 SELECT row_to_json(
   (
     SELECT t
-    FROM (SELECT id, description FROM todos LIMIT 1) AS t
+    FROM (SELECT id, description FROM tasks LIMIT 1) AS t
   )
 )
 `,
@@ -177,7 +177,7 @@ SELECT row_to_json(
 								{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
 							},
 							Tables: []*common_model.Table{
-								{Name: "todos"},
+								{Name: "tasks"},
 							},
 						},
 					},
@@ -190,7 +190,7 @@ SELECT row_to_json(
 var PostgresSubqueryInFromData = &postgresData{
 	SQL: `
 SELECT *
-FROM (SELECT id, user_id FROM todos)
+FROM (SELECT id, user_id FROM tasks)
 `,
 	Scopes: []*common_model.StmtScope{
 		{
@@ -209,7 +209,7 @@ FROM (SELECT id, user_id FROM todos)
 						{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
 					},
 					Tables: []*common_model.Table{
-						{Name: "todos"},
+						{Name: "tasks"},
 					},
 				},
 			},
@@ -221,7 +221,7 @@ var PostgresSubqueryInJoinData = &postgresData{
 	SQL: `
 SELECT name, t.id, user_id
 FROM users
-INNER JOIN (SELECT id, user_id FROM todos) AS t ON users.id = t.user_id
+INNER JOIN (SELECT id, user_id FROM tasks) AS t ON users.id = t.user_id
 `,
 	Scopes: []*common_model.StmtScope{
 		{
@@ -247,7 +247,7 @@ INNER JOIN (SELECT id, user_id FROM todos) AS t ON users.id = t.user_id
 						{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
 					},
 					Tables: []*common_model.Table{
-						{Name: "todos"},
+						{Name: "tasks"},
 					},
 				},
 			},
@@ -259,7 +259,7 @@ var PostgresSubqueryUsingStarData = &postgresData{
 	SQL: `
 SELECT description
 FROM
-	(SELECT * FROM todos) AS t
+	(SELECT * FROM tasks) AS t
 `,
 	Scopes: []*common_model.StmtScope{
 		{
@@ -279,7 +279,7 @@ FROM
 						{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
 					},
 					Tables: []*common_model.Table{
-						{Name: "todos"},
+						{Name: "tasks"},
 					},
 				},
 			},
@@ -292,7 +292,7 @@ var PostgresSubqueryWithLateralJoinData = &postgresData{
 SELECT description
 FROM
 	(SELECT id FROM users) AS u
-	LEFT OUTER JOIN LATERAL (SELECT user_id, description FROM todos WHERE user_id = u.id) AS t ON u.id = t.user_id
+	LEFT OUTER JOIN LATERAL (SELECT user_id, description FROM tasks WHERE user_id = u.id) AS t ON u.id = t.user_id
 `,
 	Scopes: []*common_model.StmtScope{
 		{
@@ -331,7 +331,7 @@ FROM
 						}},
 					},
 					Tables: []*common_model.Table{
-						{Name: "todos"},
+						{Name: "tasks"},
 					},
 				},
 			},
@@ -381,7 +381,7 @@ FROM (SELECT name FROM users) AS a
 var PostgresSubqueryWithAggregateFunctionData = &postgresData{
 	SQL: `
 SELECT json_agg(t)
-FROM (SELECT description FROM todos LIMIT 3) AS t;
+FROM (SELECT description FROM tasks LIMIT 3) AS t;
 `,
 	Scopes: []*common_model.StmtScope{
 		{
@@ -399,7 +399,7 @@ FROM (SELECT description FROM todos LIMIT 3) AS t;
 						{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
 					},
 					Tables: []*common_model.Table{
-						{Name: "todos"},
+						{Name: "tasks"},
 					},
 				},
 			},
@@ -410,7 +410,7 @@ FROM (SELECT description FROM todos LIMIT 3) AS t;
 var PostgresCorrelatedSubqueryData = &postgresData{
 	SQL: `
 SELECT description
-FROM todos
+FROM tasks
 WHERE EXISTS(SELECT * FROM users WHERE users.id = user_id)
 `,
 	Scopes: []*common_model.StmtScope{
@@ -436,7 +436,7 @@ WHERE EXISTS(SELECT * FROM users WHERE users.id = user_id)
 				},
 			},
 			Tables: []*common_model.Table{
-				{Name: "todos"},
+				{Name: "tasks"},
 			},
 		},
 	},

@@ -595,7 +595,7 @@
         "Dimensions": {
           "db.sql.db_id": "bc1ca671cb41d533e6f2d8634cdef5dc",
           "db.sql.id": "291D748E840E117E66851B30A7BB06D5D46F78EE",
-          "db.sql.statement": "INSERT INTO todos(user_id...",
+          "db.sql.statement": "INSERT INTO tasks(user_id...",
           "db.sql.tokenized_id": "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C"
         }
       },

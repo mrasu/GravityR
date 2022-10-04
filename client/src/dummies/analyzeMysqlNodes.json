@@ -1,6 +1,6 @@
 [
   {
-    "text": "-> Sort: (case when (count_tbl.`status` = 1) then 'Todo' when (count_tbl.`status` = 2) then 'Doing' when (count_tbl.`status` = 3) then 'Done' end) DESC  (actual time=0.018..0.018 rows=3 loops=1)",
+    "text": "-> Sort: (case when (count_tbl.`status` = 1) then 'Pending' when (count_tbl.`status` = 2) then 'Doing' when (count_tbl.`status` = 3) then 'Done' end) DESC  (actual time=0.018..0.018 rows=3 loops=1)",
     "title": "Sort",
     "tableName": "count_tbl",
     "estimatedInitCost": null,
@@ -84,9 +84,9 @@
                             "actualLoopCount": 1,
                             "children": [
                               {
-                                "text": "                            -> Table scan on todos  (cost=660603.68 rows=6361711) (actual time=0.040..1250.329 rows=6553600 loops=1)",
+                                "text": "                            -> Table scan on tasks  (cost=660603.68 rows=6361711) (actual time=0.040..1250.329 rows=6553600 loops=1)",
                                 "title": "Table scan",
-                                "tableName": "todos",
+                                "tableName": "tasks",
                                 "estimatedInitCost": null,
                                 "estimatedCost": 660603.68,
                                 "estimatedReturnedRows": 6361711,
@@ -108,7 +108,7 @@
                                 "actualLoopCount": 6553600,
                                 "children": [
                                   {
-                                    "text": "                                -> Single-row index lookup on users using PRIMARY (user_id=todos.user_id)  (cost=0.96 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
+                                    "text": "                                -> Single-row index lookup on users using PRIMARY (user_id=tasks.user_id)  (cost=0.96 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
                                     "title": "Single-row index lookup",
                                     "tableName": "users",
                                     "estimatedInitCost": null,

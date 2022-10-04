@@ -1,5 +1,5 @@
 table:
-  name: todos
+  name: tasks
   schema: public
 object_relationships:
   - name: user

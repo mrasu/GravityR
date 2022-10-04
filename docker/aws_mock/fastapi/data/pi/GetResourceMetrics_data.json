@@ -4,7 +4,7 @@
     "Value": 0.36661971830985916,
     "db.sql.id": "291D748E840E117E66851B30A7BB06D5D46F78EE",
     "db.sql.tokenized_id": "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C",
-    "db.sql.statement": "INSERT INTO todos(user_id, title, description, status, created_at, updated_at)\nSELECT users.id,\n     'test title',\n     'test description',\n     tmp_100.id % 3,\n     users.updated_at - INTERVAL ((tmp_100.id%100) +5) HOUR,\n     users.updated_at - INTERVAL (tmp_100.id%100) HOUR\nFROM users\n     CROSS JOIN (SELECT * FROM users LIMIT 100) tmp_100"
+    "db.sql.statement": "INSERT INTO tasks(user_id, title, description, status, created_at, updated_at)\nSELECT users.id,\n     'test title',\n     'test description',\n     tmp_100.id % 3,\n     users.updated_at - INTERVAL ((tmp_100.id%100) +5) HOUR,\n     users.updated_at - INTERVAL (tmp_100.id%100) HOUR\nFROM users\n     CROSS JOIN (SELECT * FROM users LIMIT 100) tmp_100"
   },
   {
     "Time": "14:40:00",
@@ -25,48 +25,48 @@
     "Value": 0.12345,
     "db.sql.id": "B29D2F38721FB30FF376D1708615E9BD8C1A67AB",
     "db.sql.tokenized_id": "A192925921893390FD3679B2FEA9D3BAC46BB9FA",
-    "db.sql.statement": "SELECT name, description FROM users INNER JOIN todos AS aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    "db.sql.statement": "SELECT name, description FROM users INNER JOIN tasks AS aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   },
   {
     "Time": "14:45:00",
     "Value": 0.148125,
     "db.sql.id": "CDB577AA41FDBB40B232CCAC1143B7E6A6AF1768",
     "db.sql.tokenized_id": "64E6FE2C360536B8BED607E6A6B66BC463667A4A",
-    "db.sql.statement": "explain analyze SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
+    "db.sql.statement": "explain analyze SELECT name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
   },
   {
     "Time": "14:45:00",
     "Value": 0.0234375,
     "db.sql.id": "D24837154EE301DC7DEC8C29996641724BCA128A",
     "db.sql.tokenized_id": "D51E26E104C8374C3547D9AEC929104FB6A2D9AE",
-    "db.sql.statement": "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.email = 'test31779@example.com'"
+    "db.sql.statement": "SELECT name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.email = 'test31779@example.com'"
   },
   {
     "Time": "14:45:00",
     "Value": 0.01171875,
     "db.sql.id": "9A28290842967F82EAF49AD5353117D3985A1F3C",
     "db.sql.tokenized_id": "D51E26E104C8374C3547D9AEC929104FB6A2D9AE",
-    "db.sql.statement": "SELECT\nname,\nt.description\nFROM\nusers\nINNER JOIN todos AS t ON users.id = t.user_id\nWHERE\nusers.email = 'test31776@example.com'"
+    "db.sql.statement": "SELECT\nname,\nt.description\nFROM\nusers\nINNER JOIN tasks AS t ON users.id = t.user_id\nWHERE\nusers.email = 'test31776@example.com'"
   },
   {
     "Time": "15:20:00",
     "Value": 0.0675,
     "db.sql.id": "F0D937B892BED473197121DF228FDD15127AE78B",
     "db.sql.tokenized_id": "D51E26E104C8374C3547D9AEC929104FB6A2D9AE",
-    "db.sql.statement": "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
+    "db.sql.statement": "SELECT name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
   },
   {
     "Time": "15:20:00",
     "Value": 0.016666666666666666,
     "db.sql.id": "D8F2B2D3FD1301F333E28944C059667C300A20A5",
     "db.sql.tokenized_id": "D51E26E104C8374C3547D9AEC929104FB6A2D9AE",
-    "db.sql.statement": "SELECT  name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
+    "db.sql.statement": "SELECT  name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
   },
   {
     "Time": "15:20:00",
     "Value": 0.016666666666666666,
     "db.sql.id": "5B62D00F1A4398ABC19945B8939CDFDFDB74C074",
     "db.sql.tokenized_id": "8B3C8976E635486D34735D6953A9F362B9738BF0",
-    "db.sql.statement": "SELECT  * FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
+    "db.sql.statement": "SELECT  * FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.email = 'test31776@example.com'"
   }
 ]

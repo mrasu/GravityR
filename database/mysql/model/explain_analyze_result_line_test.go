@@ -15,11 +15,11 @@ func TestParseExplainAnalyzeResultLine(t *testing.T) {
 	}{
 		{
 			name:         "simple",
-			line:         "-> Table scan on todos  (cost=659696.88 rows=6361711) (actual time=0.069..1803.459 rows=6553600 loops=1)",
+			line:         "-> Table scan on tasks  (cost=659696.88 rows=6361711) (actual time=0.069..1803.459 rows=6553600 loops=1)",
 			expectedNest: 0,
 			expectedLine: &ExplainAnalyzeResultLine{
-				Text:                  "-> Table scan on todos  (cost=659696.88 rows=6361711) (actual time=0.069..1803.459 rows=6553600 loops=1)",
-				TableName:             "todos",
+				Text:                  "-> Table scan on tasks  (cost=659696.88 rows=6361711) (actual time=0.069..1803.459 rows=6553600 loops=1)",
+				TableName:             "tasks",
 				EstimatedInitCost:     null.FloatFromPtr(nil),
 				EstimatedCost:         null.FloatFrom(659696.88),
 				EstimatedReturnedRows: null.IntFrom(6361711),
@@ -63,10 +63,10 @@ func TestParseExplainAnalyzeResultLine(t *testing.T) {
 		},
 		{
 			name:         "never executed",
-			line:         "-> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=0.25 rows=1) (never executed)",
+			line:         "-> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=0.25 rows=1) (never executed)",
 			expectedNest: 0,
 			expectedLine: &ExplainAnalyzeResultLine{
-				Text:                  "-> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=0.25 rows=1) (never executed)",
+				Text:                  "-> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=0.25 rows=1) (never executed)",
 				TableName:             "users",
 				EstimatedInitCost:     null.FloatFromPtr(nil),
 				EstimatedCost:         null.FloatFrom(0.25),
@@ -111,11 +111,11 @@ func TestParseExplainAnalyzeResultLine(t *testing.T) {
 		},
 		{
 			name:         "average cost exists",
-			line:         "-> Table scan on todos  (cost=1..2 rows=3) (actual time=0.069..1803.459 rows=6553600 loops=1)",
+			line:         "-> Table scan on tasks  (cost=1..2 rows=3) (actual time=0.069..1803.459 rows=6553600 loops=1)",
 			expectedNest: 0,
 			expectedLine: &ExplainAnalyzeResultLine{
-				Text:                  "-> Table scan on todos  (cost=1..2 rows=3) (actual time=0.069..1803.459 rows=6553600 loops=1)",
-				TableName:             "todos",
+				Text:                  "-> Table scan on tasks  (cost=1..2 rows=3) (actual time=0.069..1803.459 rows=6553600 loops=1)",
+				TableName:             "tasks",
 				EstimatedInitCost:     null.FloatFrom(1),
 				EstimatedCost:         null.FloatFrom(2.0),
 				EstimatedReturnedRows: null.IntFrom(3),
@@ -127,11 +127,11 @@ func TestParseExplainAnalyzeResultLine(t *testing.T) {
 		},
 		{
 			name:         "filter",
-			line:         "-> Filter: (todos.`status` = 1)  (cost=659696.88 rows=636171) (actual time=0.071..2047.548 rows=2228224 loops=1)",
+			line:         "-> Filter: (tasks.`status` = 1)  (cost=659696.88 rows=636171) (actual time=0.071..2047.548 rows=2228224 loops=1)",
 			expectedNest: 0,
 			expectedLine: &ExplainAnalyzeResultLine{
-				Text:                  "-> Filter: (todos.`status` = 1)  (cost=659696.88 rows=636171) (actual time=0.071..2047.548 rows=2228224 loops=1)",
-				TableName:             "todos",
+				Text:                  "-> Filter: (tasks.`status` = 1)  (cost=659696.88 rows=636171) (actual time=0.071..2047.548 rows=2228224 loops=1)",
+				TableName:             "tasks",
 				EstimatedInitCost:     null.FloatFromPtr(nil),
 				EstimatedCost:         null.FloatFrom(659696.88),
 				EstimatedReturnedRows: null.IntFrom(636171),
@@ -272,7 +272,7 @@ func TestExplainAnalyzeResultLine_Title(t *testing.T) {
 		},
 		{
 			name:     "with `on`2",
-			text:     "-> Single-row index lookup on users using PRIMARY (user_id=todos.user_id)  (cost=0.96 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
+			text:     "-> Single-row index lookup on users using PRIMARY (user_id=tasks.user_id)  (cost=0.96 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
 			expected: "Single-row index lookup",
 		},
 		{

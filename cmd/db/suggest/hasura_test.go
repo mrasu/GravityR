@@ -18,7 +18,7 @@ query MyQuery($$email: String) {
   users(where: {email: {_eq: $$email}}) {
     email
     name
-    todos(where: {}) {
+    tasks(where: {}) {
       title
       description
     }
@@ -66,21 +66,21 @@ func (m *hasuraMock) mockExplain() {
 		httpmock.NewStringResponder(200, `
 [
 	{
-		"field": "todos",
+		"field": "tasks",
 		"plan": [
 			"ggregate  (cost=151050.01..151050.02 rows=1 width=32)",
 			"  ->  Nested Loop Left Join  (cost=149485.77..151050.00 rows=1 width=62)",
 			"        ->  Seq Scan on users  (cost=0.00..1564.20 rows=1 width=34)",
 			"              Filter: ((email)::text = 'test33333@example.com'::text)",
 			"        ->  Aggregate  (cost=149485.77..149485.78 rows=1 width=32)",
-			"              ->  Seq Scan on todos  (cost=0.00..149483.14 rows=175 width=28)",
+			"              ->  Seq Scan on tasks  (cost=0.00..149483.14 rows=175 width=28)",
 			"                    Filter: (users.id = user_id)",
 			"              SubPlan 2",
 			"                ->  Result  (cost=0.00..0.01 rows=1 width=32)",
 			"  SubPlan 1",
 			"    ->  Result  (cost=0.00..0.01 rows=1 width=32)"
 		],
-		"sql": "SELECT coalesce(json_agg(\"root\"), '[]') AS \"root\"FROM ( SELECT row_to_json( ( SELECT \"_e\" FROM ( SELECT \"_root.base\".\"email\" AS \"email\", \"_root.base\".\"name\" AS \"name\", \"_root.ar.root.todos\".\"todos\" AS \"todos\" ) AS \"_e\" ) ) AS \"root\" FROM ( SELECT * FROM \"public\".\"users\" WHERE ( (\"public\".\"users\".\"email\") = (('test33333@example.com')::varchar) ) ) AS \"_root.base\" LEFT OUTER JOIN LATERAL ( SELECT coalesce(json_agg(\"todos\"), '[]') AS \"todos\" FROM ( SELECT row_to_json( ( SELECT \"_e\" FROM ( SELECT \"_root.ar.root.todos.base\".\"title\" AS \"title\", \"_root.ar.root.todos.base\".\"description\" AS \"description\" ) AS \"_e\" ) ) AS \"todos\" FROM ( SELECT * FROM \"public\".\"todos\" WHERE ((\"_root.base\".\"id\") = (\"user_id\")) ) AS \"_root.ar.root.todos.base\" ) AS \"_root.ar.root.todos\" ) AS \"_root.ar.root.todos\" ON ('true') ) AS \"_root\""
+		"sql": "SELECT coalesce(json_agg(\"root\"), '[]') AS \"root\"FROM ( SELECT row_to_json( ( SELECT \"_e\" FROM ( SELECT \"_root.base\".\"email\" AS \"email\", \"_root.base\".\"name\" AS \"name\", \"_root.ar.root.tasks\".\"tasks\" AS \"tasks\" ) AS \"_e\" ) ) AS \"root\" FROM ( SELECT * FROM \"public\".\"users\" WHERE ( (\"public\".\"users\".\"email\") = (('test33333@example.com')::varchar) ) ) AS \"_root.base\" LEFT OUTER JOIN LATERAL ( SELECT coalesce(json_agg(\"tasks\"), '[]') AS \"tasks\" FROM ( SELECT row_to_json( ( SELECT \"_e\" FROM ( SELECT \"_root.ar.root.tasks.base\".\"title\" AS \"title\", \"_root.ar.root.tasks.base\".\"description\" AS \"description\" ) AS \"_e\" ) ) AS \"tasks\" FROM ( SELECT * FROM \"public\".\"tasks\" WHERE ((\"_root.base\".\"id\") = (\"user_id\")) ) AS \"_root.ar.root.tasks.base\" ) AS \"_root.ar.root.tasks\" ) AS \"_root.ar.root.tasks\" ON ('true') ) AS \"_root\""
 	}
 ]`),
 	)
@@ -98,17 +98,17 @@ func (m *hasuraMock) mockTableSchemaQuery() {
 			"is_pk"
 		],
 		[
-			"todos",
+			"tasks",
 			"user_id",
 			"f"
 		],
 		[
-			"todos",
+			"tasks",
 			"title",
 			"f"
 		],
 		[
-			"todos",
+			"tasks",
 			"description",
 			"f"
 		],
@@ -138,7 +138,7 @@ func (m *hasuraMock) mockGqlQuery() {
 		httpmock.NewStringResponder(200, `
 {
 	"data": {
-		"todos": [
+		"tasks": [
 			{
 				"user": {
 					"email": "test33333@example.com",

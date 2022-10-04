@@ -255,7 +255,7 @@ func TestBuildIndexTargets_MultipleTables(t *testing.T) {
 			},
 		},
 		{
-			Name:        "todos",
+			Name:        "tasks",
 			PrimaryKeys: []string{"id"},
 			Columns: []*common_model.ColumnSchema{
 				{Name: "id"},
@@ -277,32 +277,32 @@ func TestBuildIndexTargets_MultipleTables(t *testing.T) {
 			scopeFields: []*common_model.Field{
 				{
 					Columns: []*common_model.FieldColumn{
-						{Table: "todos", Name: "id", Type: common_model.FieldCondition},
+						{Table: "tasks", Name: "id", Type: common_model.FieldCondition},
 					},
 				},
 				{
 					Columns: []*common_model.FieldColumn{
 						{Table: "u", Name: "id", Type: common_model.FieldCondition},
-						{Table: "todos", Name: "user_id", Type: common_model.FieldCondition},
+						{Table: "tasks", Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 			},
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "id", Type: common_model.FieldCondition},
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "id", Type: common_model.FieldCondition},
@@ -316,25 +316,25 @@ func TestBuildIndexTargets_MultipleTables(t *testing.T) {
 			scopeFields: []*common_model.Field{
 				{
 					Columns: []*common_model.FieldColumn{
-						{Table: "todos", Name: "description", Type: common_model.FieldReference},
+						{Table: "tasks", Name: "description", Type: common_model.FieldReference},
 					},
 				},
 				{
 					Columns: []*common_model.FieldColumn{
 						{Table: "u", Name: "id", Type: common_model.FieldCondition},
-						{Table: "todos", Name: "user_id", Type: common_model.FieldCondition},
+						{Table: "tasks", Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 			},
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "description", Type: common_model.FieldReference},
@@ -349,7 +349,7 @@ func TestBuildIndexTargets_MultipleTables(t *testing.T) {
 				Name: common_model.RootScopeName,
 				Tables: []*common_model.Table{
 					{AsName: tt.asTableName, Name: "users"},
-					{Name: "todos"},
+					{Name: "tasks"},
 				},
 				Fields: tt.scopeFields,
 			}
@@ -376,7 +376,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			},
 		},
 		{
-			Name:        "todos",
+			Name:        "tasks",
 			PrimaryKeys: []string{"id"},
 			Columns: []*common_model.ColumnSchema{
 				{Name: "id"},
@@ -398,7 +398,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryInSelectData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldReference},
 					},
@@ -410,7 +410,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryInSelectAliasedFieldData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "status", Type: common_model.FieldReference},
 					},
@@ -429,7 +429,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryWithComparisonData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "description", Type: common_model.FieldReference},
 						{Name: "status", Type: common_model.FieldReference},
@@ -442,7 +442,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryInSelectFunctionData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "description", Type: common_model.FieldReference},
 						{Name: "id", Type: common_model.FieldReference},
@@ -455,7 +455,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryInFromData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "id", Type: common_model.FieldReference},
 						{Name: "user_id", Type: common_model.FieldReference},
@@ -468,13 +468,13 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryInJoinData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "id", Type: common_model.FieldReference},
@@ -494,7 +494,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryUsingStarData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "description", Type: common_model.FieldReference},
 					},
@@ -506,13 +506,13 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryWithLateralJoinData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "description", Type: common_model.FieldReference},
@@ -537,7 +537,7 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresSubqueryWithAggregateFunctionData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "description", Type: common_model.FieldReference},
 					},
@@ -549,13 +549,13 @@ func TestBuildIndexTargets_PostgresSubquery(t *testing.T) {
 			scopes: tdata.PostgresCorrelatedSubqueryData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "description", Type: common_model.FieldReference},
@@ -589,7 +589,7 @@ func TestBuildIndexTargets_HasuraSubquery(t *testing.T) {
 			},
 		},
 		{
-			Name:        "todos",
+			Name:        "tasks",
 			PrimaryKeys: []string{"id"},
 			Columns: []*common_model.ColumnSchema{
 				{Name: "id"},
@@ -611,13 +611,13 @@ func TestBuildIndexTargets_HasuraSubquery(t *testing.T) {
 			scopes: tdata.HasuraSubqueryWithWhereData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "status", Type: common_model.FieldReference},
@@ -667,13 +667,13 @@ func TestBuildIndexTargets_HasuraSubquery(t *testing.T) {
 			scopes: tdata.HasuraSubqueryWithVariablesData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "description", Type: common_model.FieldReference},
@@ -724,13 +724,13 @@ func TestBuildIndexTargets_HasuraSubquery(t *testing.T) {
 			scopes: tdata.HasuraSubqueryWithAggregationData.Scopes,
 			expectedIndexTarget: []*common_model.IndexTargetTable{
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 					},
 				},
 				{
-					TableName: "todos",
+					TableName: "tasks",
 					IndexFields: []*common_model.IndexField{
 						{Name: "user_id", Type: common_model.FieldCondition},
 						{Name: "description", Type: common_model.FieldReference},

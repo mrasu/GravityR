@@ -19,7 +19,7 @@ var tableColumns = map[string][]*common_model.ColumnSchema{
 		{Name: "created_at"},
 		{Name: "updated_at"},
 	},
-	"todos": {
+	"tasks": {
 		{Name: "id"},
 		{Name: "user_id"},
 		{Name: "title"},
@@ -43,7 +43,7 @@ func TestCollectTableSchemas(t *testing.T) {
 		},
 		{
 			name:   "multiple table",
-			tables: []string{"users", "todos"},
+			tables: []string{"users", "tasks"},
 		},
 	}
 

@@ -52,7 +52,7 @@ func TestPerformanceInsights_GetHalfDaySqlMetrics(t *testing.T) {
 	expAvgs := []*aws.PiSQLLoadAvg{
 		{
 			DbName:      "db-x",
-			SQL:         "INSERT INTO todos(user_id...",
+			SQL:         "INSERT INTO tasks(user_id...",
 			TokenizedId: "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C",
 			Values: []*aws.PiTimeValue{
 				{
@@ -129,7 +129,7 @@ func TestPerformanceInsights_GetHalfDayTokenizedSqlMetrics(t *testing.T) {
 	expAvgs := []*aws.PiSQLLoadAvg{
 		{
 			DbName:      "db-x",
-			SQL:         "INSERT INTO `todos`(`user_id`...",
+			SQL:         "INSERT INTO `tasks`(`user_id`...",
 			TokenizedId: "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C",
 			Values: []*aws.PiTimeValue{
 				{

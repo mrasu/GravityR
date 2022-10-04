@@ -28,7 +28,7 @@ SELECT
 	t.description
 FROM
 	users
-	INNER JOIN todos AS t ON users.id = t.user_id
+	INNER JOIN tasks AS t ON users.id = t.user_id
 WHERE
 	users.email = 'test31776@example.com'
 endef
@@ -39,7 +39,7 @@ query MyQuery($$email: String) {
   users(where: {email: {_eq: $$email}}) {
     email
     name
-    todos(where: {}) {
+    tasks(where: {}) {
       title
       description
     }

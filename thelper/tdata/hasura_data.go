@@ -12,7 +12,7 @@ var HasuraSubqueryWithWhereData = &hasuraData{
 	GQL: `
 query MyQuery {
   users(where: {email: {_eq: "test33333@example.com"}}) {
-    todos {
+    tasks {
       title
       status
     }
@@ -33,7 +33,7 @@ FROM
           FROM
             (
               SELECT
-                "_root.ar.root.todos"."todos" AS "todos",
+                "_root.ar.root.tasks"."tasks" AS "tasks",
                 "_root.base"."email" AS "email",
                 "_root.base"."name" AS "name"
             ) AS "_e"
@@ -52,7 +52,7 @@ FROM
       ) AS "_root.base"
       LEFT OUTER JOIN LATERAL (
         SELECT
-          coalesce(json_agg("todos"), '[]') AS "todos"
+          coalesce(json_agg("tasks"), '[]') AS "tasks"
         FROM
           (
             SELECT
@@ -63,22 +63,22 @@ FROM
                   FROM
                     (
                       SELECT
-                        "_root.ar.root.todos.base"."title" AS "title",
-                        "_root.ar.root.todos.base"."status" AS "status"
+                        "_root.ar.root.tasks.base"."title" AS "title",
+                        "_root.ar.root.tasks.base"."status" AS "status"
                     ) AS "_e"
                 )
-              ) AS "todos"
+              ) AS "tasks"
             FROM
               (
                 SELECT
                   *
                 FROM
-                  "public"."todos"
+                  "public"."tasks"
                 WHERE
                   (("_root.base"."id") = ("user_id"))
-              ) AS "_root.ar.root.todos.base"
-          ) AS "_root.ar.root.todos"
-      ) AS "_root.ar.root.todos" ON ('true')
+              ) AS "_root.ar.root.tasks.base"
+          ) AS "_root.ar.root.tasks"
+      ) AS "_root.ar.root.tasks" ON ('true')
   ) AS "_root"
 `,
 	Scopes: []*common_model.StmtScope{
@@ -114,8 +114,8 @@ FROM
 									Name: "<select3>",
 									Fields: []*common_model.Field{
 										{
-											AsName:  "todos",
-											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos", Name: "todos", Type: common_model.FieldReference}},
+											AsName:  "tasks",
+											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.tasks", Name: "tasks", Type: common_model.FieldReference}},
 										},
 										{
 											AsName:  "email",
@@ -132,7 +132,7 @@ FROM
 					},
 					Tables: []*common_model.Table{
 						{AsName: "_root.base", Name: "<select1>"},
-						{AsName: "_root.ar.root.todos", Name: "<select2>", IsLateral: true},
+						{AsName: "_root.ar.root.tasks", Name: "<select2>", IsLateral: true},
 					},
 					SubScopes: []*common_model.StmtScope{
 						{
@@ -147,16 +147,16 @@ FROM
 							Name: "<select2>",
 							Fields: []*common_model.Field{
 								{
-									AsName:  "todos",
-									Columns: []*common_model.FieldColumn{{Name: "todos", Type: common_model.FieldReference}},
+									AsName:  "tasks",
+									Columns: []*common_model.FieldColumn{{Name: "tasks", Type: common_model.FieldReference}},
 								},
 							},
-							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos", Name: "<select4>"}},
+							Tables: []*common_model.Table{{AsName: "_root.ar.root.tasks", Name: "<select4>"}},
 							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select4>",
 									Fields: []*common_model.Field{
-										{AsName: "todos", Columns: []*common_model.FieldColumn{{ReferenceName: "<field1>", Type: common_model.FieldSubquery}}},
+										{AsName: "tasks", Columns: []*common_model.FieldColumn{{ReferenceName: "<field1>", Type: common_model.FieldSubquery}}},
 									},
 									FieldScopes: []*common_model.StmtScope{
 										{
@@ -171,18 +171,18 @@ FROM
 													Fields: []*common_model.Field{
 														{
 															AsName:  "title",
-															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "title", Type: common_model.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "title", Type: common_model.FieldReference}},
 														},
 														{
 															AsName:  "status",
-															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "status", Type: common_model.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "status", Type: common_model.FieldReference}},
 														},
 													},
 												},
 											},
 										},
 									},
-									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos.base", Name: "<select5>"}},
+									Tables: []*common_model.Table{{AsName: "_root.ar.root.tasks.base", Name: "<select5>"}},
 									SubScopes: []*common_model.StmtScope{
 										{
 											Name: "<select5>",
@@ -197,7 +197,7 @@ FROM
 													},
 												},
 											},
-											Tables: []*common_model.Table{{Name: "todos"}},
+											Tables: []*common_model.Table{{Name: "tasks"}},
 										},
 									},
 								},
@@ -212,7 +212,7 @@ FROM
 
 var HasuraSubqueryWithVariablesData = &hasuraData{
 	GQL: `query MyQuery($email: String) {
-  todos(where: {user: {email: {_eq: $email}}}) {
+  tasks(where: {user: {email: {_eq: $email}}}) {
     user {
       email
       id
@@ -249,7 +249,7 @@ FROM
         SELECT
           *
         FROM
-          "public"."todos"
+          "public"."tasks"
         WHERE
           (
             EXISTS
@@ -261,7 +261,7 @@ FROM
                   (
                     (
                       (
-                        ("__be_0_users"."id") = ("public"."todos"."user_id")
+                        ("__be_0_users"."id") = ("public"."tasks"."user_id")
                       ) AND
                       ('true')
                     ) AND
@@ -382,14 +382,14 @@ FROM
 									Fields: []*common_model.Field{
 										{Columns: []*common_model.FieldColumn{
 											{Table: "__be_0_users", Name: "id", Type: common_model.FieldCondition},
-											{Table: "todos", Name: "user_id", Type: common_model.FieldCondition},
+											{Table: "tasks", Name: "user_id", Type: common_model.FieldCondition},
 											{Table: "__be_0_users", Name: "email", Type: common_model.FieldCondition},
 										}},
 									},
 									Tables: []*common_model.Table{{AsName: "__be_0_users", Name: "users"}},
 								},
 							},
-							Tables: []*common_model.Table{{Name: "todos"}},
+							Tables: []*common_model.Table{{Name: "tasks"}},
 						},
 						{
 							Name: "<select2>",
@@ -454,14 +454,14 @@ var HasuraSubqueryWithAggregationData = &hasuraData{
   users(where: {email: {_eq: $email}}) {
     email
     name
-    todos_aggregate {
+    tasks_aggregate {
       aggregate {
         avg {
           status
         }
       }
     }
-    todos(where: {}) {
+    tasks(where: {}) {
       title
       description
     }
@@ -481,8 +481,8 @@ FROM
               SELECT
                 "_root.base"."email" AS "email",
                 "_root.base"."name" AS "name",
-                "_root.ar.root.todos_aggregate"."todos_aggregate" AS "todos_aggregate",
-                "_root.ar.root.todos"."todos" AS "todos"
+                "_root.ar.root.tasks_aggregate"."tasks_aggregate" AS "tasks_aggregate",
+                "_root.ar.root.tasks"."tasks" AS "tasks"
             ) AS "_e"
         )
       ) AS "root"
@@ -505,25 +505,25 @@ FROM
               'avg',
               json_build_object('status', avg("status"))
             )
-          ) AS "todos_aggregate"
+          ) AS "tasks_aggregate"
         FROM
           (
             SELECT
-              "_root.ar.root.todos_aggregate.base"."status" AS "status"
+              "_root.ar.root.tasks_aggregate.base"."status" AS "status"
             FROM
               (
                 SELECT
                   *
                 FROM
-                  "public"."todos"
+                  "public"."tasks"
                 WHERE
                   (("_root.base"."id") = ("user_id"))
-              ) AS "_root.ar.root.todos_aggregate.base"
-          ) AS "_root.ar.root.todos_aggregate"
-      ) AS "_root.ar.root.todos_aggregate" ON ('true')
+              ) AS "_root.ar.root.tasks_aggregate.base"
+          ) AS "_root.ar.root.tasks_aggregate"
+      ) AS "_root.ar.root.tasks_aggregate" ON ('true')
       LEFT OUTER JOIN LATERAL (
         SELECT
-          coalesce(json_agg("todos"), '[]') AS "todos"
+          coalesce(json_agg("tasks"), '[]') AS "tasks"
         FROM
           (
             SELECT
@@ -534,22 +534,22 @@ FROM
                   FROM
                     (
                       SELECT
-                        "_root.ar.root.todos.base"."title" AS "title",
-                        "_root.ar.root.todos.base"."description" AS "description"
+                        "_root.ar.root.tasks.base"."title" AS "title",
+                        "_root.ar.root.tasks.base"."description" AS "description"
                     ) AS "_e"
                 )
-              ) AS "todos"
+              ) AS "tasks"
             FROM
               (
                 SELECT
                   *
                 FROM
-                  "public"."todos"
+                  "public"."tasks"
                 WHERE
                   (("_root.base"."id") = ("user_id"))
-              ) AS "_root.ar.root.todos.base"
-          ) AS "_root.ar.root.todos"
-      ) AS "_root.ar.root.todos" ON ('true')
+              ) AS "_root.ar.root.tasks.base"
+          ) AS "_root.ar.root.tasks"
+      ) AS "_root.ar.root.tasks" ON ('true')
   ) AS "_root"`,
 	Scopes: []*common_model.StmtScope{
 		{
@@ -592,12 +592,12 @@ FROM
 											Columns: []*common_model.FieldColumn{{Table: "_root.base", Name: "name", Type: common_model.FieldReference}},
 										},
 										{
-											AsName:  "todos_aggregate",
-											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos_aggregate", Name: "todos_aggregate", Type: common_model.FieldReference}},
+											AsName:  "tasks_aggregate",
+											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.tasks_aggregate", Name: "tasks_aggregate", Type: common_model.FieldReference}},
 										},
 										{
-											AsName:  "todos",
-											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos", Name: "todos", Type: common_model.FieldReference}},
+											AsName:  "tasks",
+											Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.tasks", Name: "tasks", Type: common_model.FieldReference}},
 										},
 									},
 								},
@@ -606,8 +606,8 @@ FROM
 					},
 					Tables: []*common_model.Table{
 						{AsName: "_root.base", Name: "<select1>"},
-						{AsName: "_root.ar.root.todos_aggregate", Name: "<select2>", IsLateral: true},
-						{AsName: "_root.ar.root.todos", Name: "<select3>", IsLateral: true},
+						{AsName: "_root.ar.root.tasks_aggregate", Name: "<select2>", IsLateral: true},
+						{AsName: "_root.ar.root.tasks", Name: "<select3>", IsLateral: true},
 					},
 					SubScopes: []*common_model.StmtScope{
 						{
@@ -621,18 +621,18 @@ FROM
 						{
 							Name: "<select2>",
 							Fields: []*common_model.Field{
-								{AsName: "todos_aggregate", Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
+								{AsName: "tasks_aggregate", Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
 							},
-							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos_aggregate", Name: "<select5>"}},
+							Tables: []*common_model.Table{{AsName: "_root.ar.root.tasks_aggregate", Name: "<select5>"}},
 							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select5>",
 									Fields: []*common_model.Field{
 										{AsName: "status", Columns: []*common_model.FieldColumn{
-											{Table: "_root.ar.root.todos_aggregate.base", Name: "status", Type: common_model.FieldReference},
+											{Table: "_root.ar.root.tasks_aggregate.base", Name: "status", Type: common_model.FieldReference},
 										}},
 									},
-									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos_aggregate.base", Name: "<select6>"}},
+									Tables: []*common_model.Table{{AsName: "_root.ar.root.tasks_aggregate.base", Name: "<select6>"}},
 									SubScopes: []*common_model.StmtScope{
 										{
 											Name: "<select6>",
@@ -643,7 +643,7 @@ FROM
 													{Name: "user_id", Type: common_model.FieldCondition},
 												}},
 											},
-											Tables: []*common_model.Table{{Name: "todos"}},
+											Tables: []*common_model.Table{{Name: "tasks"}},
 										},
 									},
 								},
@@ -653,16 +653,16 @@ FROM
 							Name: "<select3>",
 							Fields: []*common_model.Field{
 								{
-									AsName:  "todos",
-									Columns: []*common_model.FieldColumn{{Name: "todos", Type: common_model.FieldReference}},
+									AsName:  "tasks",
+									Columns: []*common_model.FieldColumn{{Name: "tasks", Type: common_model.FieldReference}},
 								},
 							},
-							Tables: []*common_model.Table{{AsName: "_root.ar.root.todos", Name: "<select7>"}},
+							Tables: []*common_model.Table{{AsName: "_root.ar.root.tasks", Name: "<select7>"}},
 							SubScopes: []*common_model.StmtScope{
 								{
 									Name: "<select7>",
 									Fields: []*common_model.Field{
-										{AsName: "todos", Columns: []*common_model.FieldColumn{{ReferenceName: "<field1>", Type: common_model.FieldSubquery}}},
+										{AsName: "tasks", Columns: []*common_model.FieldColumn{{ReferenceName: "<field1>", Type: common_model.FieldSubquery}}},
 									},
 									FieldScopes: []*common_model.StmtScope{
 										{
@@ -677,18 +677,18 @@ FROM
 													Fields: []*common_model.Field{
 														{
 															AsName:  "title",
-															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "title", Type: common_model.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "title", Type: common_model.FieldReference}},
 														},
 														{
 															AsName:  "description",
-															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.todos.base", Name: "description", Type: common_model.FieldReference}},
+															Columns: []*common_model.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "description", Type: common_model.FieldReference}},
 														},
 													},
 												},
 											},
 										},
 									},
-									Tables: []*common_model.Table{{AsName: "_root.ar.root.todos.base", Name: "<select8>"}},
+									Tables: []*common_model.Table{{AsName: "_root.ar.root.tasks.base", Name: "<select8>"}},
 									SubScopes: []*common_model.StmtScope{
 										{
 											Name: "<select8>",
@@ -699,7 +699,7 @@ FROM
 													{Name: "user_id", Type: common_model.FieldCondition},
 												}},
 											},
-											Tables: []*common_model.Table{{Name: "todos"}},
+											Tables: []*common_model.Table{{Name: "tasks"}},
 										},
 									},
 								},

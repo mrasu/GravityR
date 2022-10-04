@@ -594,7 +594,7 @@
         "Metric": "db.load.avg",
         "Dimensions": {
           "db.sql_tokenized.db_id": "xxxxxxxxxxx",
-          "db.sql_tokenized.statement": "INSERT INTO `todos`(`user_id`...",
+          "db.sql_tokenized.statement": "INSERT INTO `tasks`(`user_id`...",
           "db.sql_tokenized.id": "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C"
         }
       },

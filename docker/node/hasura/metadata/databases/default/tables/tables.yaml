@@ -1,2 +1,2 @@
-- "!include public_todos.yaml"
+- "!include public_tasks.yaml"
 - "!include public_users.yaml"

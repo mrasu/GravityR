@@ -12,7 +12,7 @@
       {
         "name": "gravityr1",
         "sqls": [
-          { "sql": "INSERT INTO `todos` ( `user_id` , `title` , DESCRIPTION , STATUS , `created_at` , `updated_at` ) SELECT `users` . `id` , ?, ... , `tmp_100` . `id` % ? , `users` . `updated_at` - INTERVAL ( ( `tmp_100` . `id` % ? ) + ? ) SQL_TSI_HOUR , `users` . `updated_at` - INTERVAL ( `tmp_100` . `id` % ? ) SQL_TSI_HOUR FROM `users` CROSS JOIN ( SELECT * FROM `users` LIMIT ? ) `tmp_100`", "loadMax": 0.531, "loadSum": 0.531, "tokenizedId": "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C" },
+          { "sql": "INSERT INTO `tasks` ( `user_id` , `title` , DESCRIPTION , STATUS , `created_at` , `updated_at` ) SELECT `users` . `id` , ?, ... , `tmp_100` . `id` % ? , `users` . `updated_at` - INTERVAL ( ( `tmp_100` . `id` % ? ) + ? ) SQL_TSI_HOUR , `users` . `updated_at` - INTERVAL ( `tmp_100` . `id` % ? ) SQL_TSI_HOUR FROM `users` CROSS JOIN ( SELECT * FROM `users` LIMIT ? ) `tmp_100`", "loadMax": 0.531, "loadSum": 0.531, "tokenizedId": "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C" },
           { "sql": "SELECT `email` FROM `users`", "loadMax": 0.81203, "loadSum": 0.81203, "tokenizedId": "9502706E61874BC3B22A9B09E4156984XXXXXXXX" }
         ]
       }
@@ -593,19 +593,19 @@
         "name": "gravityr1",
         "sqls": [
           {
-            "sql": "INSERT INTO `todos` ( `user_id` , `title` , DESCRIPTION , STATUS , `created_at` , `updated_at` ) SELECT `users` . `id` , ?, ... , `tmp_100` . `id` % ? , `users` . `updated_at` - INTERVAL ( ( `tmp_100` . `id` % ? ) + ? ) SQL_TSI_HOUR , `users` . `updated_at` - INTERVAL ( `tmp_100` . `id` % ? ) SQL_TSI_HOUR FROM `users` CROSS JOIN ( SELECT * FROM `users` LIMIT ? ) `tmp_100`",
+            "sql": "INSERT INTO `tasks` ( `user_id` , `title` , DESCRIPTION , STATUS , `created_at` , `updated_at` ) SELECT `users` . `id` , ?, ... , `tmp_100` . `id` % ? , `users` . `updated_at` - INTERVAL ( ( `tmp_100` . `id` % ? ) + ? ) SQL_TSI_HOUR , `users` . `updated_at` - INTERVAL ( `tmp_100` . `id` % ? ) SQL_TSI_HOUR FROM `users` CROSS JOIN ( SELECT * FROM `users` LIMIT ? ) `tmp_100`",
             "loadMax": 0.18661971830985916,
             "loadSum": 0.18661971830985916,
             "tokenizedId": "70FB8D1F1B692FE0C458211B3EE75B5710E81F1C"
           },
           {
-            "sql": "EXPLAIN ANALYZE SELECT NAME , `t` . `description` FROM `users` INNER JOIN `todos` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?",
+            "sql": "EXPLAIN ANALYZE SELECT NAME , `t` . `description` FROM `users` INNER JOIN `tasks` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?",
             "loadMax": 0.078125,
             "loadSum": 0.078125,
             "tokenizedId": "64E6FE2C360536B8BED607E6A6B66BC463667A4A"
           },
           {
-            "sql": "SELECT NAME , `t` . `description` FROM `users` INNER JOIN `todos` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?",
+            "sql": "SELECT NAME , `t` . `description` FROM `users` INNER JOIN `tasks` AS `t` ON `users` . `id` = `t` . `user_id` WHERE `users` . `email` = ?",
             "loadMax": 0.03515625,
             "loadSum": 0.03515625,
             "tokenizedId": "D51E26E104C8374C3547D9AEC929104FB6A2D9AE"

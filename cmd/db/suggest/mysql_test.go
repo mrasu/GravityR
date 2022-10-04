@@ -18,7 +18,7 @@ SELECT
 	t.description
 FROM
 	users
-	INNER JOIN todos AS t ON users.id = t.user_id
+	INNER JOIN tasks AS t ON users.id = t.user_id
 WHERE
 	users.email = 'test31776@example.com'
 `,
@@ -69,8 +69,8 @@ const tableSchemaQuery = "SELECT\\s+COLUMN_NAME,\\s+COLUMN_KEY,\\s+TABLE_NAME\\s
 
 func (m *mysqlMock) mockTableSchemaQuery(mock sqlmock.Sqlmock) {
 	rows := sqlmock.NewRows([]string{"COLUMN_NAME", "COLUMN_KEY", "TABLE_NAME"})
-	rows.AddRow("description", "", "todos")
-	rows.AddRow("user_id", "", "todos")
+	rows.AddRow("description", "", "tasks")
+	rows.AddRow("user_id", "", "tasks")
 	rows.AddRow("email", "", "users")
 	rows.AddRow("id", "PRI", "users")
 	rows.AddRow("name", "", "users")

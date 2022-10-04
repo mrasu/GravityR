@@ -65,13 +65,13 @@ var tableColumns = []*postgres.ColumnInfo{
 	{ColumnName: "created_at", TableName: "users"},
 	{ColumnName: "updated_at", TableName: "users"},
 
-	{ColumnName: "id", IsPK: true, TableName: "todos"},
-	{ColumnName: "user_id", TableName: "todos"},
-	{ColumnName: "title", TableName: "todos"},
-	{ColumnName: "description", TableName: "todos"},
-	{ColumnName: "status", TableName: "todos"},
-	{ColumnName: "created_at", TableName: "todos"},
-	{ColumnName: "updated_at", TableName: "todos"},
+	{ColumnName: "id", IsPK: true, TableName: "tasks"},
+	{ColumnName: "user_id", TableName: "tasks"},
+	{ColumnName: "title", TableName: "tasks"},
+	{ColumnName: "description", TableName: "tasks"},
+	{ColumnName: "status", TableName: "tasks"},
+	{ColumnName: "created_at", TableName: "tasks"},
+	{ColumnName: "updated_at", TableName: "tasks"},
 }
 
 const tableSchemaQuery = "SELECT\\s+pg_class.relname AS table_name,\\s+pg_attribute.attname AS column_name,\\s+COALESCE\\(pg_index.indisprimary, FALSE\\) AS is_pk\\s+FROM\\s+pg_class"
@@ -89,7 +89,7 @@ func TestDB_GetTableColumns(t *testing.T) {
 		},
 		{
 			name:         "multiple table",
-			tables:       []string{"users", "todos"},
+			tables:       []string{"users", "tasks"},
 			expectedCols: tableColumns,
 		},
 		{

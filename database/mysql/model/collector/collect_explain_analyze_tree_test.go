@@ -41,11 +41,11 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 			},
 		},
 		{
-			name: "single join(SELECT name FROM users INNER JOIN todos ON ...)",
+			name: "single join(SELECT name FROM users INNER JOIN tasks ON ...)",
 			explainResult: `
 -> Nested loop inner join  (cost=6378854.77 rows=6361711) (actual time=0.147..2483.756 rows=6553600 loops=1)
-    -> Table scan on todos  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)
-    -> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
+    -> Table scan on tasks  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)
+    -> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
 `,
 			expectedTree: &model.ExplainAnalyzeTree{
 				Root: &model.ExplainAnalyzeTreeNode{
@@ -66,8 +66,8 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 							Children: []*model.ExplainAnalyzeTreeNode{
 								{
 									AnalyzeResultLine: &model.ExplainAnalyzeResultLine{
-										Text:                  "    -> Table scan on todos  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)",
-										TableName:             "todos",
+										Text:                  "    -> Table scan on tasks  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)",
+										TableName:             "tasks",
 										EstimatedInitCost:     null.FloatFromPtr(nil),
 										EstimatedCost:         null.FloatFrom(659260.39),
 										EstimatedReturnedRows: null.IntFrom(6361711),
@@ -79,7 +79,7 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 								},
 								{
 									AnalyzeResultLine: &model.ExplainAnalyzeResultLine{
-										Text:                  "    -> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
+										Text:                  "    -> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
 										TableName:             "users",
 										EstimatedInitCost:     null.FloatFromPtr(nil),
 										EstimatedCost:         null.FloatFrom(0.80),
@@ -97,12 +97,12 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 			},
 		},
 		{
-			name: "single join(SELECT name FROM users INNER JOIN todos ON ... WHERE todos.description = 'a')",
+			name: "single join(SELECT name FROM users INNER JOIN tasks ON ... WHERE tasks.description = 'a')",
 			explainResult: `
 -> Nested loop inner join  (cost=1360547.06 rows=636171) (actual time=0.115..3426.457 rows=6553600 loops=1)
-    -> Filter: (todos.` + "`" + `description` + "`" + ` = 'a')  (cost=662245.22 rows=636171) (actual time=0.046..2095.384 rows=6553600 loops=1)
-        -> Table scan on todos  (cost=662245.22 rows=6361711) (actual time=0.043..1191.708 rows=6553600 loops=1)
-    -> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=1.00 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
+    -> Filter: (tasks.` + "`" + `description` + "`" + ` = 'a')  (cost=662245.22 rows=636171) (actual time=0.046..2095.384 rows=6553600 loops=1)
+        -> Table scan on tasks  (cost=662245.22 rows=6361711) (actual time=0.043..1191.708 rows=6553600 loops=1)
+    -> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=1.00 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
 `,
 			expectedTree: &model.ExplainAnalyzeTree{
 				Root: &model.ExplainAnalyzeTreeNode{
@@ -123,8 +123,8 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 							Children: []*model.ExplainAnalyzeTreeNode{
 								{
 									AnalyzeResultLine: &model.ExplainAnalyzeResultLine{
-										Text:                  "    -> Filter: (todos.`description` = 'a')  (cost=662245.22 rows=636171) (actual time=0.046..2095.384 rows=6553600 loops=1)",
-										TableName:             "todos",
+										Text:                  "    -> Filter: (tasks.`description` = 'a')  (cost=662245.22 rows=636171) (actual time=0.046..2095.384 rows=6553600 loops=1)",
+										TableName:             "tasks",
 										EstimatedInitCost:     null.FloatFromPtr(nil),
 										EstimatedCost:         null.FloatFrom(662245.22),
 										EstimatedReturnedRows: null.IntFrom(636171),
@@ -136,8 +136,8 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 									Children: []*model.ExplainAnalyzeTreeNode{
 										{
 											AnalyzeResultLine: &model.ExplainAnalyzeResultLine{
-												Text:                  "        -> Table scan on todos  (cost=662245.22 rows=6361711) (actual time=0.043..1191.708 rows=6553600 loops=1)",
-												TableName:             "todos",
+												Text:                  "        -> Table scan on tasks  (cost=662245.22 rows=6361711) (actual time=0.043..1191.708 rows=6553600 loops=1)",
+												TableName:             "tasks",
 												EstimatedInitCost:     null.FloatFromPtr(nil),
 												EstimatedCost:         null.FloatFrom(662245.22),
 												EstimatedReturnedRows: null.IntFrom(6361711),
@@ -151,7 +151,7 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 								},
 								{
 									AnalyzeResultLine: &model.ExplainAnalyzeResultLine{
-										Text:                  "    -> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=1.00 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
+										Text:                  "    -> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=1.00 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)",
 										TableName:             "users",
 										EstimatedInitCost:     null.FloatFromPtr(nil),
 										EstimatedCost:         null.FloatFrom(1.0),

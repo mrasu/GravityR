@@ -170,9 +170,9 @@ func TestCollectStmtScopes_SingleField(t *testing.T) {
 		},
 		{
 			name:   "window function query",
-			query:  "SELECT AVG(todo_id) OVER(PARTITION BY user_id ORDER BY created_at ROWS BETWEEN 1 PRECEDING AND 2 FOLLOWING) FROM todos",
-			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "todo_id", Type: common_model.FieldReference}, {Name: "user_id", Type: common_model.FieldReference}, {Name: "created_at", Type: common_model.FieldReference}}}},
-			table:  &common_model.Table{Name: "todos"},
+			query:  "SELECT AVG(task_id) OVER(PARTITION BY user_id ORDER BY created_at ROWS BETWEEN 1 PRECEDING AND 2 FOLLOWING) FROM tasks",
+			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "task_id", Type: common_model.FieldReference}, {Name: "user_id", Type: common_model.FieldReference}, {Name: "created_at", Type: common_model.FieldReference}}}},
+			table:  &common_model.Table{Name: "tasks"},
 		},
 		{
 			name:   "GET_FORMAT function query",
@@ -231,60 +231,60 @@ func TestCollectStmtScopes_Joins(t *testing.T) {
 		{
 			name: "single join query",
 			query: `
-				SELECT todos.id
+				SELECT tasks.id
 				FROM users AS u
-				INNER JOIN todos ON u.id = todos.user_id
+				INNER JOIN tasks ON u.id = tasks.user_id
 			`,
 			fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Table: "todos", Name: "id", Type: common_model.FieldReference}}},
-				{Columns: []*common_model.FieldColumn{{Table: "u", Name: "id", Type: common_model.FieldCondition}, {Table: "todos", Name: "user_id", Type: common_model.FieldCondition}}},
+				{Columns: []*common_model.FieldColumn{{Table: "tasks", Name: "id", Type: common_model.FieldReference}}},
+				{Columns: []*common_model.FieldColumn{{Table: "u", Name: "id", Type: common_model.FieldCondition}, {Table: "tasks", Name: "user_id", Type: common_model.FieldCondition}}},
 			},
-			tables: []*common_model.Table{{AsName: "u", Name: "users"}, {Name: "todos"}},
+			tables: []*common_model.Table{{AsName: "u", Name: "users"}, {Name: "tasks"}},
 		},
 		{
 			name: "multiple join query",
 			query: `
-				SELECT todos.id
+				SELECT tasks.id
 				FROM users AS u
-				INNER JOIN todos ON u.id = todos.user_id
-				INNER JOIN todos AS t2 ON u.id = t2.user_id
-				INNER JOIN todos AS t3 ON u.id = t3.user_id
+				INNER JOIN tasks ON u.id = tasks.user_id
+				INNER JOIN tasks AS t2 ON u.id = t2.user_id
+				INNER JOIN tasks AS t3 ON u.id = t3.user_id
 			`,
 			fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Table: "todos", Name: "id", Type: common_model.FieldReference}}},
-				{Columns: []*common_model.FieldColumn{{Table: "u", Name: "id", Type: common_model.FieldCondition}, {Table: "todos", Name: "user_id", Type: common_model.FieldCondition}}},
+				{Columns: []*common_model.FieldColumn{{Table: "tasks", Name: "id", Type: common_model.FieldReference}}},
+				{Columns: []*common_model.FieldColumn{{Table: "u", Name: "id", Type: common_model.FieldCondition}, {Table: "tasks", Name: "user_id", Type: common_model.FieldCondition}}},
 				{Columns: []*common_model.FieldColumn{{Table: "u", Name: "id", Type: common_model.FieldCondition}, {Table: "t2", Name: "user_id", Type: common_model.FieldCondition}}},
 				{Columns: []*common_model.FieldColumn{{Table: "u", Name: "id", Type: common_model.FieldCondition}, {Table: "t3", Name: "user_id", Type: common_model.FieldCondition}}},
 			},
-			tables: []*common_model.Table{{AsName: "u", Name: "users"}, {Name: "todos"}, {AsName: "t2", Name: "todos"}, {AsName: "t3", Name: "todos"}},
+			tables: []*common_model.Table{{AsName: "u", Name: "users"}, {Name: "tasks"}, {AsName: "t2", Name: "tasks"}, {AsName: "t3", Name: "tasks"}},
 		},
 		{
 			name: "row join query",
 			query: `
-				SELECT todos.id
+				SELECT tasks.id
 				FROM users AS u
-				INNER JOIN todos ON ROW(u.id, u.id2) = ROW(todos.user_id, todos.user_id2)
+				INNER JOIN tasks ON ROW(u.id, u.id2) = ROW(tasks.user_id, tasks.user_id2)
 			`,
 			fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Table: "todos", Name: "id", Type: common_model.FieldReference}}},
+				{Columns: []*common_model.FieldColumn{{Table: "tasks", Name: "id", Type: common_model.FieldReference}}},
 				{Columns: []*common_model.FieldColumn{
 					{Table: "u", Name: "id", Type: common_model.FieldCondition},
 					{Table: "u", Name: "id2", Type: common_model.FieldCondition},
-					{Table: "todos", Name: "user_id", Type: common_model.FieldCondition},
-					{Table: "todos", Name: "user_id2", Type: common_model.FieldCondition},
+					{Table: "tasks", Name: "user_id", Type: common_model.FieldCondition},
+					{Table: "tasks", Name: "user_id2", Type: common_model.FieldCondition},
 				}},
 			},
-			tables: []*common_model.Table{{AsName: "u", Name: "users"}, {Name: "todos"}},
+			tables: []*common_model.Table{{AsName: "u", Name: "users"}, {Name: "tasks"}},
 		},
 		{
 			name: "subquery join query",
 			query: `
-				SELECT todos.id
+				SELECT tasks.id
 				FROM users AS u
-				INNER JOIN (SELECT * FROM todos) AS t ON u.id = t.user_id
+				INNER JOIN (SELECT * FROM tasks) AS t ON u.id = t.user_id
 			`,
 			fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Table: "todos", Name: "id", Type: common_model.FieldReference}}},
+				{Columns: []*common_model.FieldColumn{{Table: "tasks", Name: "id", Type: common_model.FieldReference}}},
 				{Columns: []*common_model.FieldColumn{
 					{Table: "u", Name: "id", Type: common_model.FieldCondition},
 					{Table: "t", Name: "user_id", Type: common_model.FieldCondition},
@@ -322,25 +322,25 @@ func TestCollectStmtScopes_NestedScope(t *testing.T) {
 	}{
 		{
 			name:   "subquery",
-			query:  "SELECT id, (SELECT COUNT(status) FROM todos) AS status_count FROM users",
+			query:  "SELECT id, (SELECT COUNT(status) FROM tasks) AS status_count FROM users",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
 			tables: []string{},
 		},
 		{
 			name:   "subquery with comparison",
-			query:  "SELECT (SELECT COUNT(status) FROM todos) - (SELECT COUNT(description) FROM todos) AS no_desc_count",
+			query:  "SELECT (SELECT COUNT(status) FROM tasks) - (SELECT COUNT(description) FROM tasks) AS no_desc_count",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
 			tables: []string{},
 		},
 		{
 			name:   "exists subquery",
-			query:  "SELECT id, EXISTS (SELECT * FROM todos WHERE user_id = users.user_id) FROM users",
+			query:  "SELECT id, EXISTS (SELECT * FROM tasks WHERE user_id = users.user_id) FROM users",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
 			tables: []string{},
 		},
 		{
 			name:   "in subquery",
-			query:  "SELECT user_id IN (SELECT user_id FROM todos) FROM users",
+			query:  "SELECT user_id IN (SELECT user_id FROM tasks) FROM users",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
 			tables: []string{},
 		},

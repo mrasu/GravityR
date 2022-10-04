@@ -18,7 +18,7 @@ SELECT
 	t.description
 FROM
 	users
-	INNER JOIN todos AS t ON users.id = t.user_id
+	INNER JOIN tasks AS t ON users.id = t.user_id
 WHERE
 	users.email = 'test31776@example.com'
 `,
@@ -66,7 +66,7 @@ func (m *postgresMock) mockExplainQuery(mock sqlmock.Sqlmock) {
 		"  ->  Hash Join  (cost=1564.21..103602.35 rows=42 width=26) (actual time=585.084..700.687 rows=33 loops=3)",
 		"        Hash Cond: (t.user_id = users.id)",
 		"        Buffers: shared hit=1608 read=68308",
-		"        ->  Parallel Seq Scan on todos t  (cost=0.00..94869.67 rows=2730667 width=21) (actual time=0.286..529.485 rows=2184533 loops=3)",
+		"        ->  Parallel Seq Scan on tasks t  (cost=0.00..94869.67 rows=2730667 width=21) (actual time=0.286..529.485 rows=2184533 loops=3)",
 		"              Buffers: shared read=67563",
 		"        ->  Hash  (cost=1564.20..1564.20 rows=1 width=13) (actual time=20.432..20.433 rows=1 loops=3)",
 		"              Buckets: 1024  Batches: 1  Memory Usage: 9kB",
@@ -94,8 +94,8 @@ const psqlTableSchemaQuery = "SELECT\\s+pg_class.relname AS table_name"
 
 func (m *postgresMock) mockTableSchemaQuery(mock sqlmock.Sqlmock) {
 	rows := sqlmock.NewRows([]string{"table_name", "column_name", "is_pk"})
-	rows.AddRow("todos", "description", false)
-	rows.AddRow("todos", "user_id", false)
+	rows.AddRow("tasks", "description", false)
+	rows.AddRow("tasks", "user_id", false)
 	rows.AddRow("users", "email", false)
 	rows.AddRow("users", "id", true)
 	rows.AddRow("users", "name", false)

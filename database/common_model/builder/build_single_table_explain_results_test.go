@@ -38,13 +38,13 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 			name: "one line",
 			nodes: []*explainNode{
 				{
-					tableName:          "todos",
+					tableName:          "tasks",
 					estimatedTotalTime: 0.4,
 				},
 			},
 			expectedTrees: []*common_model.SingleTableExplainResult{
 				{
-					TableName:          "todos",
+					TableName:          "tasks",
 					EstimatedTotalTime: 0.4,
 				},
 			},
@@ -53,11 +53,11 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 			name: "multiple lines",
 			nodes: []*explainNode{
 				{
-					tableName:          "todos",
+					tableName:          "tasks",
 					estimatedTotalTime: 0.4,
 					children: []*explainNode{
 						{
-							tableName:          "todos",
+							tableName:          "tasks",
 							estimatedTotalTime: 0.9,
 						},
 					},
@@ -65,7 +65,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 			},
 			expectedTrees: []*common_model.SingleTableExplainResult{
 				{
-					TableName:          "todos",
+					TableName:          "tasks",
 					EstimatedTotalTime: 0.2 * 2,
 				},
 			},
@@ -78,11 +78,11 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 					estimatedTotalTime: 0.1,
 					children: []*explainNode{
 						{
-							tableName:          "todos",
+							tableName:          "tasks",
 							estimatedTotalTime: 0.4,
 							children: []*explainNode{
 								{
-									tableName:          "todos",
+									tableName:          "tasks",
 									estimatedTotalTime: 0.9,
 								},
 							},
@@ -100,7 +100,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 			},
 			expectedTrees: []*common_model.SingleTableExplainResult{
 				{
-					TableName:          "todos",
+					TableName:          "tasks",
 					EstimatedTotalTime: 0.2 * 2,
 				},
 				{

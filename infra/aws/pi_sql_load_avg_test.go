@@ -21,7 +21,7 @@ func TestConvertPiSQLLoadAvgsToVms(t *testing.T) {
 			name: "query same time",
 			avgs: []*aws.PiSQLLoadAvg{{
 				DbName:      "db-x",
-				SQL:         "SELECT * FROM todos...",
+				SQL:         "SELECT * FROM tasks...",
 				TokenizedId: "aaa",
 				Values: []*aws.PiTimeValue{
 					{
@@ -43,7 +43,7 @@ func TestConvertPiSQLLoadAvgsToVms(t *testing.T) {
 				Databases: []*viewmodel.VmDbLoad{{
 					Name: "db-x",
 					Sqls: []*viewmodel.VmDbLoadOfSql{{
-						Sql:         "SELECT * FROM todos...",
+						Sql:         "SELECT * FROM tasks...",
 						LoadMax:     0.4,
 						LoadSum:     0.7,
 						TokenizedId: "aaa",
@@ -55,7 +55,7 @@ func TestConvertPiSQLLoadAvgsToVms(t *testing.T) {
 			name: "query different period",
 			avgs: []*aws.PiSQLLoadAvg{{
 				DbName:      "db-x",
-				SQL:         "SELECT * FROM todos...",
+				SQL:         "SELECT * FROM tasks...",
 				TokenizedId: "aaa",
 				Values: []*aws.PiTimeValue{
 					{
@@ -77,7 +77,7 @@ func TestConvertPiSQLLoadAvgsToVms(t *testing.T) {
 				Databases: []*viewmodel.VmDbLoad{{
 					Name: "db-x",
 					Sqls: []*viewmodel.VmDbLoadOfSql{{
-						Sql:         "SELECT * FROM todos...",
+						Sql:         "SELECT * FROM tasks...",
 						LoadMax:     0.4,
 						LoadSum:     0.7,
 						TokenizedId: "aaa",

@@ -53,9 +53,9 @@
             "actualLoopCount": null,
             "children": [
               {
-                "text": "              ->  Seq Scan on todos  (cost=0.00..149483.00 rows=175 width=13)\n                    Filter: (users.id = user_id)",
+                "text": "              ->  Seq Scan on tasks  (cost=0.00..149483.00 rows=175 width=13)\n                    Filter: (users.id = user_id)",
                 "title": "Seq Scan",
-                "tableName": "todos",
+                "tableName": "tasks",
                 "estimatedInitCost": 0,
                 "estimatedCost": 149483,
                 "estimatedReturnedRows": 175,

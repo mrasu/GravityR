@@ -16,16 +16,16 @@ func TestDB_Explain(t *testing.T) {
 		expected      string
 	}{
 		{
-			name: "single join(SELECT name FROM users INNER JOIN todos ON ...)",
+			name: "single join(SELECT name FROM users INNER JOIN tasks ON ...)",
 			explainResult: `
 -> Nested loop inner join  (cost=6378854.77 rows=6361711) (actual time=0.147..2483.756 rows=6553600 loops=1)
-    -> Table scan on todos  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)
-    -> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
+    -> Table scan on tasks  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)
+    -> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
 `,
 			expected: `
 -> Nested loop inner join  (cost=6378854.77 rows=6361711) (actual time=0.147..2483.756 rows=6553600 loops=1)
-    -> Table scan on todos  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)
-    -> Single-row index lookup on users using PRIMARY (id=todos.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
+    -> Table scan on tasks  (cost=659260.39 rows=6361711) (actual time=0.074..1138.883 rows=6553600 loops=1)
+    -> Single-row index lookup on users using PRIMARY (id=tasks.user_id)  (cost=0.80 rows=1) (actual time=0.000..0.000 rows=1 loops=6553600)
 `,
 		},
 		{
@@ -59,13 +59,13 @@ var tableColumns = []*mysql.ColumnInfo{
 	{ColumnName: "created_at", TableName: "users"},
 	{ColumnName: "updated_at", TableName: "users"},
 
-	{ColumnName: "id", ColumnKey: "PRI", TableName: "todos"},
-	{ColumnName: "user_id", TableName: "todos"},
-	{ColumnName: "title", TableName: "todos"},
-	{ColumnName: "description", TableName: "todos"},
-	{ColumnName: "status", TableName: "todos"},
-	{ColumnName: "created_at", TableName: "todos"},
-	{ColumnName: "updated_at", TableName: "todos"},
+	{ColumnName: "id", ColumnKey: "PRI", TableName: "tasks"},
+	{ColumnName: "user_id", TableName: "tasks"},
+	{ColumnName: "title", TableName: "tasks"},
+	{ColumnName: "description", TableName: "tasks"},
+	{ColumnName: "status", TableName: "tasks"},
+	{ColumnName: "created_at", TableName: "tasks"},
+	{ColumnName: "updated_at", TableName: "tasks"},
 }
 
 const tableSchemaQuery = "SELECT\\s+COLUMN_NAME,\\s+COLUMN_KEY,\\s+TABLE_NAME\\s+FROM\\s+information_schema.columns"
@@ -83,7 +83,7 @@ func TestDB_GetTableColumns(t *testing.T) {
 		},
 		{
 			name:         "multiple table",
-			tables:       []string{"users", "todos"},
+			tables:       []string{"users", "tasks"},
 			expectedCols: tableColumns,
 		},
 		{

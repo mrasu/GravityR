@@ -40,18 +40,18 @@ func TestParseExplainAnalyzeResultLineNode(t *testing.T) {
 		{
 			name: "index range scan(where id in (1,2,3))",
 			lines: []string{
-				"Index Scan using todos_pkey on todos  (cost=0.43..17.35 rows=3 width=54) (actual time=0.039..0.042 rows=3 loops=1)",
+				"Index Scan using tasks_pkey on tasks  (cost=0.43..17.35 rows=3 width=54) (actual time=0.039..0.042 rows=3 loops=1)",
 				"  Index Cond: (id = ANY ('{1,2,3}'::integer[]))",
 				"  Buffers: shared hit=9 read=4",
 			},
 			expectedNest: 0,
 			expectedLine: &model.ExplainAnalyzeResultNode{
 				Lines: []string{
-					"Index Scan using todos_pkey on todos  (cost=0.43..17.35 rows=3 width=54) (actual time=0.039..0.042 rows=3 loops=1)",
+					"Index Scan using tasks_pkey on tasks  (cost=0.43..17.35 rows=3 width=54) (actual time=0.039..0.042 rows=3 loops=1)",
 					"  Index Cond: (id = ANY ('{1,2,3}'::integer[]))",
 					"  Buffers: shared hit=9 read=4",
 				},
-				TableName:             "todos",
+				TableName:             "tasks",
 				EstimatedInitCost:     null.FloatFrom(0.43),
 				EstimatedCost:         null.FloatFrom(17.35),
 				EstimatedReturnedRows: null.IntFrom(3),

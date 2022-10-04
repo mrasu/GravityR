@@ -7,7 +7,7 @@ CREATE TABLE users (
   updated_at datetime DEFAULT NULL
 );
 
-CREATE TABLE todos (
+CREATE TABLE tasks (
   id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   user_id int NOT NULL,
   title varchar(50) NOT NULL,
@@ -32,7 +32,7 @@ SELECT CONCAT('test', CAST(num AS char)),
 FROM l4;
 
 /* Insert 65,536*100(=6,553,600) rows */
-INSERT INTO todos(user_id, title, description, status, created_at, updated_at)
+INSERT INTO tasks(user_id, title, description, status, created_at, updated_at)
 SELECT users.id,
      'test title',
      'test description',

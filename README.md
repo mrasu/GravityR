@@ -31,20 +31,20 @@ export HASURA_URL="http://localhost:8081" HASURA_ADMIN_SECRET="myadminsecretkey"
 gr db dig performance-insights -o "example/performance-insights.html"
 
 # Search your MySQL's SQL with EXPLAIN
-gr db suggest mysql -o "example/mysql.html" -q "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.name = 'foo'"
+gr db suggest mysql -o "example/mysql.html" -q "SELECT name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.name = 'foo'"
 
 # Search your MySQL's SQL by adding indexes temporarily
-gr db suggest mysql --with-examine -o "example/mysql_examine.html" -q "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.name = 'foo'"
+gr db suggest mysql --with-examine -o "example/mysql_examine.html" -q "SELECT name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.name = 'foo'"
 
 # Search your PostgreSQL's SQL with EXPLAIN
-gr db suggest postgres -o "example/postgres.html" -q "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.name = 'foo'"
+gr db suggest postgres -o "example/postgres.html" -q "SELECT name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.name = 'foo'"
 
 # Search your PostgreSQL's SQL by adding indexes temporarily
-gr db suggest postgres --with-examine -o "example/postgres_examine.html" -q "SELECT name, t.description FROM users INNER JOIN todos AS t ON users.id = t.user_id WHERE users.name = 'foo'"
+gr db suggest postgres --with-examine -o "example/postgres_examine.html" -q "SELECT name, t.description FROM users INNER JOIN tasks AS t ON users.id = t.user_id WHERE users.name = 'foo'"
 
 # Search your Hasura's GraphQL with EXPLAIN
 gr db suggest hasura -o "example/hasura.html" -q "query MyQuery(\$email: String) {
-  todos(where: {user: {email: {_eq: \$email}}}) {
+  tasks(where: {user: {email: {_eq: \$email}}}) {
     user {
       name
     }
@@ -55,7 +55,7 @@ gr db suggest hasura -o "example/hasura.html" -q "query MyQuery(\$email: String)
 
 # Search your Hasura's GraphQL by adding indexes temporarily
 gr db suggest hasura --with-examine -o "example/hasura_examine.html" -q "query MyQuery(\$email: String) {
-  todos(where: {user: {email: {_eq: \$email}}}) {
+  tasks(where: {user: {email: {_eq: \$email}}}) {
     user {
       name
     }
