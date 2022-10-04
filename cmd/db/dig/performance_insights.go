@@ -3,6 +3,7 @@ package dig
 import (
 	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/mrasu/GravityR/cmd/lib"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/infra/aws"
 	"github.com/pkg/errors"
@@ -16,8 +17,11 @@ import (
 var PerformanceInsightsCmd = &cobra.Command{
 	Use:   "performance-insights",
 	Short: "Dig database behavior with AWS' PerformanceInsights",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return piR.run()
+	Run: func(cmd *cobra.Command, args []string) {
+		err := piR.run()
+		if err != nil {
+			lib.LogError(err)
+		}
 	},
 }
 

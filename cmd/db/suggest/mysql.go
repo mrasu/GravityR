@@ -2,6 +2,7 @@ package suggest
 
 import (
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/mrasu/GravityR/cmd/lib"
 	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/mysql"
@@ -18,8 +19,11 @@ import (
 var MySqlCmd = &cobra.Command{
 	Use:   "mysql",
 	Short: "Suggest ways to increase MySQL's performance",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return mysqlR.run()
+	Run: func(cmd *cobra.Command, args []string) {
+		err := mysqlR.run()
+		if err != nil {
+			lib.LogError(err)
+		}
 	},
 }
 

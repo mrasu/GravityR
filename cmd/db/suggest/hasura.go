@@ -3,6 +3,7 @@ package suggest
 import (
 	"encoding/json"
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/mrasu/GravityR/cmd/lib"
 	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/hasura"
@@ -22,8 +23,11 @@ import (
 var HasuraCmd = &cobra.Command{
 	Use:   "hasura",
 	Short: "Suggest ways to increase Hasura's performance",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return hasuraR.run()
+	Run: func(cmd *cobra.Command, args []string) {
+		err := hasuraR.run()
+		if err != nil {
+			lib.LogError(err)
+		}
 	},
 }
 

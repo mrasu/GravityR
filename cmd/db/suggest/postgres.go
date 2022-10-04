@@ -2,6 +2,7 @@ package suggest
 
 import (
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/mrasu/GravityR/cmd/lib"
 	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/postgres"
@@ -19,8 +20,11 @@ import (
 var PostgresCmd = &cobra.Command{
 	Use:   "postgres",
 	Short: "Suggest ways to increase PostgreSQL's performance",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return postgresR.run()
+	Run: func(cmd *cobra.Command, args []string) {
+		err := postgresR.run()
+		if err != nil {
+			lib.LogError(err)
+		}
 	},
 }
 
