@@ -11,8 +11,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: 既存のインデックスと被るものは除外する
-// func SuggestIndex(db *postgres.DB, schema, query string, aTree *model.ExplainAnalyzeTree) ([]*common_model.IndexTargetTable, []error) {
 func SuggestIndex(cli *hasura.Client, query string, aTree *model.ExplainAnalyzeTree) ([]*common_model.IndexTargetTable, []error) {
 	stmt, err := parse(query)
 	if err != nil {
