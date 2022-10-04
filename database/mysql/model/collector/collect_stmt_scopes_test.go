@@ -318,31 +318,31 @@ func TestCollectStmtScopes_NestedScope(t *testing.T) {
 		name   string
 		query  string
 		fields []*common_model.Field
-		tables []string
+		tables []*common_model.Table
 	}{
 		{
 			name:   "subquery",
 			query:  "SELECT id, (SELECT COUNT(status) FROM tasks) AS status_count FROM users",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
-			tables: []string{},
+			tables: []*common_model.Table{},
 		},
 		{
 			name:   "subquery with comparison",
 			query:  "SELECT (SELECT COUNT(status) FROM tasks) - (SELECT COUNT(description) FROM tasks) AS no_desc_count",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
-			tables: []string{},
+			tables: []*common_model.Table{},
 		},
 		{
 			name:   "exists subquery",
 			query:  "SELECT id, EXISTS (SELECT * FROM tasks WHERE user_id = users.user_id) FROM users",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
-			tables: []string{},
+			tables: []*common_model.Table{},
 		},
 		{
 			name:   "in subquery",
 			query:  "SELECT user_id IN (SELECT user_id FROM tasks) FROM users",
 			fields: []*common_model.Field{{Columns: []*common_model.FieldColumn{{Name: "", Type: common_model.FieldSubquery}}}},
-			tables: []string{},
+			tables: []*common_model.Table{},
 		},
 	}
 	p := parser.New()
@@ -356,9 +356,15 @@ func TestCollectStmtScopes_NestedScope(t *testing.T) {
 
 			require.Equal(t, 1, len(actualScopes))
 			assert.ElementsMatch(t, tt.fields, actualScopes[0].Fields)
-
-			// TODO
-			//assert.ElementsMatch(t, tt.tables, actualScopes[0].Tables)
+			assert.ElementsMatch(t, tt.tables, actualScopes[0].Tables)
+			expectedScopes := []*common_model.StmtScope{{
+				Name:   "<root>",
+				Fields: tt.fields,
+				Tables: tt.tables,
+			}}
+			if diff := cmp.Diff(expectedScopes, actualScopes); diff != "" {
+				t.Errorf(diff)
+			}
 		})
 	}
 }
