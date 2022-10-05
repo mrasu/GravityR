@@ -76,3 +76,19 @@ func (db *DB) GetTableColumns(schema string, tables []string) ([]*ColumnInfo, er
 
 	return cols, nil
 }
+
+func (db *DB) GetIndexes(database string, tables []string) ([]*IndexInfo, error) {
+	query, args, err := sqlx.In(indexFetchQuery, database, tables)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build query to get table schema")
+	}
+	query = db.db.Rebind(query)
+
+	var qInfos []*queryIndexInfo
+	err = db.db.Select(&qInfos, query, args...)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to execute query to get indexes")
+	}
+
+	return toIndexInfo(qInfos), nil
+}

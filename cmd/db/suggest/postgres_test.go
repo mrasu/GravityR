@@ -50,6 +50,7 @@ type postgresMock struct{}
 func (m *postgresMock) mockAll(mock sqlmock.Sqlmock, query string) {
 	m.mockExplainQuery(mock)
 	m.mockTableSchemaQuery(mock)
+	m.mockIndexesQuery(mock)
 	m.mockSelectQuery(mock, query)
 	m.mockCreateIndexQuery(mock)
 	m.mockSelectQuery(mock, query)
@@ -100,6 +101,15 @@ func (m *postgresMock) mockTableSchemaQuery(mock sqlmock.Sqlmock) {
 	rows.AddRow("users", "id", true)
 	rows.AddRow("users", "name", false)
 	mock.ExpectQuery(psqlTableSchemaQuery).WillReturnRows(rows)
+}
+
+const psqlIndexesQuery = "SELECT\\s+i.relname AS index_name,\\s+t.relname AS table_name,"
+
+func (m *postgresMock) mockIndexesQuery(mock sqlmock.Sqlmock) {
+	rows := sqlmock.NewRows([]string{"index_name", "table_name", "column_names"})
+	rows.AddRow("tasks_idx", "tasks", "{description}")
+	rows.AddRow("users_idx", "users", "{email,id}")
+	mock.ExpectQuery(psqlIndexesQuery).WillReturnRows(rows)
 }
 
 func (m *postgresMock) mockSelectQuery(mock sqlmock.Sqlmock, query string) {

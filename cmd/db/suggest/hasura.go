@@ -3,7 +3,7 @@ package suggest
 import (
 	"encoding/json"
 	"github.com/mrasu/GravityR/cmd/flag"
-	"github.com/mrasu/GravityR/cmd/lib"
+	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/hasura"
@@ -24,9 +24,15 @@ var HasuraCmd = &cobra.Command{
 	Use:   "hasura",
 	Short: "Suggest ways to increase Hasura's performance",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := hasuraR.run()
+		err := hasuraR.prepare()
 		if err != nil {
-			lib.LogError(err)
+			util.LogError(err)
+			return
+		}
+
+		err = hasuraR.run()
+		if err != nil {
+			util.LogError(err)
 		}
 	},
 }
@@ -51,6 +57,18 @@ type hasuraRunner struct {
 	indexTargets    []string
 	query           string
 	jsonVariables   string
+
+	parsedVariables map[string]interface{}
+}
+
+func (hr *hasuraRunner) prepare() error {
+	v, err := hr.parseJSONToVariables(hr.jsonVariables)
+	if err != nil {
+		return err
+	}
+
+	hr.parsedVariables = v
+	return nil
 }
 
 func (hr *hasuraRunner) run() error {
@@ -64,15 +82,10 @@ func (hr *hasuraRunner) run() error {
 }
 
 func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
-	v, err := hr.parseJSONToVariables(hr.jsonVariables)
-	if err != nil {
-		return err
-	}
-
 	q := &iHasura.ExplainRequestBody{
 		Query: &iHasura.Query{
 			Query:     hr.query,
-			Variables: v,
+			Variables: hr.parsedVariables,
 		},
 	}
 	res, err := cli.Explain(q)
@@ -89,20 +102,14 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 		return err
 	}
 
-	its, errs := hasura.SuggestIndex(cli, r.SQL, aTree)
+	itts, errs := hasura.SuggestIndex(cli, r.SQL, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
 
-	idxTargets := toUniqueIndexTargets(its)
-
-	if len(idxTargets) > 0 {
-		log.Debug().Msg("Found possibly efficient index combinations:")
-		for i, it := range idxTargets {
-			log.Printf("\t%d.%s", i, it.CombinationString())
-		}
-	} else {
-		log.Debug().Msg("No possibly efficient index found. Perhaps already indexed?")
+	its, err := hr.removeExistingIndexTargets(cli, itts)
+	if err != nil {
+		return err
 	}
 
 	examinationIdxTargets, err := parseIndexTargets(hr.indexTargets)
@@ -110,26 +117,16 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 		return err
 	}
 
-	if len(examinationIdxTargets) == 0 {
-		for _, it := range idxTargets {
-			if it.IsSafe() {
-				examinationIdxTargets = append(examinationIdxTargets, it)
-			}
-		}
-	}
-
 	var er *common_model.ExaminationResult
 	if hr.runsExamination {
-		log.Info().Msg("Start examination...")
-		ie := hasura.NewIndexExaminer(cli, hr.query, v)
-		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
+		er, err = hr.examine(cli, examinationIdxTargets, its)
 		if err != nil {
 			return err
 		}
 	}
 
 	if outputPath != "" {
-		err := hr.createHTML(outputPath, v, r.SQL, idxTargets, er, aTree)
+		err := hr.createHTML(outputPath, hr.parsedVariables, r.SQL, its, er, aTree)
 		if err != nil {
 			return err
 		}
@@ -149,6 +146,33 @@ func (hr *hasuraRunner) parseJSONToVariables(jsonStr string) (map[string]interfa
 	}
 
 	return variables, nil
+}
+
+func (hr *hasuraRunner) removeExistingIndexTargets(cli *iHasura.Client, itts []*common_model.IndexTargetTable) ([]*common_model.IndexTarget, error) {
+	idxGetter := hasura.NewIndexGetter(cli)
+	its, err := database.NewExistingIndexRemover(idxGetter, "public", itts).Remove()
+	if err != nil {
+		return nil, err
+	}
+
+	logNewIndexTargets(its)
+	return its, nil
+}
+
+func (hr *hasuraRunner) examine(cli *iHasura.Client, varTargets, possibleTargets []*common_model.IndexTarget) (*common_model.ExaminationResult, error) {
+	targets := varTargets
+	if len(targets) == 0 {
+		targets = lo.Filter(possibleTargets, func(it *common_model.IndexTarget, _ int) bool { return it.IsSafe() })
+	}
+
+	log.Info().Msg("Start examination...")
+	ie := hasura.NewIndexExaminer(cli, hr.query, hr.parsedVariables)
+	er, err := database.NewIndexEfficiencyExaminer(ie).Run(targets)
+	if err != nil {
+		return nil, err
+	}
+
+	return er, nil
 }
 
 func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {

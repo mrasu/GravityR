@@ -7,6 +7,8 @@ CREATE TABLE users (
   updated_at timestamp with time zone DEFAULT NULL
 );
 
+CREATE INDEX ON users(id, email);
+
 CREATE TABLE tasks (
   id SERIAL PRIMARY KEY,
   user_id int NOT NULL,

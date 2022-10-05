@@ -3,7 +3,7 @@ package dig
 import (
 	"fmt"
 	"github.com/mrasu/GravityR/cmd/flag"
-	"github.com/mrasu/GravityR/cmd/lib"
+	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/infra/aws"
 	"github.com/pkg/errors"
@@ -20,7 +20,7 @@ var PerformanceInsightsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := piR.run()
 		if err != nil {
-			lib.LogError(err)
+			util.LogError(err)
 		}
 	},
 }

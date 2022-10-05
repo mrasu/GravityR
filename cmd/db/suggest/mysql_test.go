@@ -49,6 +49,7 @@ type mysqlMock struct{}
 func (m *mysqlMock) mockAll(mock sqlmock.Sqlmock, query string) {
 	m.mockExplainQuery(mock)
 	m.mockTableSchemaQuery(mock)
+	m.mockIndexesQuery(mock)
 	m.mockSelectQuery(mock, query)
 	m.mockAddIndexQuery(mock)
 	m.mockSelectQuery(mock, query)
@@ -75,6 +76,16 @@ func (m *mysqlMock) mockTableSchemaQuery(mock sqlmock.Sqlmock) {
 	rows.AddRow("id", "PRI", "users")
 	rows.AddRow("name", "", "users")
 	mock.ExpectQuery(tableSchemaQuery).WillReturnRows(rows)
+}
+
+const mysqlIndexesQuery = "SELECT\\s+TABLE_NAME,\\s+INDEX_NAME,\\s+COLUMN_NAME\\s+FROM\\s+information_schema.STATISTICS"
+
+func (m *mysqlMock) mockIndexesQuery(mock sqlmock.Sqlmock) {
+	rows := sqlmock.NewRows([]string{"TABLE_NAME", "INDEX_NAME", "COLUMN_NAME"})
+	rows.AddRow("tasks", "tasks_idx", "tdescriptionasks")
+	rows.AddRow("users", "users_idx", "email")
+	rows.AddRow("users", "users_idx", "id")
+	mock.ExpectQuery(mysqlIndexesQuery).WillReturnRows(rows)
 }
 
 func (m *mysqlMock) mockSelectQuery(mock sqlmock.Sqlmock, query string) {

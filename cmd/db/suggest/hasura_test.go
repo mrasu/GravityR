@@ -6,8 +6,11 @@ import (
 	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"io"
+	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -55,7 +58,7 @@ func (m *hasuraMock) mockAll(fn func()) {
 	defer httpmock.DeactivateAndReset()
 
 	m.mockExplain()
-	m.mockTableSchemaQuery()
+	m.mockV2Query()
 	m.mockGqlQuery()
 
 	fn()
@@ -86,9 +89,7 @@ func (m *hasuraMock) mockExplain() {
 	)
 }
 
-func (m *hasuraMock) mockTableSchemaQuery() {
-	httpmock.RegisterResponder("POST", "https://example.com/v2/query",
-		httpmock.NewStringResponder(200, `
+const tableSchemaResponse = `
 {
 	"result_type": "TuplesOk",
 	"result": [
@@ -129,7 +130,52 @@ func (m *hasuraMock) mockTableSchemaQuery() {
 		]
 	]
 }
-`),
+`
+
+const indexesResponse = `
+{
+	"result_type": "TuplesOk",
+	"result": [
+		[
+			"table_name",
+			"column_names"
+		],
+		[
+			"tasks",
+			"{description}"
+		],
+		[
+			"users",
+			"{email,id}"
+		]
+	]
+}
+`
+
+func (m *hasuraMock) mockV2Query() {
+	// Note:
+	// After https://github.com/jarcoal/httpmock/issues/135 is merged, it may be possible to separate each responder
+	httpmock.RegisterResponder("POST", "https://example.com/v2/query",
+		func(req *http.Request) (*http.Response, error) {
+			body, err := io.ReadAll(req.Body)
+			if err != nil {
+				return nil, err
+			}
+			if strings.Contains(string(body), "COALESCE(pg_index.indisprimary, FALSE) AS is_pk") {
+				return httpmock.NewStringResponder(200, tableSchemaResponse)(req)
+			}
+			if strings.Contains(string(body), "SELECT PG_GET_INDEXDEF(pg_index.indexrelid, k + 1, TRUE") {
+				return httpmock.NewStringResponder(200, indexesResponse)(req)
+			}
+			if strings.Contains(string(body), "CREATE INDEX") {
+				return httpmock.NewStringResponder(200, "{}")(req)
+			}
+			if strings.Contains(string(body), "DROP INDEX") {
+				return httpmock.NewStringResponder(200, "{}")(req)
+			}
+
+			return httpmock.ConnectionFailure(req)
+		},
 	)
 }
 

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestParseIndexTarget(t *testing.T) {
+func TestNewIndexTargetFromText(t *testing.T) {
 	tests := []struct {
 		name     string
 		text     string
@@ -27,9 +27,56 @@ func TestParseIndexTarget(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			it, err := common_model.NewIndexTarget(tt.text)
+			it, err := common_model.NewIndexTargetFromText(tt.text)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.expected, it)
+		})
+	}
+}
+
+func TestIndexTarget_HasSameIdxColumns(t *testing.T) {
+	tests := []struct {
+		name     string
+		s        *common_model.IndexTarget
+		t        *common_model.IndexTarget
+		expected bool
+	}{
+		{
+			name:     "same column",
+			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
+			expected: true,
+		},
+		{
+			name:     "same column but different order",
+			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        common_model.NewIndexTarget("table", []string{"col2", "col1"}),
+			expected: false,
+		},
+		{
+			name:     "less column",
+			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        common_model.NewIndexTarget("table", []string{"col1"}),
+			expected: false,
+		},
+		{
+			name:     "more column",
+			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        common_model.NewIndexTarget("table", []string{"col1", "col2", "col3"}),
+			expected: false,
+		},
+		{
+			name:     "different column",
+			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        common_model.NewIndexTarget("table", []string{"col3", "col4"}),
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res := tt.s.HasSameIdxColumns(tt.t)
+			assert.Equal(t, tt.expected, res)
 		})
 	}
 }
@@ -44,5 +91,5 @@ func buildIndexTarget(t *testing.T, tName string, cNames []string) *common_model
 		cs = append(cs, c)
 	}
 
-	return &common_model.IndexTarget{TableName: "users", Columns: cs}
+	return &common_model.IndexTarget{TableName: tName, Columns: cs}
 }

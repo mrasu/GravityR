@@ -13,7 +13,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/jarcoal/httpmock v1.2.0
 	github.com/jmoiron/sqlx v1.3.5
-	github.com/lib/pq v1.9.0
+	github.com/lib/pq v1.10.7
 	github.com/pingcap/tidb v1.1.0-beta.0.20220605042428-1a89decdb192
 	github.com/pingcap/tidb/parser v0.0.0-20220605042428-1a89decdb192
 	github.com/pkg/errors v0.9.1

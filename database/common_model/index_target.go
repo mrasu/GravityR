@@ -5,6 +5,7 @@ import (
 	"github.com/mrasu/GravityR/html/viewmodel"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 	"regexp"
 	"strings"
 )
@@ -19,7 +20,14 @@ var wordOnlyReg = regexp.MustCompile(`\A\w+\z`)
 
 const indexTargetColumnSeparator = "+"
 
-func NewIndexTarget(text string) (*IndexTarget, error) {
+func NewIndexTarget(tableName string, columns []string) *IndexTarget {
+	return &IndexTarget{
+		TableName: tableName,
+		Columns:   lo.Map(columns, func(col string, _ int) *IndexColumn { return &IndexColumn{name: col} }),
+	}
+}
+
+func NewIndexTargetFromText(text string) (*IndexTarget, error) {
 	m := indexTargetReg.FindStringSubmatch(text)
 	if m == nil {
 		return nil, errors.Errorf("Not appropriate text for index: %s", text)
@@ -87,6 +95,20 @@ func (it *IndexTarget) IsSafe() bool {
 
 	for _, c := range it.Columns {
 		if c.name != c.SafeName() {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (it *IndexTarget) HasSameIdxColumns(info *IndexTarget) bool {
+	if len(info.Columns) != len(it.Columns) {
+		return false
+	}
+
+	for i, col := range info.Columns {
+		if !strings.EqualFold(it.Columns[i].name, col.name) {
 			return false
 		}
 	}

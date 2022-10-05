@@ -7,6 +7,8 @@ CREATE TABLE users (
   updated_at datetime DEFAULT NULL
 );
 
+ALTER TABLE users ADD INDEX (id, email);
+
 CREATE TABLE tasks (
   id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   user_id int NOT NULL,

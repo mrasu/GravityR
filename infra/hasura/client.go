@@ -98,6 +98,24 @@ func (c *Client) GetTableColumns(schema string, tableNames []string) ([]*ColumnI
 	return cols, nil
 }
 
+func (c *Client) GetIndexes(schema string, tableNames []string) ([]*IndexInfo, error) {
+	q, err := buildIndexFetchQuery(schema, tableNames)
+	if err != nil {
+		return nil, err
+	}
+
+	args := &RunSQLArgs{
+		SQL:      q,
+		ReadOnly: lib.Ptr(true),
+	}
+	res, err := c.RunSQL(args)
+	if err != nil {
+		return nil, err
+	}
+
+	return parseIndexFetchResult(res)
+}
+
 func (c *Client) post(pathname string, body interface{}) ([]byte, error) {
 	b, err := json.Marshal(body)
 	if err != nil {

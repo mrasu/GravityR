@@ -2,7 +2,7 @@ package suggest
 
 import (
 	"github.com/mrasu/GravityR/cmd/flag"
-	"github.com/mrasu/GravityR/cmd/lib"
+	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/postgres"
@@ -12,6 +12,7 @@ import (
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iPostgres "github.com/mrasu/GravityR/infra/postgres"
 	"github.com/rs/zerolog/log"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
@@ -23,7 +24,7 @@ var PostgresCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := postgresR.run()
 		if err != nil {
-			lib.LogError(err)
+			util.LogError(err)
 		}
 	},
 }
@@ -79,41 +80,26 @@ func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema st
 		return err
 	}
 
-	its, errs := postgres.SuggestIndex(db, schema, pr.query, aTree)
+	itts, errs := postgres.SuggestIndex(db, schema, pr.query, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
-	idxTargets := toUniqueIndexTargets(its)
 
-	if len(idxTargets) > 0 {
-		log.Debug().Msg("Found possibly efficient index combinations:")
-		for i, it := range idxTargets {
-			log.Printf("\t%d.%s", i, it.CombinationString())
-		}
-	} else {
-		log.Debug().Msg("No possibly efficient index found. Perhaps already indexed?")
-	}
-
-	if len(examinationIdxTargets) == 0 {
-		for _, it := range idxTargets {
-			if it.IsSafe() {
-				examinationIdxTargets = append(examinationIdxTargets, it)
-			}
-		}
+	its, err := pr.removeExistingIndexTargets(db, schema, itts)
+	if err != nil {
+		return err
 	}
 
 	var er *common_model.ExaminationResult
 	if pr.runsExamination {
-		log.Info().Msg("Start examination...")
-		ie := postgres.NewIndexExaminer(db, pr.query)
-		er, err = database.NewIndexEfficiencyExaminer(ie).Run(examinationIdxTargets)
+		er, err = pr.examine(db, examinationIdxTargets, its)
 		if err != nil {
 			return err
 		}
 	}
 
 	if outputPath != "" {
-		err := pr.createHTML(outputPath, idxTargets, er, aTree)
+		err := pr.createHTML(outputPath, its, er, aTree)
 		if err != nil {
 			return err
 		}
@@ -124,6 +110,33 @@ func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema st
 		}
 	}
 	return nil
+}
+
+func (pr *postgresRunner) removeExistingIndexTargets(db *iPostgres.DB, dbName string, itts []*common_model.IndexTargetTable) ([]*common_model.IndexTarget, error) {
+	idxGetter := postgres.NewIndexGetter(db)
+	its, err := database.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
+	if err != nil {
+		return nil, err
+	}
+
+	logNewIndexTargets(its)
+	return its, nil
+}
+
+func (pr *postgresRunner) examine(db *iPostgres.DB, varTargets, possibleTargets []*common_model.IndexTarget) (*common_model.ExaminationResult, error) {
+	targets := varTargets
+	if len(targets) == 0 {
+		targets = lo.Filter(possibleTargets, func(it *common_model.IndexTarget, _ int) bool { return it.IsSafe() })
+	}
+
+	log.Info().Msg("Start examination...")
+	ie := postgres.NewIndexExaminer(db, pr.query)
+	er, err := database.NewIndexEfficiencyExaminer(ie).Run(targets)
+	if err != nil {
+		return nil, err
+	}
+
+	return er, nil
 }
 
 func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
