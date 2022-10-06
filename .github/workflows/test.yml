@@ -12,6 +12,8 @@ jobs:
       - name: 'Create a dummy file to enable to build'
         run: mkdir -p client/dist/assets && touch client/dist/assets/.dummy
       - uses: golangci/golangci-lint-action@v3
+        with:
+          args: --timeout 5m --verbose
       - run: make test
   client-test:
     defaults:
