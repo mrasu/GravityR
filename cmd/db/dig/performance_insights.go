@@ -9,8 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"os"
-	"path"
 	"time"
 )
 
@@ -95,10 +93,7 @@ func (pr *piRunner) dig(outputPath string, rdsCli *aws.Rds, piCli *aws.Performan
 		return err
 	}
 
-	wd, err := os.Getwd()
-	if err == nil {
-		log.Info().Msg("Result html is at: " + path.Join(wd, outputPath))
-	}
+	util.LogResultOutputPath(outputPath)
 
 	return nil
 }

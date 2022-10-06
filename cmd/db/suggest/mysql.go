@@ -12,8 +12,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"os"
-	"path"
 )
 
 var MySqlCmd = &cobra.Command{
@@ -120,10 +118,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) e
 			return err
 		}
 
-		wd, err := os.Getwd()
-		if err == nil {
-			log.Info().Msg("Result html is at: " + path.Join(wd, outputPath))
-		}
+		util.LogResultOutputPath(outputPath)
 	}
 	return nil
 }

@@ -16,8 +16,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"os"
-	"path"
 )
 
 var HasuraCmd = &cobra.Command{
@@ -131,10 +129,7 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *hasura.Client) error {
 			return err
 		}
 
-		wd, err := os.Getwd()
-		if err == nil {
-			log.Info().Msg("Result html is at: " + path.Join(wd, outputPath))
-		}
+		util.LogResultOutputPath(outputPath)
 	}
 	return nil
 }
