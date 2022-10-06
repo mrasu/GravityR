@@ -1,27 +1,27 @@
 package tdata
 
-import "github.com/mrasu/GravityR/database"
+import "github.com/mrasu/GravityR/database/dmodel"
 
 type postgresData struct {
 	SQL    string
-	Scopes []*database.StmtScope
+	Scopes []*dmodel.StmtScope
 }
 
 var PostgresSubqueryInSelectData = &postgresData{
 	SQL: "SELECT (SELECT user_id FROM tasks limit 1)",
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}}},
 			},
-			FieldScopes: []*database.StmtScope{
+			FieldScopes: []*dmodel.StmtScope{
 				{
 					Name: "<field0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "user_id", Type: dmodel.FieldReference}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -32,25 +32,25 @@ var PostgresSubqueryInSelectData = &postgresData{
 
 var PostgresSubqueryInSelectAliasedFieldData = &postgresData{
 	SQL: "SELECT name, is_admin, (SELECT COUNT(status) FROM tasks) AS status_count FROM users",
-	Scopes: []*database.StmtScope{{
+	Scopes: []*dmodel.StmtScope{{
 		Name: "<root>",
-		Fields: []*database.Field{
-			{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
-			{Columns: []*database.FieldColumn{{Name: "is_admin", Type: database.FieldReference}}},
-			{AsName: "status_count", Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
+		Fields: []*dmodel.Field{
+			{Columns: []*dmodel.FieldColumn{{Name: "name", Type: dmodel.FieldReference}}},
+			{Columns: []*dmodel.FieldColumn{{Name: "is_admin", Type: dmodel.FieldReference}}},
+			{AsName: "status_count", Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}}},
 		},
-		FieldScopes: []*database.StmtScope{
+		FieldScopes: []*dmodel.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*database.Field{
-					{Columns: []*database.FieldColumn{{Name: "status", Type: database.FieldReference}}},
+				Fields: []*dmodel.Field{
+					{Columns: []*dmodel.FieldColumn{{Name: "status", Type: dmodel.FieldReference}}},
 				},
-				Tables: []*database.Table{
+				Tables: []*dmodel.Table{
 					{Name: "tasks"},
 				},
 			},
 		},
-		Tables: []*database.Table{
+		Tables: []*dmodel.Table{
 			{Name: "users"},
 		},
 	}},
@@ -58,30 +58,30 @@ var PostgresSubqueryInSelectAliasedFieldData = &postgresData{
 
 var PostgresSubqueryWithComparisonData = &postgresData{
 	SQL: "SELECT (SELECT COUNT(status) FROM tasks) - (SELECT COUNT(description) FROM tasks) AS no_desc_count",
-	Scopes: []*database.StmtScope{{
+	Scopes: []*dmodel.StmtScope{{
 		Name: "<root>",
-		Fields: []*database.Field{
-			{AsName: "no_desc_count", Columns: []*database.FieldColumn{
-				{ReferenceName: "<field0>", Type: database.FieldSubquery},
-				{ReferenceName: "<field1>", Type: database.FieldSubquery},
+		Fields: []*dmodel.Field{
+			{AsName: "no_desc_count", Columns: []*dmodel.FieldColumn{
+				{ReferenceName: "<field0>", Type: dmodel.FieldSubquery},
+				{ReferenceName: "<field1>", Type: dmodel.FieldSubquery},
 			}},
 		},
-		FieldScopes: []*database.StmtScope{
+		FieldScopes: []*dmodel.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*database.Field{
-					{Columns: []*database.FieldColumn{{Name: "status", Type: database.FieldReference}}},
+				Fields: []*dmodel.Field{
+					{Columns: []*dmodel.FieldColumn{{Name: "status", Type: dmodel.FieldReference}}},
 				},
-				Tables: []*database.Table{
+				Tables: []*dmodel.Table{
 					{Name: "tasks"},
 				},
 			},
 			{
 				Name: "<field1>",
-				Fields: []*database.Field{
-					{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
+				Fields: []*dmodel.Field{
+					{Columns: []*dmodel.FieldColumn{{Name: "description", Type: dmodel.FieldReference}}},
 				},
-				Tables: []*database.Table{
+				Tables: []*dmodel.Table{
 					{Name: "tasks"},
 				},
 			},
@@ -91,28 +91,28 @@ var PostgresSubqueryWithComparisonData = &postgresData{
 
 var PostgresSubqueryWithExistData = &postgresData{
 	SQL: "SELECT name, EXISTS (SELECT * FROM tasks WHERE user_id = users.id) FROM users",
-	Scopes: []*database.StmtScope{{
+	Scopes: []*dmodel.StmtScope{{
 		Name: "<root>",
-		Fields: []*database.Field{
-			{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
-			{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
+		Fields: []*dmodel.Field{
+			{Columns: []*dmodel.FieldColumn{{Name: "name", Type: dmodel.FieldReference}}},
+			{Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}}},
 		},
-		FieldScopes: []*database.StmtScope{
+		FieldScopes: []*dmodel.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*database.Field{
-					{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
-					{Columns: []*database.FieldColumn{
-						{Name: "user_id", Type: database.FieldCondition},
-						{Table: "users", Name: "id", Type: database.FieldCondition},
+				Fields: []*dmodel.Field{
+					{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
+					{Columns: []*dmodel.FieldColumn{
+						{Name: "user_id", Type: dmodel.FieldCondition},
+						{Table: "users", Name: "id", Type: dmodel.FieldCondition},
 					}},
 				},
-				Tables: []*database.Table{
+				Tables: []*dmodel.Table{
 					{Name: "tasks"},
 				},
 			},
 		},
-		Tables: []*database.Table{
+		Tables: []*dmodel.Table{
 			{Name: "users"},
 		},
 	}},
@@ -120,26 +120,26 @@ var PostgresSubqueryWithExistData = &postgresData{
 
 var PostgresSubqueryWithInData = &postgresData{
 	SQL: "SELECT user_id IN (SELECT user_id FROM tasks) FROM users",
-	Scopes: []*database.StmtScope{{
+	Scopes: []*dmodel.StmtScope{{
 		Name: "<root>",
-		Fields: []*database.Field{
-			{Columns: []*database.FieldColumn{
-				{Name: "user_id", Type: database.FieldReference},
-				{ReferenceName: "<field0>", Type: database.FieldSubquery},
+		Fields: []*dmodel.Field{
+			{Columns: []*dmodel.FieldColumn{
+				{Name: "user_id", Type: dmodel.FieldReference},
+				{ReferenceName: "<field0>", Type: dmodel.FieldSubquery},
 			}},
 		},
-		FieldScopes: []*database.StmtScope{
+		FieldScopes: []*dmodel.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*database.Field{
-					{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
+				Fields: []*dmodel.Field{
+					{Columns: []*dmodel.FieldColumn{{Name: "user_id", Type: dmodel.FieldReference}}},
 				},
-				Tables: []*database.Table{
+				Tables: []*dmodel.Table{
 					{Name: "tasks"},
 				},
 			},
 		},
-		Tables: []*database.Table{
+		Tables: []*dmodel.Table{
 			{Name: "users"},
 		},
 	}},
@@ -154,29 +154,29 @@ SELECT row_to_json(
   )
 )
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}}},
 			},
-			FieldScopes: []*database.StmtScope{
+			FieldScopes: []*dmodel.StmtScope{
 				{
 					Name: "<field0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "t", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "t", Type: dmodel.FieldReference}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "<select0>", AsName: "t"},
 					},
-					SubScopes: []*database.StmtScope{
+					SubScopes: []*dmodel.StmtScope{
 						{
 							Name: "<select0>",
-							Fields: []*database.Field{
-								{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
-								{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
+							Fields: []*dmodel.Field{
+								{Columns: []*dmodel.FieldColumn{{Name: "id", Type: dmodel.FieldReference}}},
+								{Columns: []*dmodel.FieldColumn{{Name: "description", Type: dmodel.FieldReference}}},
 							},
-							Tables: []*database.Table{
+							Tables: []*dmodel.Table{
 								{Name: "tasks"},
 							},
 						},
@@ -192,23 +192,23 @@ var PostgresSubqueryInFromData = &postgresData{
 SELECT *
 FROM (SELECT id, user_id FROM tasks)
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
 			},
-			Tables: []*database.Table{
+			Tables: []*dmodel.Table{
 				{Name: "<select0>"},
 			},
-			SubScopes: []*database.StmtScope{
+			SubScopes: []*dmodel.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
-						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "id", Type: dmodel.FieldReference}}},
+						{Columns: []*dmodel.FieldColumn{{Name: "user_id", Type: dmodel.FieldReference}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -223,30 +223,30 @@ SELECT name, t.id, user_id
 FROM users
 INNER JOIN (SELECT id, user_id FROM tasks) AS t ON users.id = t.user_id
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
-				{Columns: []*database.FieldColumn{{Table: "t", Name: "id", Type: database.FieldReference}}},
-				{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
-				{Columns: []*database.FieldColumn{
-					{Table: "users", Name: "id", Type: database.FieldCondition},
-					{Table: "t", Name: "user_id", Type: database.FieldCondition},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{{Name: "name", Type: dmodel.FieldReference}}},
+				{Columns: []*dmodel.FieldColumn{{Table: "t", Name: "id", Type: dmodel.FieldReference}}},
+				{Columns: []*dmodel.FieldColumn{{Name: "user_id", Type: dmodel.FieldReference}}},
+				{Columns: []*dmodel.FieldColumn{
+					{Table: "users", Name: "id", Type: dmodel.FieldCondition},
+					{Table: "t", Name: "user_id", Type: dmodel.FieldCondition},
 				}},
 			},
-			Tables: []*database.Table{
+			Tables: []*dmodel.Table{
 				{Name: "users"},
 				{Name: "<select0>", AsName: "t"},
 			},
-			SubScopes: []*database.StmtScope{
+			SubScopes: []*dmodel.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
-						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "id", Type: dmodel.FieldReference}}},
+						{Columns: []*dmodel.FieldColumn{{Name: "user_id", Type: dmodel.FieldReference}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -261,24 +261,24 @@ SELECT description
 FROM
 	(SELECT * FROM tasks) AS t
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{
-					{Name: "description", Type: database.FieldReference},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{
+					{Name: "description", Type: dmodel.FieldReference},
 				}},
 			},
-			Tables: []*database.Table{
+			Tables: []*dmodel.Table{
 				{Name: "<select0>", AsName: "t"},
 			},
-			SubScopes: []*database.StmtScope{
+			SubScopes: []*dmodel.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -294,43 +294,43 @@ FROM
 	(SELECT id FROM users) AS u
 	LEFT OUTER JOIN LATERAL (SELECT user_id, description FROM tasks WHERE user_id = u.id) AS t ON u.id = t.user_id
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{
-					{Name: "description", Type: database.FieldReference},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{
+					{Name: "description", Type: dmodel.FieldReference},
 				}},
-				{Columns: []*database.FieldColumn{
-					{Table: "u", Name: "id", Type: database.FieldCondition},
-					{Table: "t", Name: "user_id", Type: database.FieldCondition},
+				{Columns: []*dmodel.FieldColumn{
+					{Table: "u", Name: "id", Type: dmodel.FieldCondition},
+					{Table: "t", Name: "user_id", Type: dmodel.FieldCondition},
 				}},
 			},
-			Tables: []*database.Table{
+			Tables: []*dmodel.Table{
 				{Name: "<select0>", AsName: "u"},
 				{Name: "<select1>", AsName: "t", IsLateral: true},
 			},
-			SubScopes: []*database.StmtScope{
+			SubScopes: []*dmodel.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "id", Type: dmodel.FieldReference}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "users"},
 					},
 				},
 				{
 					Name: "<select1>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
-						{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
-						{Columns: []*database.FieldColumn{
-							{Name: "user_id", Type: database.FieldCondition},
-							{Table: "u", Name: "id", Type: database.FieldCondition},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "user_id", Type: dmodel.FieldReference}}},
+						{Columns: []*dmodel.FieldColumn{{Name: "description", Type: dmodel.FieldReference}}},
+						{Columns: []*dmodel.FieldColumn{
+							{Name: "user_id", Type: dmodel.FieldCondition},
+							{Table: "u", Name: "id", Type: dmodel.FieldCondition},
 						}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -345,32 +345,32 @@ SELECT b
 FROM (SELECT name FROM users) AS a
 	LEFT JOIN LATERAL (SELECT a) AS b ON (TRUE)
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{
-					{Name: "b", Type: database.FieldReference},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{
+					{Name: "b", Type: dmodel.FieldReference},
 				}},
 			},
-			Tables: []*database.Table{
+			Tables: []*dmodel.Table{
 				{Name: "<select0>", AsName: "a"},
 				{Name: "<select1>", AsName: "b", IsLateral: true},
 			},
-			SubScopes: []*database.StmtScope{
+			SubScopes: []*dmodel.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "name", Type: dmodel.FieldReference}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "users"},
 					},
 				},
 				{
 					Name: "<select1>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "a", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "a", Type: dmodel.FieldReference}}},
 					},
 				},
 			},
@@ -383,22 +383,22 @@ var PostgresSubqueryWithAggregateFunctionData = &postgresData{
 SELECT json_agg(t)
 FROM (SELECT description FROM tasks LIMIT 3) AS t;
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{{Name: "t", Type: database.FieldReference}}},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{{Name: "t", Type: dmodel.FieldReference}}},
 			},
-			Tables: []*database.Table{
+			Tables: []*dmodel.Table{
 				{AsName: "t", Name: "<select0>"},
 			},
-			SubScopes: []*database.StmtScope{
+			SubScopes: []*dmodel.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Name: "description", Type: dmodel.FieldReference}}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -413,29 +413,29 @@ SELECT description
 FROM tasks
 WHERE EXISTS(SELECT * FROM users WHERE users.id = user_id)
 `,
-	Scopes: []*database.StmtScope{
+	Scopes: []*dmodel.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*database.Field{
-				{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
-				{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
+			Fields: []*dmodel.Field{
+				{Columns: []*dmodel.FieldColumn{{Name: "description", Type: dmodel.FieldReference}}},
+				{Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}}},
 			},
-			FieldScopes: []*database.StmtScope{
+			FieldScopes: []*dmodel.StmtScope{
 				{
 					Name: "<field0>",
-					Fields: []*database.Field{
-						{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
-						{Columns: []*database.FieldColumn{
-							{Table: "users", Name: "id", Type: database.FieldCondition},
-							{Name: "user_id", Type: database.FieldCondition},
+					Fields: []*dmodel.Field{
+						{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
+						{Columns: []*dmodel.FieldColumn{
+							{Table: "users", Name: "id", Type: dmodel.FieldCondition},
+							{Name: "user_id", Type: dmodel.FieldCondition},
 						}},
 					},
-					Tables: []*database.Table{
+					Tables: []*dmodel.Table{
 						{Name: "users"},
 					},
 				},
 			},
-			Tables: []*database.Table{
+			Tables: []*dmodel.Table{
 				{Name: "tasks"},
 			},
 		},

@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/cmd/util"
-	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/hasura"
-	"github.com/mrasu/GravityR/database/postgres/model"
-	"github.com/mrasu/GravityR/database/postgres/model/collector"
-	"github.com/mrasu/GravityR/database/service"
+	"github.com/mrasu/GravityR/database/dmodel"
+	"github.com/mrasu/GravityR/database/dservice"
+	"github.com/mrasu/GravityR/database/hasura/hservice"
+	"github.com/mrasu/GravityR/database/postgres/pmodel"
+	"github.com/mrasu/GravityR/database/postgres/pservice"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
-	iHasura "github.com/mrasu/GravityR/infra/hasura"
+	"github.com/mrasu/GravityR/infra/hasura"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
@@ -72,18 +72,18 @@ func (hr *hasuraRunner) prepare() error {
 }
 
 func (hr *hasuraRunner) run() error {
-	cfg, err := iHasura.NewConfigFromEnv()
+	cfg, err := hasura.NewConfigFromEnv()
 	if err != nil {
 		return err
 	}
-	cli := iHasura.NewClient(cfg)
+	cli := hasura.NewClient(cfg)
 
 	return hr.suggest(flag.DbFlag.Output, cli)
 }
 
-func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
-	q := &iHasura.ExplainRequestBody{
-		Query: &iHasura.Query{
+func (hr *hasuraRunner) suggest(outputPath string, cli *hasura.Client) error {
+	q := &hasura.ExplainRequestBody{
+		Query: &hasura.Query{
 			Query:     hr.query,
 			Variables: hr.parsedVariables,
 		},
@@ -97,12 +97,12 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 	}
 
 	r := res[0]
-	aTree, err := collector.CollectExplainAnalyzeTree(r.Plan)
+	aTree, err := pservice.CollectExplainAnalyzeTree(r.Plan)
 	if err != nil {
 		return err
 	}
 
-	itts, errs := hasura.SuggestIndex(cli, r.SQL, aTree)
+	itts, errs := hservice.SuggestIndex(cli, r.SQL, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
@@ -117,7 +117,7 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 		return err
 	}
 
-	var er *database.ExaminationResult
+	var er *dmodel.ExaminationResult
 	if hr.runsExamination {
 		er, err = hr.examine(cli, examinationIdxTargets, its)
 		if err != nil {
@@ -148,9 +148,9 @@ func (hr *hasuraRunner) parseJSONToVariables(jsonStr string) (map[string]interfa
 	return variables, nil
 }
 
-func (hr *hasuraRunner) removeExistingIndexTargets(cli *iHasura.Client, itts []*database.IndexTargetTable) ([]*database.IndexTarget, error) {
-	idxGetter := hasura.NewIndexGetter(cli)
-	its, err := service.NewExistingIndexRemover(idxGetter, "public", itts).Remove()
+func (hr *hasuraRunner) removeExistingIndexTargets(cli *hasura.Client, itts []*dmodel.IndexTargetTable) ([]*dmodel.IndexTarget, error) {
+	idxGetter := hservice.NewIndexGetter(cli)
+	its, err := dservice.NewExistingIndexRemover(idxGetter, "public", itts).Remove()
 	if err != nil {
 		return nil, err
 	}
@@ -159,15 +159,15 @@ func (hr *hasuraRunner) removeExistingIndexTargets(cli *iHasura.Client, itts []*
 	return its, nil
 }
 
-func (hr *hasuraRunner) examine(cli *iHasura.Client, varTargets, possibleTargets []*database.IndexTarget) (*database.ExaminationResult, error) {
+func (hr *hasuraRunner) examine(cli *hasura.Client, varTargets, possibleTargets []*dmodel.IndexTarget) (*dmodel.ExaminationResult, error) {
 	targets := varTargets
 	if len(targets) == 0 {
-		targets = lo.Filter(possibleTargets, func(it *database.IndexTarget, _ int) bool { return it.IsSafe() })
+		targets = lo.Filter(possibleTargets, func(it *dmodel.IndexTarget, _ int) bool { return it.IsSafe() })
 	}
 
 	log.Info().Msg("Start examination...")
-	ie := hasura.NewIndexExaminer(cli, hr.query, hr.parsedVariables)
-	er, err := service.NewIndexEfficiencyExaminer(ie).Run(targets)
+	ie := hservice.NewIndexExaminer(cli, hr.query, hr.parsedVariables)
+	er, err := dservice.NewIndexEfficiencyExaminer(ie).Run(targets)
 	if err != nil {
 		return nil, err
 	}
@@ -175,8 +175,8 @@ func (hr *hasuraRunner) examine(cli *iHasura.Client, varTargets, possibleTargets
 	return er, nil
 }
 
-func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*database.IndexTarget, er *database.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
-	vits := lo.Map(idxTargets, func(v *database.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
+func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*dmodel.IndexTarget, er *dmodel.ExaminationResult, aTree *pmodel.ExplainAnalyzeTree) error {
+	vits := lo.Map(idxTargets, func(v *dmodel.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
 
 	var ver *viewmodel.VmExaminationResult
 	if er != nil {

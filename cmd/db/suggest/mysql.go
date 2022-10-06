@@ -3,13 +3,12 @@ package suggest
 import (
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/cmd/util"
-	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/mysql"
-	"github.com/mrasu/GravityR/database/mysql/model/collector"
-	"github.com/mrasu/GravityR/database/service"
+	"github.com/mrasu/GravityR/database/dmodel"
+	"github.com/mrasu/GravityR/database/dservice"
+	"github.com/mrasu/GravityR/database/mysql/mservice"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
-	iMysql "github.com/mrasu/GravityR/infra/mysql"
+	"github.com/mrasu/GravityR/infra/mysql"
 	"github.com/rs/zerolog/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
@@ -49,12 +48,12 @@ type mysqlRunner struct {
 }
 
 func (mr *mysqlRunner) run() error {
-	cfg, err := iMysql.NewConfigFromEnv()
+	cfg, err := mysql.NewConfigFromEnv()
 	if err != nil {
 		return err
 	}
 
-	db, err := iMysql.OpenMySQLDB(cfg)
+	db, err := mysql.OpenMySQLDB(cfg)
 	if err != nil {
 		return err
 	}
@@ -63,7 +62,7 @@ func (mr *mysqlRunner) run() error {
 	return mr.suggest(flag.DbFlag.Output, db, cfg.GetDBName())
 }
 
-func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) error {
+func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) error {
 	examinationIdxTargets, err := parseIndexTargets(mr.indexTargets)
 	if err != nil {
 		return err
@@ -74,12 +73,12 @@ func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) 
 		return err
 	}
 
-	aTree, err := collector.CollectExplainAnalyzeTree(explainLine)
+	aTree, err := mservice.CollectExplainAnalyzeTree(explainLine)
 	if err != nil {
 		return err
 	}
 
-	itts, errs := mysql.SuggestIndex(db, dbName, mr.query, aTree)
+	itts, errs := mservice.SuggestIndex(db, dbName, mr.query, aTree)
 	if len(errs) > 0 {
 		return errs[0]
 	}
@@ -89,7 +88,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) 
 		return err
 	}
 
-	var er *database.ExaminationResult
+	var er *dmodel.ExaminationResult
 	if mr.runsExamination {
 		er, err = mr.examine(db, examinationIdxTargets, its)
 		if err != nil {
@@ -98,7 +97,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) 
 	}
 
 	if outputPath != "" {
-		vits := lo.Map(its, func(it *database.IndexTarget, _ int) *viewmodel.VmIndexTarget { return it.ToViewModel() })
+		vits := lo.Map(its, func(it *dmodel.IndexTarget, _ int) *viewmodel.VmIndexTarget { return it.ToViewModel() })
 
 		var ver *viewmodel.VmExaminationResult
 		if er != nil {
@@ -129,9 +128,9 @@ func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) 
 	return nil
 }
 
-func (mr *mysqlRunner) removeExistingIndexTargets(db *iMysql.DB, dbName string, itts []*database.IndexTargetTable) ([]*database.IndexTarget, error) {
-	idxGetter := mysql.NewIndexGetter(db)
-	its, err := service.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
+func (mr *mysqlRunner) removeExistingIndexTargets(db *mysql.DB, dbName string, itts []*dmodel.IndexTargetTable) ([]*dmodel.IndexTarget, error) {
+	idxGetter := mservice.NewIndexGetter(db)
+	its, err := dservice.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
 	if err != nil {
 		return nil, err
 	}
@@ -140,15 +139,15 @@ func (mr *mysqlRunner) removeExistingIndexTargets(db *iMysql.DB, dbName string, 
 	return its, nil
 }
 
-func (mr *mysqlRunner) examine(db *iMysql.DB, varTargets, possibleTargets []*database.IndexTarget) (*database.ExaminationResult, error) {
+func (mr *mysqlRunner) examine(db *mysql.DB, varTargets, possibleTargets []*dmodel.IndexTarget) (*dmodel.ExaminationResult, error) {
 	targets := varTargets
 	if len(targets) == 0 {
-		targets = lo.Filter(possibleTargets, func(it *database.IndexTarget, _ int) bool { return it.IsSafe() })
+		targets = lo.Filter(possibleTargets, func(it *dmodel.IndexTarget, _ int) bool { return it.IsSafe() })
 	}
 
 	log.Info().Msg("Start examination...")
-	ie := mysql.NewIndexExaminer(db, mr.query)
-	er, err := service.NewIndexEfficiencyExaminer(ie).Run(targets)
+	ie := mservice.NewIndexExaminer(db, mr.query)
+	er, err := dservice.NewIndexEfficiencyExaminer(ie).Run(targets)
 	if err != nil {
 		return nil, err
 	}
