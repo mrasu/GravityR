@@ -4,9 +4,9 @@ import (
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/mysql"
 	"github.com/mrasu/GravityR/database/mysql/model/collector"
+	"github.com/mrasu/GravityR/database/service"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iMysql "github.com/mrasu/GravityR/infra/mysql"
@@ -89,7 +89,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) 
 		return err
 	}
 
-	var er *common_model.ExaminationResult
+	var er *database.ExaminationResult
 	if mr.runsExamination {
 		er, err = mr.examine(db, examinationIdxTargets, its)
 		if err != nil {
@@ -98,7 +98,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) 
 	}
 
 	if outputPath != "" {
-		vits := lo.Map(its, func(it *common_model.IndexTarget, _ int) *viewmodel.VmIndexTarget { return it.ToViewModel() })
+		vits := lo.Map(its, func(it *database.IndexTarget, _ int) *viewmodel.VmIndexTarget { return it.ToViewModel() })
 
 		var ver *viewmodel.VmExaminationResult
 		if er != nil {
@@ -129,9 +129,9 @@ func (mr *mysqlRunner) suggest(outputPath string, db *iMysql.DB, dbName string) 
 	return nil
 }
 
-func (mr *mysqlRunner) removeExistingIndexTargets(db *iMysql.DB, dbName string, itts []*common_model.IndexTargetTable) ([]*common_model.IndexTarget, error) {
+func (mr *mysqlRunner) removeExistingIndexTargets(db *iMysql.DB, dbName string, itts []*database.IndexTargetTable) ([]*database.IndexTarget, error) {
 	idxGetter := mysql.NewIndexGetter(db)
-	its, err := database.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
+	its, err := service.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
 	if err != nil {
 		return nil, err
 	}
@@ -140,15 +140,15 @@ func (mr *mysqlRunner) removeExistingIndexTargets(db *iMysql.DB, dbName string, 
 	return its, nil
 }
 
-func (mr *mysqlRunner) examine(db *iMysql.DB, varTargets, possibleTargets []*common_model.IndexTarget) (*common_model.ExaminationResult, error) {
+func (mr *mysqlRunner) examine(db *iMysql.DB, varTargets, possibleTargets []*database.IndexTarget) (*database.ExaminationResult, error) {
 	targets := varTargets
 	if len(targets) == 0 {
-		targets = lo.Filter(possibleTargets, func(it *common_model.IndexTarget, _ int) bool { return it.IsSafe() })
+		targets = lo.Filter(possibleTargets, func(it *database.IndexTarget, _ int) bool { return it.IsSafe() })
 	}
 
 	log.Info().Msg("Start examination...")
 	ie := mysql.NewIndexExaminer(db, mr.query)
-	er, err := database.NewIndexEfficiencyExaminer(ie).Run(targets)
+	er, err := service.NewIndexEfficiencyExaminer(ie).Run(targets)
 	if err != nil {
 		return nil, err
 	}

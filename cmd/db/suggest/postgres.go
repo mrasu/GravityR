@@ -4,10 +4,10 @@ import (
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/postgres"
 	"github.com/mrasu/GravityR/database/postgres/model"
 	"github.com/mrasu/GravityR/database/postgres/model/collector"
+	"github.com/mrasu/GravityR/database/service"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iPostgres "github.com/mrasu/GravityR/infra/postgres"
@@ -90,7 +90,7 @@ func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema st
 		return err
 	}
 
-	var er *common_model.ExaminationResult
+	var er *database.ExaminationResult
 	if pr.runsExamination {
 		er, err = pr.examine(db, examinationIdxTargets, its)
 		if err != nil {
@@ -112,9 +112,9 @@ func (pr *postgresRunner) suggest(outputPath string, db *iPostgres.DB, schema st
 	return nil
 }
 
-func (pr *postgresRunner) removeExistingIndexTargets(db *iPostgres.DB, dbName string, itts []*common_model.IndexTargetTable) ([]*common_model.IndexTarget, error) {
+func (pr *postgresRunner) removeExistingIndexTargets(db *iPostgres.DB, dbName string, itts []*database.IndexTargetTable) ([]*database.IndexTarget, error) {
 	idxGetter := postgres.NewIndexGetter(db)
-	its, err := database.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
+	its, err := service.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
 	if err != nil {
 		return nil, err
 	}
@@ -123,15 +123,15 @@ func (pr *postgresRunner) removeExistingIndexTargets(db *iPostgres.DB, dbName st
 	return its, nil
 }
 
-func (pr *postgresRunner) examine(db *iPostgres.DB, varTargets, possibleTargets []*common_model.IndexTarget) (*common_model.ExaminationResult, error) {
+func (pr *postgresRunner) examine(db *iPostgres.DB, varTargets, possibleTargets []*database.IndexTarget) (*database.ExaminationResult, error) {
 	targets := varTargets
 	if len(targets) == 0 {
-		targets = lo.Filter(possibleTargets, func(it *common_model.IndexTarget, _ int) bool { return it.IsSafe() })
+		targets = lo.Filter(possibleTargets, func(it *database.IndexTarget, _ int) bool { return it.IsSafe() })
 	}
 
 	log.Info().Msg("Start examination...")
 	ie := postgres.NewIndexExaminer(db, pr.query)
-	er, err := database.NewIndexEfficiencyExaminer(ie).Run(targets)
+	er, err := service.NewIndexEfficiencyExaminer(ie).Run(targets)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func (pr *postgresRunner) examine(db *iPostgres.DB, varTargets, possibleTargets 
 	return er, nil
 }
 
-func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
+func (pr *postgresRunner) createHTML(outputPath string, idxTargets []*database.IndexTarget, er *database.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
 	var vits []*viewmodel.VmIndexTarget
 	for _, it := range idxTargets {
 		vits = append(vits, it.ToViewModel())

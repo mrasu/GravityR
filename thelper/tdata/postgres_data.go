@@ -1,27 +1,27 @@
 package tdata
 
-import "github.com/mrasu/GravityR/database/common_model"
+import "github.com/mrasu/GravityR/database"
 
 type postgresData struct {
 	SQL    string
-	Scopes []*common_model.StmtScope
+	Scopes []*database.StmtScope
 }
 
 var PostgresSubqueryInSelectData = &postgresData{
 	SQL: "SELECT (SELECT user_id FROM tasks limit 1)",
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
 			},
-			FieldScopes: []*common_model.StmtScope{
+			FieldScopes: []*database.StmtScope{
 				{
 					Name: "<field0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -32,25 +32,25 @@ var PostgresSubqueryInSelectData = &postgresData{
 
 var PostgresSubqueryInSelectAliasedFieldData = &postgresData{
 	SQL: "SELECT name, is_admin, (SELECT COUNT(status) FROM tasks) AS status_count FROM users",
-	Scopes: []*common_model.StmtScope{{
+	Scopes: []*database.StmtScope{{
 		Name: "<root>",
-		Fields: []*common_model.Field{
-			{Columns: []*common_model.FieldColumn{{Name: "name", Type: common_model.FieldReference}}},
-			{Columns: []*common_model.FieldColumn{{Name: "is_admin", Type: common_model.FieldReference}}},
-			{AsName: "status_count", Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
+		Fields: []*database.Field{
+			{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
+			{Columns: []*database.FieldColumn{{Name: "is_admin", Type: database.FieldReference}}},
+			{AsName: "status_count", Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
 		},
-		FieldScopes: []*common_model.StmtScope{
+		FieldScopes: []*database.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
+				Fields: []*database.Field{
+					{Columns: []*database.FieldColumn{{Name: "status", Type: database.FieldReference}}},
 				},
-				Tables: []*common_model.Table{
+				Tables: []*database.Table{
 					{Name: "tasks"},
 				},
 			},
 		},
-		Tables: []*common_model.Table{
+		Tables: []*database.Table{
 			{Name: "users"},
 		},
 	}},
@@ -58,30 +58,30 @@ var PostgresSubqueryInSelectAliasedFieldData = &postgresData{
 
 var PostgresSubqueryWithComparisonData = &postgresData{
 	SQL: "SELECT (SELECT COUNT(status) FROM tasks) - (SELECT COUNT(description) FROM tasks) AS no_desc_count",
-	Scopes: []*common_model.StmtScope{{
+	Scopes: []*database.StmtScope{{
 		Name: "<root>",
-		Fields: []*common_model.Field{
-			{AsName: "no_desc_count", Columns: []*common_model.FieldColumn{
-				{ReferenceName: "<field0>", Type: common_model.FieldSubquery},
-				{ReferenceName: "<field1>", Type: common_model.FieldSubquery},
+		Fields: []*database.Field{
+			{AsName: "no_desc_count", Columns: []*database.FieldColumn{
+				{ReferenceName: "<field0>", Type: database.FieldSubquery},
+				{ReferenceName: "<field1>", Type: database.FieldSubquery},
 			}},
 		},
-		FieldScopes: []*common_model.StmtScope{
+		FieldScopes: []*database.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{{Name: "status", Type: common_model.FieldReference}}},
+				Fields: []*database.Field{
+					{Columns: []*database.FieldColumn{{Name: "status", Type: database.FieldReference}}},
 				},
-				Tables: []*common_model.Table{
+				Tables: []*database.Table{
 					{Name: "tasks"},
 				},
 			},
 			{
 				Name: "<field1>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
+				Fields: []*database.Field{
+					{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
 				},
-				Tables: []*common_model.Table{
+				Tables: []*database.Table{
 					{Name: "tasks"},
 				},
 			},
@@ -91,28 +91,28 @@ var PostgresSubqueryWithComparisonData = &postgresData{
 
 var PostgresSubqueryWithExistData = &postgresData{
 	SQL: "SELECT name, EXISTS (SELECT * FROM tasks WHERE user_id = users.id) FROM users",
-	Scopes: []*common_model.StmtScope{{
+	Scopes: []*database.StmtScope{{
 		Name: "<root>",
-		Fields: []*common_model.Field{
-			{Columns: []*common_model.FieldColumn{{Name: "name", Type: common_model.FieldReference}}},
-			{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
+		Fields: []*database.Field{
+			{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
+			{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
 		},
-		FieldScopes: []*common_model.StmtScope{
+		FieldScopes: []*database.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-					{Columns: []*common_model.FieldColumn{
-						{Name: "user_id", Type: common_model.FieldCondition},
-						{Table: "users", Name: "id", Type: common_model.FieldCondition},
+				Fields: []*database.Field{
+					{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
+					{Columns: []*database.FieldColumn{
+						{Name: "user_id", Type: database.FieldCondition},
+						{Table: "users", Name: "id", Type: database.FieldCondition},
 					}},
 				},
-				Tables: []*common_model.Table{
+				Tables: []*database.Table{
 					{Name: "tasks"},
 				},
 			},
 		},
-		Tables: []*common_model.Table{
+		Tables: []*database.Table{
 			{Name: "users"},
 		},
 	}},
@@ -120,26 +120,26 @@ var PostgresSubqueryWithExistData = &postgresData{
 
 var PostgresSubqueryWithInData = &postgresData{
 	SQL: "SELECT user_id IN (SELECT user_id FROM tasks) FROM users",
-	Scopes: []*common_model.StmtScope{{
+	Scopes: []*database.StmtScope{{
 		Name: "<root>",
-		Fields: []*common_model.Field{
-			{Columns: []*common_model.FieldColumn{
-				{Name: "user_id", Type: common_model.FieldReference},
-				{ReferenceName: "<field0>", Type: common_model.FieldSubquery},
+		Fields: []*database.Field{
+			{Columns: []*database.FieldColumn{
+				{Name: "user_id", Type: database.FieldReference},
+				{ReferenceName: "<field0>", Type: database.FieldSubquery},
 			}},
 		},
-		FieldScopes: []*common_model.StmtScope{
+		FieldScopes: []*database.StmtScope{
 			{
 				Name: "<field0>",
-				Fields: []*common_model.Field{
-					{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
+				Fields: []*database.Field{
+					{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
 				},
-				Tables: []*common_model.Table{
+				Tables: []*database.Table{
 					{Name: "tasks"},
 				},
 			},
 		},
-		Tables: []*common_model.Table{
+		Tables: []*database.Table{
 			{Name: "users"},
 		},
 	}},
@@ -154,29 +154,29 @@ SELECT row_to_json(
   )
 )
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
 			},
-			FieldScopes: []*common_model.StmtScope{
+			FieldScopes: []*database.StmtScope{
 				{
 					Name: "<field0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "t", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "t", Type: database.FieldReference}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "<select0>", AsName: "t"},
 					},
-					SubScopes: []*common_model.StmtScope{
+					SubScopes: []*database.StmtScope{
 						{
 							Name: "<select0>",
-							Fields: []*common_model.Field{
-								{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-								{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
+							Fields: []*database.Field{
+								{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
+								{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
 							},
-							Tables: []*common_model.Table{
+							Tables: []*database.Table{
 								{Name: "tasks"},
 							},
 						},
@@ -192,23 +192,23 @@ var PostgresSubqueryInFromData = &postgresData{
 SELECT *
 FROM (SELECT id, user_id FROM tasks)
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
 			},
-			Tables: []*common_model.Table{
+			Tables: []*database.Table{
 				{Name: "<select0>"},
 			},
-			SubScopes: []*common_model.StmtScope{
+			SubScopes: []*database.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-						{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
+						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -223,30 +223,30 @@ SELECT name, t.id, user_id
 FROM users
 INNER JOIN (SELECT id, user_id FROM tasks) AS t ON users.id = t.user_id
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Name: "name", Type: common_model.FieldReference}}},
-				{Columns: []*common_model.FieldColumn{{Table: "t", Name: "id", Type: common_model.FieldReference}}},
-				{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
-				{Columns: []*common_model.FieldColumn{
-					{Table: "users", Name: "id", Type: common_model.FieldCondition},
-					{Table: "t", Name: "user_id", Type: common_model.FieldCondition},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
+				{Columns: []*database.FieldColumn{{Table: "t", Name: "id", Type: database.FieldReference}}},
+				{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
+				{Columns: []*database.FieldColumn{
+					{Table: "users", Name: "id", Type: database.FieldCondition},
+					{Table: "t", Name: "user_id", Type: database.FieldCondition},
 				}},
 			},
-			Tables: []*common_model.Table{
+			Tables: []*database.Table{
 				{Name: "users"},
 				{Name: "<select0>", AsName: "t"},
 			},
-			SubScopes: []*common_model.StmtScope{
+			SubScopes: []*database.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
-						{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
+						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -261,24 +261,24 @@ SELECT description
 FROM
 	(SELECT * FROM tasks) AS t
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{
-					{Name: "description", Type: common_model.FieldReference},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{
+					{Name: "description", Type: database.FieldReference},
 				}},
 			},
-			Tables: []*common_model.Table{
+			Tables: []*database.Table{
 				{Name: "<select0>", AsName: "t"},
 			},
-			SubScopes: []*common_model.StmtScope{
+			SubScopes: []*database.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -294,43 +294,43 @@ FROM
 	(SELECT id FROM users) AS u
 	LEFT OUTER JOIN LATERAL (SELECT user_id, description FROM tasks WHERE user_id = u.id) AS t ON u.id = t.user_id
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{
-					{Name: "description", Type: common_model.FieldReference},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{
+					{Name: "description", Type: database.FieldReference},
 				}},
-				{Columns: []*common_model.FieldColumn{
-					{Table: "u", Name: "id", Type: common_model.FieldCondition},
-					{Table: "t", Name: "user_id", Type: common_model.FieldCondition},
+				{Columns: []*database.FieldColumn{
+					{Table: "u", Name: "id", Type: database.FieldCondition},
+					{Table: "t", Name: "user_id", Type: database.FieldCondition},
 				}},
 			},
-			Tables: []*common_model.Table{
+			Tables: []*database.Table{
 				{Name: "<select0>", AsName: "u"},
 				{Name: "<select1>", AsName: "t", IsLateral: true},
 			},
-			SubScopes: []*common_model.StmtScope{
+			SubScopes: []*database.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "id", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "id", Type: database.FieldReference}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "users"},
 					},
 				},
 				{
 					Name: "<select1>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "user_id", Type: common_model.FieldReference}}},
-						{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
-						{Columns: []*common_model.FieldColumn{
-							{Name: "user_id", Type: common_model.FieldCondition},
-							{Table: "u", Name: "id", Type: common_model.FieldCondition},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "user_id", Type: database.FieldReference}}},
+						{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
+						{Columns: []*database.FieldColumn{
+							{Name: "user_id", Type: database.FieldCondition},
+							{Table: "u", Name: "id", Type: database.FieldCondition},
 						}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -345,32 +345,32 @@ SELECT b
 FROM (SELECT name FROM users) AS a
 	LEFT JOIN LATERAL (SELECT a) AS b ON (TRUE)
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{
-					{Name: "b", Type: common_model.FieldReference},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{
+					{Name: "b", Type: database.FieldReference},
 				}},
 			},
-			Tables: []*common_model.Table{
+			Tables: []*database.Table{
 				{Name: "<select0>", AsName: "a"},
 				{Name: "<select1>", AsName: "b", IsLateral: true},
 			},
-			SubScopes: []*common_model.StmtScope{
+			SubScopes: []*database.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "name", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "name", Type: database.FieldReference}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "users"},
 					},
 				},
 				{
 					Name: "<select1>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "a", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "a", Type: database.FieldReference}}},
 					},
 				},
 			},
@@ -383,22 +383,22 @@ var PostgresSubqueryWithAggregateFunctionData = &postgresData{
 SELECT json_agg(t)
 FROM (SELECT description FROM tasks LIMIT 3) AS t;
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Name: "t", Type: common_model.FieldReference}}},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{{Name: "t", Type: database.FieldReference}}},
 			},
-			Tables: []*common_model.Table{
+			Tables: []*database.Table{
 				{AsName: "t", Name: "<select0>"},
 			},
-			SubScopes: []*common_model.StmtScope{
+			SubScopes: []*database.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "tasks"},
 					},
 				},
@@ -413,29 +413,29 @@ SELECT description
 FROM tasks
 WHERE EXISTS(SELECT * FROM users WHERE users.id = user_id)
 `,
-	Scopes: []*common_model.StmtScope{
+	Scopes: []*database.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*common_model.Field{
-				{Columns: []*common_model.FieldColumn{{Name: "description", Type: common_model.FieldReference}}},
-				{Columns: []*common_model.FieldColumn{{ReferenceName: "<field0>", Type: common_model.FieldSubquery}}},
+			Fields: []*database.Field{
+				{Columns: []*database.FieldColumn{{Name: "description", Type: database.FieldReference}}},
+				{Columns: []*database.FieldColumn{{ReferenceName: "<field0>", Type: database.FieldSubquery}}},
 			},
-			FieldScopes: []*common_model.StmtScope{
+			FieldScopes: []*database.StmtScope{
 				{
 					Name: "<field0>",
-					Fields: []*common_model.Field{
-						{Columns: []*common_model.FieldColumn{{Type: common_model.FieldStar}}},
-						{Columns: []*common_model.FieldColumn{
-							{Table: "users", Name: "id", Type: common_model.FieldCondition},
-							{Name: "user_id", Type: common_model.FieldCondition},
+					Fields: []*database.Field{
+						{Columns: []*database.FieldColumn{{Type: database.FieldStar}}},
+						{Columns: []*database.FieldColumn{
+							{Table: "users", Name: "id", Type: database.FieldCondition},
+							{Name: "user_id", Type: database.FieldCondition},
 						}},
 					},
-					Tables: []*common_model.Table{
+					Tables: []*database.Table{
 						{Name: "users"},
 					},
 				},
 			},
-			Tables: []*common_model.Table{
+			Tables: []*database.Table{
 				{Name: "tasks"},
 			},
 		},

@@ -1,29 +1,29 @@
-package builder
+package service
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 )
 
 type indexTargetBuilder struct {
-	tableSchemaMap map[string]*common_model.TableSchema
+	tableSchemaMap map[string]*database.TableSchema
 }
 
-type index []*common_model.IndexField
+type index []*database.IndexField
 
-func newIndexTargetBuilder(tablesSchemas []*common_model.TableSchema) *indexTargetBuilder {
-	tableMap := map[string]*common_model.TableSchema{}
+func newIndexTargetBuilder(tablesSchemas []*database.TableSchema) *indexTargetBuilder {
+	tableMap := map[string]*database.TableSchema{}
 	for _, t := range tablesSchemas {
 		tableMap[t.Name] = t
 	}
 	return &indexTargetBuilder{tableSchemaMap: tableMap}
 }
 
-func BuildIndexTargets(tablesSchemas []*common_model.TableSchema, scopes []*common_model.StmtScope) ([]*common_model.IndexTargetTable, error) {
+func BuildIndexTargets(tablesSchemas []*database.TableSchema, scopes []*database.StmtScope) ([]*database.IndexTargetTable, error) {
 	itc := newIndexTargetBuilder(tablesSchemas)
 
-	var tables []*common_model.IndexTargetTable
+	var tables []*database.IndexTargetTable
 	for _, scope := range scopes {
 		ts, err := itc.buildFromScope(scope)
 		if err != nil {
@@ -33,12 +33,12 @@ func BuildIndexTargets(tablesSchemas []*common_model.TableSchema, scopes []*comm
 		tables = append(tables, ts...)
 	}
 
-	common_model.SortIndexTargetTable(tables)
+	database.SortIndexTargetTable(tables)
 	return tables, nil
 }
 
-func (itb *indexTargetBuilder) buildFromScope(scope *common_model.StmtScope) ([]*common_model.IndexTargetTable, error) {
-	var targets []*common_model.IndexTargetTable
+func (itb *indexTargetBuilder) buildFromScope(scope *database.StmtScope) ([]*database.IndexTargetTable, error) {
+	var targets []*database.IndexTargetTable
 
 	tableFields, err := buildTableFields(itb.tableSchemaMap, scope)
 	if err != nil {
@@ -53,7 +53,7 @@ func (itb *indexTargetBuilder) buildFromScope(scope *common_model.StmtScope) ([]
 		ifs := itb.buildIndexComposition(lib.NewSetS(f), tSchema.PrimaryKeys)
 
 		for _, fs := range ifs {
-			targets = append(targets, &common_model.IndexTargetTable{
+			targets = append(targets, &database.IndexTargetTable{
 				TableName:   tName,
 				IndexFields: fs,
 			})
@@ -63,20 +63,20 @@ func (itb *indexTargetBuilder) buildFromScope(scope *common_model.StmtScope) ([]
 	return targets, nil
 }
 
-func (itb *indexTargetBuilder) buildIndexComposition(fieldColumns *lib.Set[*common_model.FieldColumn], pkCols []string) []index {
+func (itb *indexTargetBuilder) buildIndexComposition(fieldColumns *lib.Set[*database.FieldColumn], pkCols []string) []index {
 	candidateFields := itb.extractEfficientIndexes(fieldColumns)
 	idxFieldList := itb.removePkOnlyFields(pkCols, candidateFields)
 
 	return idxFieldList
 }
 
-func (itb *indexTargetBuilder) extractEfficientIndexes(fieldColumns *lib.Set[*common_model.FieldColumn]) []index {
+func (itb *indexTargetBuilder) extractEfficientIndexes(fieldColumns *lib.Set[*database.FieldColumn]) []index {
 	compositions := itb.compositeFieldColumns(fieldColumns)
 
 	var efficientIndexFields []index
 	for _, fields := range compositions {
 		for i := 0; i < len(fields); i++ {
-			if fields[i].Type != common_model.FieldReference {
+			if fields[i].Type != database.FieldReference {
 				continue
 			}
 
@@ -85,7 +85,7 @@ func (itb *indexTargetBuilder) extractEfficientIndexes(fieldColumns *lib.Set[*co
 			}
 
 			for j := i + 1; j < len(fields); j++ {
-				if fields[j].Type != common_model.FieldReference {
+				if fields[j].Type != database.FieldReference {
 					goto next
 				}
 
@@ -102,10 +102,10 @@ func (itb *indexTargetBuilder) extractEfficientIndexes(fieldColumns *lib.Set[*co
 	return efficientIndexFields
 }
 
-func (itb *indexTargetBuilder) compositeFieldColumns(fColumns *lib.Set[*common_model.FieldColumn]) []index {
+func (itb *indexTargetBuilder) compositeFieldColumns(fColumns *lib.Set[*database.FieldColumn]) []index {
 	var compositions []index
 	for _, fc := range fColumns.Values() {
-		if !(fc.Type == common_model.FieldReference || fc.Type == common_model.FieldCondition) {
+		if !(fc.Type == database.FieldReference || fc.Type == database.FieldCondition) {
 			continue
 		}
 
@@ -119,7 +119,7 @@ func (itb *indexTargetBuilder) compositeFieldColumns(fColumns *lib.Set[*common_m
 		}})
 		for _, r := range res2 {
 			r2 := r[:]
-			r2 = append(r2, &common_model.IndexField{
+			r2 = append(r2, &database.IndexField{
 				Name: fc.Name,
 				Type: fc.Type,
 			})

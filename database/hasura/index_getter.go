@@ -1,7 +1,7 @@
 package hasura
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/infra/hasura"
 	"github.com/samber/lo"
 )
@@ -14,13 +14,13 @@ func NewIndexGetter(cli *hasura.Client) *IndexGetter {
 	return &IndexGetter{cli: cli}
 }
 
-func (ig *IndexGetter) GetIndexes(database string, tables []string) ([]*common_model.IndexTarget, error) {
-	infos, err := ig.cli.GetIndexes(database, tables)
+func (ig *IndexGetter) GetIndexes(dbSchema string, tables []string) ([]*database.IndexTarget, error) {
+	infos, err := ig.cli.GetIndexes(dbSchema, tables)
 	if err != nil {
 		return nil, err
 	}
 
-	return lo.Map(infos, func(info *hasura.IndexInfo, _ int) *common_model.IndexTarget {
-		return common_model.NewIndexTarget(info.TableName, info.Columns)
+	return lo.Map(infos, func(info *hasura.IndexInfo, _ int) *database.IndexTarget {
+		return database.NewIndexTarget(info.TableName, info.Columns)
 	}), nil
 }

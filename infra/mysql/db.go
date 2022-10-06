@@ -67,8 +67,8 @@ func (db *DB) Explain(query string) (string, error) {
 	return res, nil
 }
 
-func (db *DB) GetTableColumns(database string, tables []string) ([]*ColumnInfo, error) {
-	query, args, err := sqlx.In(columnFetchQuery, database, tables)
+func (db *DB) GetTableColumns(dbName string, tables []string) ([]*ColumnInfo, error) {
+	query, args, err := sqlx.In(columnFetchQuery, dbName, tables)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build query to get table schema")
 	}

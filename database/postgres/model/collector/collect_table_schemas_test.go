@@ -2,7 +2,7 @@ package collector_test
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/postgres/model/collector"
 	"github.com/mrasu/GravityR/infra/postgres"
 	"github.com/mrasu/GravityR/thelper"
@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-var tableColumns = map[string][]*common_model.ColumnSchema{
+var tableColumns = map[string][]*database.ColumnSchema{
 	"users": {
 		{Name: "id"},
 		{Name: "name"},

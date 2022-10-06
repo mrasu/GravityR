@@ -1,6 +1,6 @@
-package builder
+package service
 
-import "github.com/mrasu/GravityR/database/common_model"
+import "github.com/mrasu/GravityR/database"
 
 type ExplainNode interface {
 	TableName() string
@@ -16,14 +16,14 @@ type singleTableTree struct {
 
 type singleTableExplainResultsBuilder struct{}
 
-func BuildSingleTableExplainResults(root ExplainNode) []*common_model.SingleTableExplainResult {
+func BuildSingleTableExplainResults(root ExplainNode) []*database.SingleTableExplainResult {
 	var trees []*singleTableTree
 	sb := singleTableExplainResultsBuilder{}
 	sb.toSingleTableTreeRecursive(&trees, root, nil)
 
-	var res []*common_model.SingleTableExplainResult
+	var res []*database.SingleTableExplainResult
 	for _, tree := range trees {
-		res = append(res, &common_model.SingleTableExplainResult{
+		res = append(res, &database.SingleTableExplainResult{
 			TableName:          tree.tableName,
 			EstimatedTotalTime: tree.nodes[0].EstimatedTotalTime(),
 		})

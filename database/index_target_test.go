@@ -1,7 +1,7 @@
-package common_model_test
+package database_test
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -11,7 +11,7 @@ func TestNewIndexTargetFromText(t *testing.T) {
 	tests := []struct {
 		name     string
 		text     string
-		expected *common_model.IndexTarget
+		expected *database.IndexTarget
 	}{
 		{
 			name:     "single column",
@@ -27,7 +27,7 @@ func TestNewIndexTargetFromText(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			it, err := common_model.NewIndexTargetFromText(tt.text)
+			it, err := database.NewIndexTargetFromText(tt.text)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.expected, it)
 		})
@@ -37,38 +37,38 @@ func TestNewIndexTargetFromText(t *testing.T) {
 func TestIndexTarget_HasSameIdxColumns(t *testing.T) {
 	tests := []struct {
 		name     string
-		s        *common_model.IndexTarget
-		t        *common_model.IndexTarget
+		s        *database.IndexTarget
+		t        *database.IndexTarget
 		expected bool
 	}{
 		{
 			name:     "same column",
-			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
-			t:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
+			s:        database.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        database.NewIndexTarget("table", []string{"col1", "col2"}),
 			expected: true,
 		},
 		{
 			name:     "same column but different order",
-			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
-			t:        common_model.NewIndexTarget("table", []string{"col2", "col1"}),
+			s:        database.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        database.NewIndexTarget("table", []string{"col2", "col1"}),
 			expected: false,
 		},
 		{
 			name:     "less column",
-			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
-			t:        common_model.NewIndexTarget("table", []string{"col1"}),
+			s:        database.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        database.NewIndexTarget("table", []string{"col1"}),
 			expected: false,
 		},
 		{
 			name:     "more column",
-			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
-			t:        common_model.NewIndexTarget("table", []string{"col1", "col2", "col3"}),
+			s:        database.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        database.NewIndexTarget("table", []string{"col1", "col2", "col3"}),
 			expected: false,
 		},
 		{
 			name:     "different column",
-			s:        common_model.NewIndexTarget("table", []string{"col1", "col2"}),
-			t:        common_model.NewIndexTarget("table", []string{"col3", "col4"}),
+			s:        database.NewIndexTarget("table", []string{"col1", "col2"}),
+			t:        database.NewIndexTarget("table", []string{"col3", "col4"}),
 			expected: false,
 		},
 	}
@@ -81,15 +81,15 @@ func TestIndexTarget_HasSameIdxColumns(t *testing.T) {
 	}
 }
 
-func buildIndexTarget(t *testing.T, tName string, cNames []string) *common_model.IndexTarget {
+func buildIndexTarget(t *testing.T, tName string, cNames []string) *database.IndexTarget {
 	t.Helper()
 
-	var cs []*common_model.IndexColumn
+	var cs []*database.IndexColumn
 	for _, cName := range cNames {
-		c, err := common_model.NewIndexColumn(cName)
+		c, err := database.NewIndexColumn(cName)
 		require.NoError(t, err)
 		cs = append(cs, c)
 	}
 
-	return &common_model.IndexTarget{TableName: tName, Columns: cs}
+	return &database.IndexTarget{TableName: tName, Columns: cs}
 }

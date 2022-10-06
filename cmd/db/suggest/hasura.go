@@ -5,10 +5,10 @@ import (
 	"github.com/mrasu/GravityR/cmd/flag"
 	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/mrasu/GravityR/database"
-	"github.com/mrasu/GravityR/database/common_model"
 	"github.com/mrasu/GravityR/database/hasura"
 	"github.com/mrasu/GravityR/database/postgres/model"
 	"github.com/mrasu/GravityR/database/postgres/model/collector"
+	"github.com/mrasu/GravityR/database/service"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	iHasura "github.com/mrasu/GravityR/infra/hasura"
@@ -117,7 +117,7 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *iHasura.Client) error {
 		return err
 	}
 
-	var er *common_model.ExaminationResult
+	var er *database.ExaminationResult
 	if hr.runsExamination {
 		er, err = hr.examine(cli, examinationIdxTargets, its)
 		if err != nil {
@@ -148,9 +148,9 @@ func (hr *hasuraRunner) parseJSONToVariables(jsonStr string) (map[string]interfa
 	return variables, nil
 }
 
-func (hr *hasuraRunner) removeExistingIndexTargets(cli *iHasura.Client, itts []*common_model.IndexTargetTable) ([]*common_model.IndexTarget, error) {
+func (hr *hasuraRunner) removeExistingIndexTargets(cli *iHasura.Client, itts []*database.IndexTargetTable) ([]*database.IndexTarget, error) {
 	idxGetter := hasura.NewIndexGetter(cli)
-	its, err := database.NewExistingIndexRemover(idxGetter, "public", itts).Remove()
+	its, err := service.NewExistingIndexRemover(idxGetter, "public", itts).Remove()
 	if err != nil {
 		return nil, err
 	}
@@ -159,15 +159,15 @@ func (hr *hasuraRunner) removeExistingIndexTargets(cli *iHasura.Client, itts []*
 	return its, nil
 }
 
-func (hr *hasuraRunner) examine(cli *iHasura.Client, varTargets, possibleTargets []*common_model.IndexTarget) (*common_model.ExaminationResult, error) {
+func (hr *hasuraRunner) examine(cli *iHasura.Client, varTargets, possibleTargets []*database.IndexTarget) (*database.ExaminationResult, error) {
 	targets := varTargets
 	if len(targets) == 0 {
-		targets = lo.Filter(possibleTargets, func(it *common_model.IndexTarget, _ int) bool { return it.IsSafe() })
+		targets = lo.Filter(possibleTargets, func(it *database.IndexTarget, _ int) bool { return it.IsSafe() })
 	}
 
 	log.Info().Msg("Start examination...")
 	ie := hasura.NewIndexExaminer(cli, hr.query, hr.parsedVariables)
-	er, err := database.NewIndexEfficiencyExaminer(ie).Run(targets)
+	er, err := service.NewIndexEfficiencyExaminer(ie).Run(targets)
 	if err != nil {
 		return nil, err
 	}
@@ -175,8 +175,8 @@ func (hr *hasuraRunner) examine(cli *iHasura.Client, varTargets, possibleTargets
 	return er, nil
 }
 
-func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*common_model.IndexTarget, er *common_model.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
-	vits := lo.Map(idxTargets, func(v *common_model.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
+func (hr *hasuraRunner) createHTML(outputPath string, variables map[string]interface{}, sql string, idxTargets []*database.IndexTarget, er *database.ExaminationResult, aTree *model.ExplainAnalyzeTree) error {
+	vits := lo.Map(idxTargets, func(v *database.IndexTarget, _ int) *viewmodel.VmIndexTarget { return v.ToViewModel() })
 
 	var ver *viewmodel.VmExaminationResult
 	if er != nil {

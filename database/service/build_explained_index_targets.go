@@ -1,12 +1,12 @@
-package builder
+package service
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/lib"
 )
 
 // BuildExplainedIndexTargets extracts IndexTargetTable referred in EXPLAIN ANALYZE(aka SingleTableExplainResult) and orders them by its EstimatedTotalTime
-func BuildExplainedIndexTargets(idxCandidates []*common_model.IndexTargetTable, scopes []*common_model.StmtScope, explainResults []*common_model.SingleTableExplainResult) ([]*common_model.IndexTargetTable, []error) {
+func BuildExplainedIndexTargets(idxCandidates []*database.IndexTargetTable, scopes []*database.StmtScope, explainResults []*database.SingleTableExplainResult) ([]*database.IndexTargetTable, []error) {
 	//TODO: consider scope to handle name duplication
 	asTableMap := map[string]*lib.Set[string]{}
 	for _, s := range scopes {
@@ -18,12 +18,12 @@ func BuildExplainedIndexTargets(idxCandidates []*common_model.IndexTargetTable, 
 			}
 		}
 	}
-	lib.Sort(explainResults, func(t *common_model.SingleTableExplainResult) float64 {
+	lib.Sort(explainResults, func(t *database.SingleTableExplainResult) float64 {
 		return t.EstimatedTotalTime * -1
 	})
 
 	calledTable := lib.NewSet[string]()
-	var indexes []*common_model.IndexTargetTable
+	var indexes []*database.IndexTargetTable
 	for _, eRes := range explainResults {
 		tNames := []string{eRes.TableName}
 		if name, ok := asTableMap[eRes.TableName]; ok {

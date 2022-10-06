@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
 	"github.com/auxten/postgresql-parser/pkg/sql/sem/tree"
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/lib"
 	"reflect"
 )
@@ -12,7 +12,7 @@ import (
 type scopeCollector struct {
 	targetSchema string
 
-	scopes []*common_model.StmtScope
+	scopes []*database.StmtScope
 	errors []error
 
 	scopeStack *lib.Stack[scopeInfo]
@@ -24,7 +24,7 @@ type scopeCollector struct {
 
 type scopeInfo struct {
 	node  interface{}
-	scope *common_model.StmtScope
+	scope *database.StmtScope
 }
 
 type selectInfo struct {
@@ -41,7 +41,7 @@ func newScopeCollector(targetSchema string) *scopeCollector {
 	}
 }
 
-func CollectStmtScopes(stmt *parser.Statement, targetSchema string) ([]*common_model.StmtScope, []error) {
+func CollectStmtScopes(stmt *parser.Statement, targetSchema string) ([]*database.StmtScope, []error) {
 	sc := newScopeCollector(targetSchema)
 	if _, ok := stmt.AST.(*tree.Select); !ok {
 		return nil, []error{lib.NewUnsupportedError("only SELECT query is supported")}
@@ -72,15 +72,15 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 
 	sc.scopeStack.Push(&scopeInfo{node: node, scope: scope})
 
-	var foundFields []*common_model.Field
+	var foundFields []*database.Field
 	for _, expr := range stmt.Exprs {
-		cols := sc.collectExprReferences(expr.Expr, common_model.FieldReference)
+		cols := sc.collectExprReferences(expr.Expr, database.FieldReference)
 		if err := sc.getAndClearLastError(); err != nil {
 			sc.errors = append(sc.errors, err)
 			continue
 		}
 
-		foundFields = append(foundFields, &common_model.Field{
+		foundFields = append(foundFields, &database.Field{
 			AsName:  string(expr.As),
 			Columns: cols,
 		})
@@ -95,7 +95,7 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 		foundFields = append(foundFields, fields...)
 	}
 	if stmt.Where != nil {
-		f, err := sc.createFieldFromExpr(stmt.Where.Expr, common_model.FieldCondition)
+		f, err := sc.createFieldFromExpr(stmt.Where.Expr, database.FieldCondition)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
@@ -104,7 +104,7 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 	}
 	if stmt.GroupBy != nil {
 		for _, g := range stmt.GroupBy {
-			f, err := sc.createFieldFromExpr(g, common_model.FieldReference)
+			f, err := sc.createFieldFromExpr(g, database.FieldReference)
 			if err == nil {
 				foundFields = append(foundFields, f)
 			} else {
@@ -113,7 +113,7 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 		}
 	}
 	if stmt.Having != nil {
-		f, err := sc.createFieldFromExpr(stmt.Having.Expr, common_model.FieldReference)
+		f, err := sc.createFieldFromExpr(stmt.Having.Expr, database.FieldReference)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
@@ -125,7 +125,7 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 	}
 	if selectNode.OrderBy != nil {
 		for _, o := range selectNode.OrderBy {
-			f, err := sc.createFieldFromExpr(o.Expr, common_model.FieldReference)
+			f, err := sc.createFieldFromExpr(o.Expr, database.FieldReference)
 			if err == nil {
 				foundFields = append(foundFields, f)
 			} else {
@@ -134,14 +134,14 @@ func (sc *scopeCollector) Enter(node interface{}) bool {
 		}
 	}
 	if selectNode.Limit != nil {
-		f, err := sc.createFieldFromExpr(selectNode.Limit.Count, common_model.FieldReference)
+		f, err := sc.createFieldFromExpr(selectNode.Limit.Count, database.FieldReference)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
 			sc.errors = append(sc.errors, err)
 		}
 
-		f, err = sc.createFieldFromExpr(selectNode.Limit.Offset, common_model.FieldReference)
+		f, err = sc.createFieldFromExpr(selectNode.Limit.Offset, database.FieldReference)
 		if err == nil {
 			foundFields = append(foundFields, f)
 		} else {
@@ -173,7 +173,7 @@ func (sc *scopeCollector) Leave(node interface{}) bool {
 	return false
 }
 
-func (sc *scopeCollector) newStmtScopeIfEnterRequired(node interface{}) (*common_model.StmtScope, *tree.Select) {
+func (sc *scopeCollector) newStmtScopeIfEnterRequired(node interface{}) (*database.StmtScope, *tree.Select) {
 	if s, ok := node.(*tree.Select); ok {
 		if s, ok := sc.foundSelectInfos[s]; ok {
 			if s.fieldOf != nil {
@@ -202,7 +202,7 @@ func (sc *scopeCollector) newStmtScopeIfEnterRequired(node interface{}) (*common
 		}
 
 		parent := sInfo.fieldOf
-		scope := &common_model.StmtScope{Name: sInfo.name}
+		scope := &database.StmtScope{Name: sInfo.name}
 		parent.scope.FieldScopes = append(parent.scope.FieldScopes, scope)
 
 		return scope, ps.Select
@@ -217,21 +217,21 @@ func (sc *scopeCollector) getAndClearLastError() error {
 	return err
 }
 
-func (sc *scopeCollector) createFieldFromExpr(expr tree.Expr, fieldType common_model.FieldType) (*common_model.Field, error) {
+func (sc *scopeCollector) createFieldFromExpr(expr tree.Expr, fieldType database.FieldType) (*database.Field, error) {
 	cols := sc.collectExprReferences(expr, fieldType)
 	if err := sc.getAndClearLastError(); err != nil {
 		return nil, err
 	}
 
-	return &common_model.Field{Columns: cols}, nil
+	return &database.Field{Columns: cols}, nil
 }
 
-func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType common_model.FieldType) []*common_model.FieldColumn {
+func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType database.FieldType) []*database.FieldColumn {
 	if expr == nil {
 		return nil
 	}
 
-	var res []*common_model.FieldColumn
+	var res []*database.FieldColumn
 
 	switch e := expr.(type) {
 	case *tree.RangeCond:
@@ -258,8 +258,8 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType comm
 		info.fieldOf = sc.scopeStack.Top()
 
 		// ignore the content of subquery as it will be in different StmtScopes
-		return []*common_model.FieldColumn{{
-			Type:          common_model.FieldSubquery,
+		return []*database.FieldColumn{{
+			Type:          database.FieldSubquery,
 			ReferenceName: info.name,
 		}}
 	case *tree.CommentOnColumn:
@@ -415,7 +415,7 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType comm
 			if sc.isSchemaSpecified(n, 1) {
 				sc.lastError = lib.NewInvalidAstError("schema or catalog/db specification at tuple `(Table).schema.col` is not expected")
 			} else {
-				return []*common_model.FieldColumn{{Table: n.Parts[0], Type: common_model.FieldStar}}
+				return []*database.FieldColumn{{Table: n.Parts[0], Type: database.FieldStar}}
 			}
 		} else {
 			res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
@@ -425,7 +425,7 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType comm
 			if sc.isSchemaSpecified(n, 1) {
 				sc.lastError = lib.NewInvalidAstError("schema or catalog/db specification at tuple `(Table).schema.col` is not expected")
 			} else {
-				return []*common_model.FieldColumn{{Table: n.Parts[0], Name: e.ColName, Type: defaultType}}
+				return []*database.FieldColumn{{Table: n.Parts[0], Name: e.ColName, Type: defaultType}}
 			}
 		} else {
 			res = append(res, sc.collectExprReferences(e.Expr, defaultType)...)
@@ -437,24 +437,24 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType comm
 			sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 		} else {
 			if e.Star {
-				return []*common_model.FieldColumn{{Table: e.Parts[1], Name: "", Type: common_model.FieldStar}}
+				return []*database.FieldColumn{{Table: e.Parts[1], Name: "", Type: database.FieldStar}}
 			} else {
-				return []*common_model.FieldColumn{{Table: e.Parts[1], Name: e.Parts[0], Type: defaultType}}
+				return []*database.FieldColumn{{Table: e.Parts[1], Name: e.Parts[0], Type: defaultType}}
 			}
 		}
 	case tree.UnqualifiedStar:
-		return []*common_model.FieldColumn{{Table: "", Type: common_model.FieldStar}}
+		return []*database.FieldColumn{{Table: "", Type: database.FieldStar}}
 	case *tree.AllColumnsSelector:
 		if sc.isSchemaSpecified2(e.TableName, 1) {
 			sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 		} else {
-			return []*common_model.FieldColumn{{Table: e.TableName.Parts[0], Type: common_model.FieldStar}}
+			return []*database.FieldColumn{{Table: e.TableName.Parts[0], Type: database.FieldStar}}
 		}
 	case *tree.ColumnItem:
 		if sc.isSchemaSpecified2(e.TableName, 1) {
 			sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 		} else {
-			return []*common_model.FieldColumn{{Table: e.TableName.Parts[0], Name: e.ColumnName.Normalize()}}
+			return []*database.FieldColumn{{Table: e.TableName.Parts[0], Name: e.ColumnName.Normalize()}}
 		}
 	default:
 		t := reflect.TypeOf(e).Name()
@@ -471,13 +471,13 @@ func (sc *scopeCollector) collectExprReferences(expr tree.Expr, defaultType comm
 	return res
 }
 
-func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*common_model.Table, []*common_model.Field) {
+func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*database.Table, []*database.Field) {
 	if table == nil {
 		return nil, nil
 	}
 
-	var tables []*common_model.Table
-	var fields []*common_model.Field
+	var tables []*database.Table
+	var fields []*database.Field
 	switch t := table.(type) {
 	case *tree.AliasedTableExpr:
 		switch tt := t.Expr.(type) {
@@ -493,7 +493,7 @@ func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*common_model.T
 			}
 
 			// ignore the content of subquery as it will be in different ScopeStmt
-			tables = []*common_model.Table{{
+			tables = []*database.Table{{
 				AsName:    t.As.Alias.Normalize(),
 				Name:      name,
 				IsLateral: t.Lateral,
@@ -502,7 +502,7 @@ func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*common_model.T
 			if sc.isSchemaSpecified2(tt, 1) {
 				sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 			} else {
-				tables = []*common_model.Table{{AsName: t.As.Alias.Normalize(), Name: tt.Parts[0]}}
+				tables = []*database.Table{{AsName: t.As.Alias.Normalize(), Name: tt.Parts[0]}}
 			}
 		case *tree.StatementSource:
 			sc.lastError = lib.NewUnsupportedError("referencing source like [table] is not supported")
@@ -514,14 +514,14 @@ func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*common_model.T
 			tables, fields = sc.collectJoinReferences(tt)
 		case *tree.RowsFromExpr:
 			for _, item := range tt.Items {
-				fcs := sc.collectExprReferences(item, common_model.FieldReference)
-				fields = append(fields, &common_model.Field{Columns: fcs})
+				fcs := sc.collectExprReferences(item, database.FieldReference)
+				fields = append(fields, &database.Field{Columns: fcs})
 			}
 		case *tree.TableName:
 			if sc.isSchemaSpecifiedTableName(tt) {
 				sc.lastError = lib.NewUnsupportedError("schema or catalog/db specification is not supported")
 			} else {
-				tables = []*common_model.Table{{AsName: t.As.Alias.Normalize(), Name: tt.Table()}}
+				tables = []*database.Table{{AsName: t.As.Alias.Normalize(), Name: tt.Table()}}
 			}
 		case *tree.TableRef:
 			sc.lastError = lib.NewUnsupportedError("numeric table reference is not supported")
@@ -532,8 +532,8 @@ func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*common_model.T
 		tables, fields = sc.collectJoinReferences(t)
 	case *tree.RowsFromExpr:
 		for _, item := range t.Items {
-			fcs := sc.collectExprReferences(item, common_model.FieldReference)
-			fields = append(fields, &common_model.Field{Columns: fcs})
+			fcs := sc.collectExprReferences(item, database.FieldReference)
+			fields = append(fields, &database.Field{Columns: fcs})
 		}
 	case *tree.Subquery:
 		// ignore the content of subquery as it will be in different scope.Scopes
@@ -549,7 +549,7 @@ func (sc *scopeCollector) collectTables(table tree.TableExpr) ([]*common_model.T
 	return tables, fields
 }
 
-func (sc *scopeCollector) collectJoinReferences(j *tree.JoinTableExpr) ([]*common_model.Table, []*common_model.Field) {
+func (sc *scopeCollector) collectJoinReferences(j *tree.JoinTableExpr) ([]*database.Table, []*database.Field) {
 	if j == nil {
 		return nil, nil
 	}
@@ -564,11 +564,11 @@ func (sc *scopeCollector) collectJoinReferences(j *tree.JoinTableExpr) ([]*commo
 		case tree.NaturalJoinCond:
 			sc.lastError = lib.NewUnsupportedError("not supporting NATURAL JOIN")
 		case *tree.OnJoinCond:
-			fields = append(fields, &common_model.Field{Columns: sc.collectExprReferences(c.Expr, common_model.FieldCondition)})
+			fields = append(fields, &database.Field{Columns: sc.collectExprReferences(c.Expr, database.FieldCondition)})
 		case *tree.UsingJoinCond:
 			// todo: not supporting the same column name?
 			for _, col := range c.Cols {
-				fields = append(fields, &common_model.Field{Columns: []*common_model.FieldColumn{{Table: "", Name: col.Normalize(), Type: common_model.FieldCondition}}})
+				fields = append(fields, &database.Field{Columns: []*database.FieldColumn{{Table: "", Name: col.Normalize(), Type: database.FieldCondition}}})
 			}
 		default:
 			sc.lastError = lib.NewUnsupportedError(
@@ -611,12 +611,12 @@ func (sc *scopeCollector) incrementFoundPrefixCounter(prefix string) int {
 	return orig
 }
 
-func (sc *scopeCollector) newScope(parent *scopeInfo, s *tree.Select) *common_model.StmtScope {
-	name := common_model.RootScopeName
+func (sc *scopeCollector) newScope(parent *scopeInfo, s *tree.Select) *database.StmtScope {
+	name := database.RootScopeName
 	if n, ok := sc.foundSelectInfos[s]; ok {
 		name = n.name
 	}
-	scope := &common_model.StmtScope{Name: name}
+	scope := &database.StmtScope{Name: name}
 
 	if parent != nil {
 		parent.scope.SubScopes = append(parent.scope.SubScopes, scope)

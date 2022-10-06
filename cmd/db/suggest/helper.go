@@ -1,14 +1,14 @@
 package suggest
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/rs/zerolog/log"
 )
 
-func parseIndexTargets(indexTargetTexts []string) ([]*common_model.IndexTarget, error) {
-	var its []*common_model.IndexTarget
+func parseIndexTargets(indexTargetTexts []string) ([]*database.IndexTarget, error) {
+	var its []*database.IndexTarget
 	for _, text := range indexTargetTexts {
-		it, err := common_model.NewIndexTargetFromText(text)
+		it, err := database.NewIndexTargetFromText(text)
 		if err != nil {
 			return nil, err
 		}
@@ -18,7 +18,7 @@ func parseIndexTargets(indexTargetTexts []string) ([]*common_model.IndexTarget, 
 	return its, nil
 }
 
-func logNewIndexTargets(newIdxTargets []*common_model.IndexTarget) {
+func logNewIndexTargets(newIdxTargets []*database.IndexTarget) {
 	if len(newIdxTargets) > 0 {
 		log.Debug().Msg("Found possibly efficient index combinations:")
 		for i, it := range newIdxTargets {

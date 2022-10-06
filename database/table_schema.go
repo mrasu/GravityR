@@ -1,4 +1,4 @@
-package common_model
+package database
 
 import (
 	"fmt"

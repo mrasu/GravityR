@@ -1,4 +1,4 @@
-package common_model
+package database
 
 import (
 	"github.com/mrasu/GravityR/html/viewmodel"

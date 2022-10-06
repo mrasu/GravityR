@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
-	"github.com/mrasu/GravityR/database/common_model/builder"
+	"github.com/mrasu/GravityR/database"
+	"github.com/mrasu/GravityR/database/service"
 	"github.com/mrasu/GravityR/html/viewmodel"
 )
 
@@ -11,8 +11,8 @@ type ExplainAnalyzeTree struct {
 	SummaryText string
 }
 
-func (eat *ExplainAnalyzeTree) ToSingleTableResults() []*common_model.SingleTableExplainResult {
-	return builder.BuildSingleTableExplainResults(eat.Root)
+func (eat *ExplainAnalyzeTree) ToSingleTableResults() []*database.SingleTableExplainResult {
+	return service.BuildSingleTableExplainResults(eat.Root)
 }
 
 func (eat *ExplainAnalyzeTree) ToViewModel() []*viewmodel.VmPostgresExplainAnalyzeNode {

@@ -1,16 +1,16 @@
 package mysql
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
-	"github.com/mrasu/GravityR/database/common_model/builder"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/database/mysql/model"
 	"github.com/mrasu/GravityR/database/mysql/model/collector"
+	"github.com/mrasu/GravityR/database/service"
 	"github.com/mrasu/GravityR/infra/mysql"
 	"github.com/pingcap/tidb/parser"
 	"github.com/pingcap/tidb/parser/ast"
 )
 
-func SuggestIndex(db *mysql.DB, database, query string, aTree *model.ExplainAnalyzeTree) ([]*common_model.IndexTargetTable, []error) {
+func SuggestIndex(db *mysql.DB, database, query string, aTree *model.ExplainAnalyzeTree) ([]*database.IndexTargetTable, []error) {
 	rootNode, err := parse(query)
 	if err != nil {
 		return nil, []error{err}
@@ -30,13 +30,13 @@ func SuggestIndex(db *mysql.DB, database, query string, aTree *model.ExplainAnal
 		return nil, errs
 	}
 
-	idxCandidates, err := builder.BuildIndexTargets(tables, scopes)
+	idxCandidates, err := service.BuildIndexTargets(tables, scopes)
 	if err != nil {
 		return nil, []error{err}
 	}
 
 	tableResults := aTree.ToSingleTableResults()
-	return builder.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
+	return service.BuildExplainedIndexTargets(idxCandidates, scopes, tableResults)
 }
 
 func parse(sql string) (ast.StmtNode, error) {

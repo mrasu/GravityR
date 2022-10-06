@@ -1,8 +1,8 @@
-package builder_test
+package service_test
 
 import (
-	"github.com/mrasu/GravityR/database/common_model"
-	"github.com/mrasu/GravityR/database/common_model/builder"
+	"github.com/mrasu/GravityR/database"
+	"github.com/mrasu/GravityR/database/service"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,8 +20,8 @@ func (en *explainNode) TableName() string {
 func (en *explainNode) EstimatedTotalTime() float64 {
 	return en.estimatedTotalTime
 }
-func (en *explainNode) GetChildren() []builder.ExplainNode {
-	var res []builder.ExplainNode
+func (en *explainNode) GetChildren() []service.ExplainNode {
+	var res []service.ExplainNode
 	for _, c := range en.children {
 		res = append(res, c)
 	}
@@ -32,7 +32,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 	tests := []struct {
 		name          string
 		nodes         []*explainNode
-		expectedTrees []*common_model.SingleTableExplainResult
+		expectedTrees []*database.SingleTableExplainResult
 	}{
 		{
 			name: "one line",
@@ -42,7 +42,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 					estimatedTotalTime: 0.4,
 				},
 			},
-			expectedTrees: []*common_model.SingleTableExplainResult{
+			expectedTrees: []*database.SingleTableExplainResult{
 				{
 					TableName:          "tasks",
 					EstimatedTotalTime: 0.4,
@@ -63,7 +63,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 					},
 				},
 			},
-			expectedTrees: []*common_model.SingleTableExplainResult{
+			expectedTrees: []*database.SingleTableExplainResult{
 				{
 					TableName:          "tasks",
 					EstimatedTotalTime: 0.2 * 2,
@@ -98,7 +98,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 					},
 				},
 			},
-			expectedTrees: []*common_model.SingleTableExplainResult{
+			expectedTrees: []*database.SingleTableExplainResult{
 				{
 					TableName:          "tasks",
 					EstimatedTotalTime: 0.2 * 2,
@@ -114,7 +114,7 @@ func TestExplainAnalyzeTree_ToSingleTableTrees(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			root := &explainNode{children: tt.nodes}
-			trees := builder.BuildSingleTableExplainResults(root)
+			trees := service.BuildSingleTableExplainResults(root)
 
 			assert.Equal(t, tt.expectedTrees, trees)
 		})

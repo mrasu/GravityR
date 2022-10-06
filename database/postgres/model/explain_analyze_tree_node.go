@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/mrasu/GravityR/database/common_model/builder"
+	"github.com/mrasu/GravityR/database/service"
 	"github.com/mrasu/GravityR/html/viewmodel"
 	"strings"
 )
@@ -43,8 +43,8 @@ func (n *ExplainAnalyzeTreeNode) EstimatedTotalTime() float64 {
 	return n.AnalyzeResultNode.EstimatedTotalTime()
 }
 
-func (n *ExplainAnalyzeTreeNode) GetChildren() []builder.ExplainNode {
-	var res []builder.ExplainNode
+func (n *ExplainAnalyzeTreeNode) GetChildren() []service.ExplainNode {
+	var res []service.ExplainNode
 	for _, c := range n.Children {
 		res = append(res, c)
 	}

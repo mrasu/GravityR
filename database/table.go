@@ -1,4 +1,4 @@
-package common_model
+package database
 
 type Table struct {
 	AsName    string

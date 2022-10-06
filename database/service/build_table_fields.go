@@ -1,14 +1,14 @@
-package builder
+package service
 
 import (
 	"fmt"
-	"github.com/mrasu/GravityR/database/common_model"
+	"github.com/mrasu/GravityR/database"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/samber/lo"
 )
 
 type tableOutputCols map[string][]*outputCol
-type tableFieldColumns map[string][]*common_model.FieldColumn
+type tableFieldColumns map[string][]*database.FieldColumn
 
 type outputCol struct {
 	name               string
@@ -22,7 +22,7 @@ type columnInfo struct {
 
 type tableFieldsBuilder struct{}
 
-func buildTableFields(dbTables map[string]*common_model.TableSchema, scope *common_model.StmtScope) (tableFieldColumns, error) {
+func buildTableFields(dbTables map[string]*database.TableSchema, scope *database.StmtScope) (tableFieldColumns, error) {
 	tfb := &tableFieldsBuilder{}
 	info := newScopeInfo(dbTables, scope, tableOutputCols{})
 	_, tableFields, err := tfb.calculateReferences(info)
@@ -36,7 +36,7 @@ func buildTableFields(dbTables map[string]*common_model.TableSchema, scope *comm
 func (tfb *tableFieldsBuilder) calculateReferences(info *scopeInfo) ([]*outputCol, tableFieldColumns, error) {
 	scope := info.scope
 
-	tableMap := lo.SliceToMap(scope.Tables, func(t *common_model.Table) (string, *common_model.Table) {
+	tableMap := lo.SliceToMap(scope.Tables, func(t *database.Table) (string, *database.Table) {
 		return t.Name, t
 	})
 
@@ -77,7 +77,7 @@ func (tfb *tableFieldsBuilder) calculateReferences(info *scopeInfo) ([]*outputCo
 				return nil, nil, err
 			}
 			for _, ci := range colInfos {
-				fc := &common_model.FieldColumn{
+				fc := &database.FieldColumn{
 					Table: ci.tableName,
 					Name:  ci.name,
 					Type:  c.Type,
@@ -86,7 +86,7 @@ func (tfb *tableFieldsBuilder) calculateReferences(info *scopeInfo) ([]*outputCo
 			}
 			allColInfos = append(allColInfos, colInfos...)
 
-			if c.Type == common_model.FieldStar {
+			if c.Type == database.FieldStar {
 				info.starTables.Add(c.Table)
 			}
 		}
@@ -107,9 +107,9 @@ func (tfb *tableFieldsBuilder) calculateReferences(info *scopeInfo) ([]*outputCo
 }
 
 type scopeInfo struct {
-	dbTables map[string]*common_model.TableSchema
+	dbTables map[string]*database.TableSchema
 
-	scope                *common_model.StmtScope
+	scope                *database.StmtScope
 	originalExternalCols tableOutputCols
 
 	referencingFields tableFieldColumns
@@ -119,7 +119,7 @@ type scopeInfo struct {
 	starTables *lib.Set[string]
 }
 
-func newScopeInfo(dbTables map[string]*common_model.TableSchema, scope *common_model.StmtScope, externalCols tableOutputCols) *scopeInfo {
+func newScopeInfo(dbTables map[string]*database.TableSchema, scope *database.StmtScope, externalCols tableOutputCols) *scopeInfo {
 	referencingColumns := buildReferencingColumns(dbTables, scope.Tables)
 	refTables := newRefTables(referencingColumns, scope.Tables, externalCols)
 
@@ -134,7 +134,7 @@ func newScopeInfo(dbTables map[string]*common_model.TableSchema, scope *common_m
 	}
 }
 
-func buildReferencingColumns(dbTables map[string]*common_model.TableSchema, tables []*common_model.Table) tableOutputCols {
+func buildReferencingColumns(dbTables map[string]*database.TableSchema, tables []*database.Table) tableOutputCols {
 	res := tableOutputCols{}
 	for _, table := range tables {
 		tName := table.Name
@@ -154,7 +154,7 @@ func buildReferencingColumns(dbTables map[string]*common_model.TableSchema, tabl
 	return res
 }
 
-func (si *scopeInfo) createChild(childScope *common_model.StmtScope, externalCols tableOutputCols) *scopeInfo {
+func (si *scopeInfo) createChild(childScope *database.StmtScope, externalCols tableOutputCols) *scopeInfo {
 	return newScopeInfo(si.dbTables, childScope, externalCols)
 }
 
@@ -163,12 +163,12 @@ func (si *scopeInfo) addSubqueryInfo(name, asName string, cols []*outputCol, new
 	si.addReferencingFields(newFieldColumns)
 }
 
-func (si *scopeInfo) getColumnReferenceColumnInfos(c *common_model.FieldColumn) ([]*columnInfo, error) {
-	if c.Type == common_model.FieldSubquery {
+func (si *scopeInfo) getColumnReferenceColumnInfos(c *database.FieldColumn) ([]*columnInfo, error) {
+	if c.Type == database.FieldSubquery {
 		return nil, nil
 	}
 
-	if c.Type == common_model.FieldStar {
+	if c.Type == database.FieldStar {
 		// Ignore "*" field for index candidates as referenced columns can be changed by just adding one column
 		return nil, nil
 	}
@@ -193,16 +193,16 @@ func (si *scopeInfo) addReferencingFields(newFieldColumns tableFieldColumns) {
 	}
 }
 
-func (si *scopeInfo) addReferencingField(tableName string, col *common_model.FieldColumn) {
+func (si *scopeInfo) addReferencingField(tableName string, col *database.FieldColumn) {
 	cols, ok := si.referencingFields[tableName]
 	if !ok {
-		si.referencingFields[tableName] = []*common_model.FieldColumn{col}
+		si.referencingFields[tableName] = []*database.FieldColumn{col}
 		return
 	}
 
 	for i, c := range cols {
 		if c.Name == col.Name {
-			if c.Type == common_model.FieldReference && col.Type == common_model.FieldCondition {
+			if c.Type == database.FieldReference && col.Type == database.FieldCondition {
 				si.referencingFields[tableName][i] = col
 			}
 			return
@@ -254,7 +254,7 @@ type refTables struct {
 	subqueryAsNames *lib.Set[string]
 }
 
-func newRefTables(referencingColumns tableOutputCols, tables []*common_model.Table, externalCols tableOutputCols) *refTables {
+func newRefTables(referencingColumns tableOutputCols, tables []*database.Table, externalCols tableOutputCols) *refTables {
 	asToName := map[string]string{}
 	subqueryAsNames := lib.NewSet[string]()
 	for tName := range externalCols {
@@ -300,7 +300,7 @@ func (t *refTables) getTableColsFromAsName(asName string) ([]*outputCol, error) 
 	return t.getTableColsFromName(name)
 }
 
-func (t *refTables) getReferencingColumnInfos(c *common_model.FieldColumn) ([]*columnInfo, error) {
+func (t *refTables) getReferencingColumnInfos(c *database.FieldColumn) ([]*columnInfo, error) {
 	fCols, err := t.getTableColsFromAsName(c.Table)
 	if err != nil {
 		return nil, err
