@@ -11,12 +11,15 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/rds v1.23.2
 	github.com/aws/smithy-go v1.12.0
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/google/go-cmp v0.5.8
 	github.com/jarcoal/httpmock v1.2.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.7
 	github.com/pingcap/tidb v1.1.0-beta.0.20220605042428-1a89decdb192
 	github.com/pingcap/tidb/parser v0.0.0-20220605042428-1a89decdb192
 	github.com/pkg/errors v0.9.1
+	github.com/rs/zerolog v1.28.0
+	github.com/samber/lo v1.28.2
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/exp v0.0.0-20220426173459-3bcf042a4bf5
@@ -49,7 +52,6 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
@@ -74,8 +76,6 @@ require (
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/rogpeppe/go-internal v1.6.1 // indirect
-	github.com/rs/zerolog v1.28.0 // indirect
-	github.com/samber/lo v1.28.2 // indirect
 	github.com/shirou/gopsutil/v3 v3.21.12 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
