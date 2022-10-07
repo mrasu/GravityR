@@ -44,7 +44,7 @@ func (db *DB) Exec(query string) (sql.Result, error) {
 	return res, nil
 }
 
-func (db *DB) Explain(query string) (string, error) {
+func (db *DB) ExplainWithAnalyze(query string) (string, error) {
 	rows, err := db.db.Query("EXPLAIN ANALYZE FORMAT=TREE " + query)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to select")

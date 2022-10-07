@@ -67,25 +67,16 @@ func (pr *postgresRunner) suggest(outputPath string, db *postgres.DB, schema str
 		return err
 	}
 
-	explainLines, err := db.ExplainWithAnalyze(pr.query)
+	aTree, err := pservice.NewExplainer(db).ExplainWithAnalyze(pr.query)
 	if err != nil {
 		return err
 	}
 
-	aTree, err := pservice.CollectExplainAnalyzeTree(explainLines)
+	its, err := pservice.NewIndexSuggester(db, schema).Suggest(pr.query, aTree)
 	if err != nil {
 		return err
 	}
-
-	itts, errs := pservice.SuggestIndex(db, schema, pr.query, aTree)
-	if len(errs) > 0 {
-		return errs[0]
-	}
-
-	its, err := pr.removeExistingIndexTargets(db, schema, itts)
-	if err != nil {
-		return err
-	}
+	logNewIndexTargets(its)
 
 	var er *dmodel.ExaminationResult
 	if pr.runsExamination {
@@ -104,17 +95,6 @@ func (pr *postgresRunner) suggest(outputPath string, db *postgres.DB, schema str
 		util.LogResultOutputPath(outputPath)
 	}
 	return nil
-}
-
-func (pr *postgresRunner) removeExistingIndexTargets(db *postgres.DB, dbName string, itts []*dmodel.IndexTargetTable) ([]*dmodel.IndexTarget, error) {
-	idxGetter := pservice.NewIndexGetter(db)
-	its, err := dservice.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
-	if err != nil {
-		return nil, err
-	}
-
-	logNewIndexTargets(its)
-	return its, nil
 }
 
 func (pr *postgresRunner) examine(db *postgres.DB, varTargets, possibleTargets []*dmodel.IndexTarget) (*dmodel.ExaminationResult, error) {

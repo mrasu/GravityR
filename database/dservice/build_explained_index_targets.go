@@ -3,10 +3,11 @@ package dservice
 import (
 	"github.com/mrasu/GravityR/database/dmodel"
 	"github.com/mrasu/GravityR/lib"
+	"github.com/samber/lo"
 )
 
 // BuildExplainedIndexTargets extracts IndexTargetTable referred in EXPLAIN ANALYZE(aka SingleTableExplainResult) and orders them by its EstimatedTotalTime
-func BuildExplainedIndexTargets(idxCandidates []*dmodel.IndexTargetTable, scopes []*dmodel.StmtScope, explainResults []*dmodel.SingleTableExplainResult) ([]*dmodel.IndexTargetTable, []error) {
+func BuildExplainedIndexTargets(idxCandidates []*dmodel.IndexTargetTable, scopes []*dmodel.StmtScope, explainResults []*dmodel.SingleTableExplainResult) ([]*dmodel.IndexTarget, []error) {
 	//TODO: consider scope to handle name duplication
 	asTableMap := map[string]*lib.Set[string]{}
 	for _, s := range scopes {
@@ -43,5 +44,6 @@ func BuildExplainedIndexTargets(idxCandidates []*dmodel.IndexTargetTable, scopes
 		}
 	}
 
-	return indexes, nil
+	idxTargets := lo.Map(indexes, func(it *dmodel.IndexTargetTable, _ int) *dmodel.IndexTarget { return it.ToIndexTarget() })
+	return idxTargets, nil
 }

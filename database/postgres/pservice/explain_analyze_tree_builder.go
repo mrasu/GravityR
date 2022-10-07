@@ -7,11 +7,14 @@ import (
 	"strings"
 )
 
-type explainAnalyzeResultCollector struct{}
+type ExplainAnalyzeTreeBuilder struct{}
 
-func CollectExplainAnalyzeTree(explainLines []string) (*pmodel.ExplainAnalyzeTree, error) {
-	c := explainAnalyzeResultCollector{}
-	root, summaryText, err := c.collect(explainLines)
+func NewExplainAnalyzeTreeBuilder() *ExplainAnalyzeTreeBuilder {
+	return &ExplainAnalyzeTreeBuilder{}
+}
+
+func (erb *ExplainAnalyzeTreeBuilder) Build(explainLines []string) (*pmodel.ExplainAnalyzeTree, error) {
+	root, summaryText, err := erb.collect(explainLines)
 	if err != nil {
 		return nil, err
 	}
@@ -22,8 +25,8 @@ func CollectExplainAnalyzeTree(explainLines []string) (*pmodel.ExplainAnalyzeTre
 	}, nil
 }
 
-func (earc *explainAnalyzeResultCollector) collect(explainLines []string) (*pmodel.ExplainAnalyzeTreeNode, string, error) {
-	lineNodes, summaryText := earc.groupToPlanLineNodes(explainLines)
+func (erb *ExplainAnalyzeTreeBuilder) collect(explainLines []string) (*pmodel.ExplainAnalyzeTreeNode, string, error) {
+	lineNodes, summaryText := erb.groupToPlanLineNodes(explainLines)
 
 	root := &pmodel.ExplainAnalyzeTreeNode{AnalyzeResultNode: &pmodel.ExplainAnalyzeResultNode{}, SpaceSize: -1}
 	nodeStack := lib.NewStack[pmodel.ExplainAnalyzeTreeNode]()
@@ -65,7 +68,7 @@ const (
 	analyzeLinePlanName
 )
 
-func (earc *explainAnalyzeResultCollector) groupToPlanLineNodes(explainLines []string) ([][]string, string) {
+func (erb *ExplainAnalyzeTreeBuilder) groupToPlanLineNodes(explainLines []string) ([][]string, string) {
 	var lineNodes [][]string
 	var nodeLines []string
 	prevLineType := analyzeLinePlanName

@@ -2,16 +2,27 @@ package mservice
 
 import (
 	"github.com/mrasu/GravityR/database/mysql/mmodel"
+	"github.com/mrasu/GravityR/infra/mysql"
 	"github.com/mrasu/GravityR/lib"
 	"github.com/pkg/errors"
 	"strings"
 )
 
-type explainAnalyzeResultCollector struct{}
+type Explainer struct {
+	db *mysql.DB
+}
 
-func CollectExplainAnalyzeTree(explainLine string) (*mmodel.ExplainAnalyzeTree, error) {
-	c := explainAnalyzeResultCollector{}
-	root, err := c.collect(explainLine)
+func NewExplainer(db *mysql.DB) *Explainer {
+	return &Explainer{db: db}
+}
+
+func (e *Explainer) ExplainWithAnalyze(query string) (*mmodel.ExplainAnalyzeTree, error) {
+	explainLine, err := e.db.ExplainWithAnalyze(query)
+	if err != nil {
+		return nil, err
+	}
+
+	root, err := e.buildExplainNode(explainLine)
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +30,7 @@ func CollectExplainAnalyzeTree(explainLine string) (*mmodel.ExplainAnalyzeTree, 
 	return &mmodel.ExplainAnalyzeTree{Root: root}, nil
 }
 
-func (earc *explainAnalyzeResultCollector) collect(explainLine string) (*mmodel.ExplainAnalyzeTreeNode, error) {
+func (e *Explainer) buildExplainNode(explainLine string) (*mmodel.ExplainAnalyzeTreeNode, error) {
 	nodeStack := lib.NewStack[mmodel.ExplainAnalyzeTreeNode]()
 
 	root := &mmodel.ExplainAnalyzeTreeNode{AnalyzeResultLine: &mmodel.ExplainAnalyzeResultLine{}}

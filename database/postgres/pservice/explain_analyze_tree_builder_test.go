@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestCollectExplainAnalyzeTree(t *testing.T) {
+func TestExplainAnalyzeTreeBuilder_Analyze(t *testing.T) {
 	tests := []struct {
 		name          string
 		explainResult string
@@ -604,7 +604,7 @@ Execution Time: 821.344 ms`,
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			explainLines := strings.Split(strings.Trim(tt.explainResult, "\n"), "\n")
-			tree, err := pservice.CollectExplainAnalyzeTree(explainLines)
+			tree, err := pservice.NewExplainAnalyzeTreeBuilder().Build(explainLines)
 			assert.NoError(t, err)
 			assert.NotNil(t, tree)
 			assert.Equal(t, tt.expectedTree, tree)
@@ -612,7 +612,7 @@ Execution Time: 821.344 ms`,
 	}
 }
 
-func TestCollectExplainAnalyzeTree_NoAnalyze(t *testing.T) {
+func TestExplainAnalyzeTreeBuilder_Analyze_NoActualValues(t *testing.T) {
 	tests := []struct {
 		name          string
 		explainResult string
@@ -662,10 +662,6 @@ JIT:
 								EstimatedCost:         null.FloatFrom(105447.86),
 								EstimatedReturnedRows: null.IntFrom(1),
 								EstimatedWidth:        null.IntFrom(32),
-								ActualTimeFirstRow:    null.FloatFromPtr(nil),
-								ActualTimeAvg:         null.FloatFromPtr(nil),
-								ActualReturnedRows:    null.IntFromPtr(nil),
-								ActualLoopCount:       null.IntFromPtr(nil),
 							},
 							Children: []*pmodel.ExplainAnalyzeTreeNode{
 								{
@@ -679,10 +675,6 @@ JIT:
 										EstimatedCost:         null.FloatFrom(105446.35),
 										EstimatedReturnedRows: null.IntFrom(100),
 										EstimatedWidth:        null.IntFrom(55),
-										ActualTimeFirstRow:    null.FloatFromPtr(nil),
-										ActualTimeAvg:         null.FloatFromPtr(nil),
-										ActualReturnedRows:    null.IntFromPtr(nil),
-										ActualLoopCount:       null.IntFromPtr(nil),
 									},
 									Children: []*pmodel.ExplainAnalyzeTreeNode{
 										{
@@ -697,10 +689,6 @@ JIT:
 												EstimatedCost:         null.FloatFrom(104612.35),
 												EstimatedReturnedRows: null.IntFrom(100),
 												EstimatedWidth:        null.IntFrom(27),
-												ActualTimeFirstRow:    null.FloatFromPtr(nil),
-												ActualTimeAvg:         null.FloatFromPtr(nil),
-												ActualReturnedRows:    null.IntFromPtr(nil),
-												ActualLoopCount:       null.IntFromPtr(nil),
 											},
 											Children: []*pmodel.ExplainAnalyzeTreeNode{
 												{
@@ -715,10 +703,6 @@ JIT:
 														EstimatedCost:         null.FloatFrom(103602.35),
 														EstimatedReturnedRows: null.IntFrom(42),
 														EstimatedWidth:        null.IntFrom(27),
-														ActualTimeFirstRow:    null.FloatFromPtr(nil),
-														ActualTimeAvg:         null.FloatFromPtr(nil),
-														ActualReturnedRows:    null.IntFromPtr(nil),
-														ActualLoopCount:       null.IntFromPtr(nil),
 													},
 													Children: []*pmodel.ExplainAnalyzeTreeNode{
 														{
@@ -732,10 +716,6 @@ JIT:
 																EstimatedCost:         null.FloatFrom(94869.67),
 																EstimatedReturnedRows: null.IntFrom(2730667),
 																EstimatedWidth:        null.IntFrom(27),
-																ActualTimeFirstRow:    null.FloatFromPtr(nil),
-																ActualTimeAvg:         null.FloatFromPtr(nil),
-																ActualReturnedRows:    null.IntFromPtr(nil),
-																ActualLoopCount:       null.IntFromPtr(nil),
 															},
 														},
 														{
@@ -749,10 +729,6 @@ JIT:
 																EstimatedCost:         null.FloatFrom(1564.20),
 																EstimatedReturnedRows: null.IntFrom(1),
 																EstimatedWidth:        null.IntFrom(4),
-																ActualTimeFirstRow:    null.FloatFromPtr(nil),
-																ActualTimeAvg:         null.FloatFromPtr(nil),
-																ActualReturnedRows:    null.IntFromPtr(nil),
-																ActualLoopCount:       null.IntFromPtr(nil),
 															},
 															Children: []*pmodel.ExplainAnalyzeTreeNode{
 																{
@@ -767,10 +743,6 @@ JIT:
 																		EstimatedCost:         null.FloatFrom(1564.20),
 																		EstimatedReturnedRows: null.IntFrom(1),
 																		EstimatedWidth:        null.IntFrom(4),
-																		ActualTimeFirstRow:    null.FloatFromPtr(nil),
-																		ActualTimeAvg:         null.FloatFromPtr(nil),
-																		ActualReturnedRows:    null.IntFromPtr(nil),
-																		ActualLoopCount:       null.IntFromPtr(nil),
 																	},
 																},
 															},
@@ -790,10 +762,6 @@ JIT:
 												EstimatedCost:         null.FloatFrom(8.33),
 												EstimatedReturnedRows: null.IntFrom(1),
 												EstimatedWidth:        null.IntFrom(32),
-												ActualTimeFirstRow:    null.FloatFromPtr(nil),
-												ActualTimeAvg:         null.FloatFromPtr(nil),
-												ActualReturnedRows:    null.IntFromPtr(nil),
-												ActualLoopCount:       null.IntFromPtr(nil),
 											},
 											Children: []*pmodel.ExplainAnalyzeTreeNode{
 												{
@@ -807,10 +775,6 @@ JIT:
 														EstimatedCost:         null.FloatFrom(8.31),
 														EstimatedReturnedRows: null.IntFrom(1),
 														EstimatedWidth:        null.IntFrom(566),
-														ActualTimeFirstRow:    null.FloatFromPtr(nil),
-														ActualTimeAvg:         null.FloatFromPtr(nil),
-														ActualReturnedRows:    null.IntFromPtr(nil),
-														ActualLoopCount:       null.IntFromPtr(nil),
 													},
 													Children: []*pmodel.ExplainAnalyzeTreeNode{
 														{
@@ -825,10 +789,6 @@ JIT:
 																EstimatedCost:         null.FloatFrom(8.31),
 																EstimatedReturnedRows: null.IntFrom(1),
 																EstimatedWidth:        null.IntFrom(566),
-																ActualTimeFirstRow:    null.FloatFromPtr(nil),
-																ActualTimeAvg:         null.FloatFromPtr(nil),
-																ActualReturnedRows:    null.IntFromPtr(nil),
-																ActualLoopCount:       null.IntFromPtr(nil),
 															},
 														},
 													},
@@ -845,10 +805,6 @@ JIT:
 														EstimatedCost:         null.FloatFrom(0.01),
 														EstimatedReturnedRows: null.IntFrom(1),
 														EstimatedWidth:        null.IntFrom(32),
-														ActualTimeFirstRow:    null.FloatFromPtr(nil),
-														ActualTimeAvg:         null.FloatFromPtr(nil),
-														ActualReturnedRows:    null.IntFromPtr(nil),
-														ActualLoopCount:       null.IntFromPtr(nil),
 													},
 												},
 											},
@@ -867,10 +823,6 @@ JIT:
 										EstimatedCost:         null.FloatFrom(0.01),
 										EstimatedReturnedRows: null.IntFrom(1),
 										EstimatedWidth:        null.IntFrom(32),
-										ActualTimeFirstRow:    null.FloatFromPtr(nil),
-										ActualTimeAvg:         null.FloatFromPtr(nil),
-										ActualReturnedRows:    null.IntFromPtr(nil),
-										ActualLoopCount:       null.IntFromPtr(nil),
 									},
 								},
 							},
@@ -884,7 +836,7 @@ JIT:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			explainLines := strings.Split(strings.Trim(tt.explainResult, "\n"), "\n")
-			tree, err := pservice.CollectExplainAnalyzeTree(explainLines)
+			tree, err := pservice.NewExplainAnalyzeTreeBuilder().Build(explainLines)
 			assert.NoError(t, err)
 			assert.NotNil(t, tree)
 			assert.Equal(t, tt.expectedTree, tree)

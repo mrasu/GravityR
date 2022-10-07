@@ -10,22 +10,21 @@ type IndexGetter interface {
 }
 
 type ExistingIndexRemover struct {
-	idxGetter       IndexGetter
-	idxTargetTables []*dmodel.IndexTargetTable
-	dbName          string
+	idxGetter  IndexGetter
+	idxTargets []*dmodel.IndexTarget
+	dbName     string
 }
 
-func NewExistingIndexRemover(idxGetter IndexGetter, dbName string, idxTargetTables []*dmodel.IndexTargetTable) *ExistingIndexRemover {
+func NewExistingIndexRemover(idxGetter IndexGetter, dbName string, its []*dmodel.IndexTarget) *ExistingIndexRemover {
 	return &ExistingIndexRemover{
-		idxGetter:       idxGetter,
-		idxTargetTables: idxTargetTables,
-		dbName:          dbName,
+		idxGetter:  idxGetter,
+		idxTargets: its,
+		dbName:     dbName,
 	}
 }
 
 func (r *ExistingIndexRemover) Remove() ([]*dmodel.IndexTarget, error) {
-	idxTargets := lo.Map(r.idxTargetTables, func(it *dmodel.IndexTargetTable, _ int) *dmodel.IndexTarget { return it.ToIndexTarget() })
-	idxTargets = lo.Uniq(idxTargets)
+	idxTargets := lo.Uniq(r.idxTargets)
 
 	tNames := lo.Map(idxTargets, func(it *dmodel.IndexTarget, _ int) string { return it.TableName })
 	tNames = lo.Uniq(tNames)

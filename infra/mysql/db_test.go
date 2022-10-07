@@ -42,7 +42,7 @@ func TestDB_Explain(t *testing.T) {
 				rows := sqlmock.NewRows([]string{"EXPLAIN"}).AddRow(tt.explainResult)
 				mock.ExpectQuery("EXPLAIN ANALYZE FORMAT=TREE " + dummyQuery).WillReturnRows(rows)
 
-				res, err := db.Explain(dummyQuery)
+				res, err := db.ExplainWithAnalyze(dummyQuery)
 				assert.NoError(t, err)
 				assert.NotNil(t, res)
 				assert.Equal(t, tt.expected, res)

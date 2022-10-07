@@ -95,17 +95,12 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *hasura.Client) error {
 	}
 
 	r := res[0]
-	aTree, err := pservice.CollectExplainAnalyzeTree(r.Plan)
+	aTree, err := pservice.NewExplainAnalyzeTreeBuilder().Build(r.Plan)
 	if err != nil {
 		return err
 	}
 
-	itts, errs := hservice.SuggestIndex(cli, r.SQL, aTree)
-	if len(errs) > 0 {
-		return errs[0]
-	}
-
-	its, err := hr.removeExistingIndexTargets(cli, itts)
+	its, err := hservice.NewIndexSuggester(cli).Suggest(r.SQL, aTree)
 	if err != nil {
 		return err
 	}
@@ -141,17 +136,6 @@ func (hr *hasuraRunner) parseJSONToVariables(jsonStr string) (map[string]interfa
 	}
 
 	return variables, nil
-}
-
-func (hr *hasuraRunner) removeExistingIndexTargets(cli *hasura.Client, itts []*dmodel.IndexTargetTable) ([]*dmodel.IndexTarget, error) {
-	idxGetter := hservice.NewIndexGetter(cli)
-	its, err := dservice.NewExistingIndexRemover(idxGetter, "public", itts).Remove()
-	if err != nil {
-		return nil, err
-	}
-
-	logNewIndexTargets(its)
-	return its, nil
 }
 
 func (hr *hasuraRunner) examine(cli *hasura.Client, varTargets, possibleTargets []*dmodel.IndexTarget) (*dmodel.ExaminationResult, error) {

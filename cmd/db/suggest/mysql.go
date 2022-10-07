@@ -5,6 +5,7 @@ import (
 	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/mrasu/GravityR/database/dmodel"
 	"github.com/mrasu/GravityR/database/dservice"
+	"github.com/mrasu/GravityR/database/mysql/mmodel"
 	"github.com/mrasu/GravityR/database/mysql/mservice"
 	"github.com/mrasu/GravityR/html"
 	"github.com/mrasu/GravityR/html/viewmodel"
@@ -66,25 +67,16 @@ func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) e
 		return err
 	}
 
-	explainLine, err := db.Explain(mr.query)
+	aTree, err := mservice.NewExplainer(db).ExplainWithAnalyze(mr.query)
 	if err != nil {
 		return err
 	}
 
-	aTree, err := mservice.CollectExplainAnalyzeTree(explainLine)
+	its, err := mservice.NewIndexSuggester(db, dbName).Suggest(mr.query, aTree)
 	if err != nil {
 		return err
 	}
-
-	itts, errs := mservice.SuggestIndex(db, dbName, mr.query, aTree)
-	if len(errs) > 0 {
-		return errs[0]
-	}
-
-	its, err := mr.removeExistingIndexTargets(db, dbName, itts)
-	if err != nil {
-		return err
-	}
+	logNewIndexTargets(its)
 
 	var er *dmodel.ExaminationResult
 	if mr.runsExamination {
@@ -95,25 +87,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) e
 	}
 
 	if outputPath != "" {
-		vits := lo.Map(its, func(it *dmodel.IndexTarget, _ int) *viewmodel.VmIndexTarget { return it.ToViewModel() })
-
-		var ver *viewmodel.VmExaminationResult
-		if er != nil {
-			ver = er.ToViewModel()
-		}
-
-		bo := html.NewSuggestMySQLDataBuildOption(
-			mr.query,
-			aTree.ToViewModel(),
-			vits,
-			[]*viewmodel.VmExaminationCommandOption{
-				viewmodel.CreateOutputExaminationOption(!mr.runsExamination, outputPath),
-				{IsShort: true, Name: "q", Value: mr.query},
-			},
-			ver,
-		)
-
-		err = html.CreateHtml(outputPath, bo)
+		err = mr.createHTML(outputPath, its, er, aTree)
 		if err != nil {
 			return err
 		}
@@ -121,17 +95,6 @@ func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) e
 		util.LogResultOutputPath(outputPath)
 	}
 	return nil
-}
-
-func (mr *mysqlRunner) removeExistingIndexTargets(db *mysql.DB, dbName string, itts []*dmodel.IndexTargetTable) ([]*dmodel.IndexTarget, error) {
-	idxGetter := mservice.NewIndexGetter(db)
-	its, err := dservice.NewExistingIndexRemover(idxGetter, dbName, itts).Remove()
-	if err != nil {
-		return nil, err
-	}
-
-	logNewIndexTargets(its)
-	return its, nil
 }
 
 func (mr *mysqlRunner) examine(db *mysql.DB, varTargets, possibleTargets []*dmodel.IndexTarget) (*dmodel.ExaminationResult, error) {
@@ -148,4 +111,30 @@ func (mr *mysqlRunner) examine(db *mysql.DB, varTargets, possibleTargets []*dmod
 	}
 
 	return er, nil
+}
+
+func (mr *mysqlRunner) createHTML(outputPath string, its []*dmodel.IndexTarget, er *dmodel.ExaminationResult, aTree *mmodel.ExplainAnalyzeTree) error {
+	vits := lo.Map(its, func(it *dmodel.IndexTarget, _ int) *viewmodel.VmIndexTarget { return it.ToViewModel() })
+
+	var ver *viewmodel.VmExaminationResult
+	if er != nil {
+		ver = er.ToViewModel()
+	}
+
+	bo := html.NewSuggestMySQLDataBuildOption(
+		mr.query,
+		aTree.ToViewModel(),
+		vits,
+		[]*viewmodel.VmExaminationCommandOption{
+			viewmodel.CreateOutputExaminationOption(!mr.runsExamination, outputPath),
+			{IsShort: true, Name: "q", Value: mr.query},
+		},
+		ver,
+	)
+
+	err := html.CreateHtml(outputPath, bo)
+	if err != nil {
+		return err
+	}
+	return nil
 }

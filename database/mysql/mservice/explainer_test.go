@@ -1,14 +1,17 @@
 package mservice_test
 
 import (
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/mrasu/GravityR/database/mysql/mmodel"
 	"github.com/mrasu/GravityR/database/mysql/mservice"
+	"github.com/mrasu/GravityR/infra/mysql"
+	"github.com/mrasu/GravityR/thelper"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v4"
 	"testing"
 )
 
-func TestCollectExplainAnalyzeTree(t *testing.T) {
+func TestExplainer_ExplainWithAnalyze(t *testing.T) {
 	tests := []struct {
 		name          string
 		explainResult string
@@ -227,10 +230,16 @@ func TestCollectExplainAnalyzeTree(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tree, err := mservice.CollectExplainAnalyzeTree(tt.explainResult)
-			assert.NoError(t, err)
-			assert.NotNil(t, tree)
-			assert.Equal(t, tt.expectedTree, tree)
+			thelper.MockMysqlDB(t, func(db *mysql.DB, mock sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"EXPLAIN"})
+				rows.AddRow(tt.explainResult)
+				mock.ExpectQuery("EXPLAIN ANALYZE FORMAT=TREE").WillReturnRows(rows)
+
+				tree, err := mservice.NewExplainer(db).ExplainWithAnalyze("SELECT ...")
+				assert.NoError(t, err)
+				assert.NotNil(t, tree)
+				assert.Equal(t, tt.expectedTree, tree)
+			})
 		})
 	}
 }
