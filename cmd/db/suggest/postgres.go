@@ -72,7 +72,7 @@ func (pr *postgresRunner) suggest(outputPath string, db *postgres.DB, schema str
 		return err
 	}
 
-	its, err := pservice.NewIndexSuggester(db, schema).Suggest(pr.query, aTree)
+	its, err := pservice.NewIndexSuggester(db, schema).Suggest(pr.query)
 	if err != nil {
 		return err
 	}

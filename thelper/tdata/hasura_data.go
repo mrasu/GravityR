@@ -1,11 +1,13 @@
 package tdata
 
-import "github.com/mrasu/GravityR/database/dmodel"
+import (
+	"github.com/mrasu/GravityR/database/dservice/dparser"
+)
 
 type hasuraData struct {
 	GQL    string
 	SQL    string
-	Scopes []*dmodel.StmtScope
+	Scopes []*dparser.StmtScope
 }
 
 var HasuraSubqueryWithWhereData = &hasuraData{
@@ -81,123 +83,123 @@ FROM
       ) AS "_root.ar.root.tasks" ON ('true')
   ) AS "_root"
 `,
-	Scopes: []*dmodel.StmtScope{
+	Scopes: []*dparser.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*dmodel.Field{
+			Fields: []*dparser.Field{
 				{
 					AsName:  "root",
-					Columns: []*dmodel.FieldColumn{{Name: "root", Type: dmodel.FieldReference}},
+					Columns: []*dparser.FieldColumn{{Name: "root", Type: dparser.FieldReference}},
 				},
 			},
-			Tables: []*dmodel.Table{
+			Tables: []*dparser.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			SubScopes: []*dmodel.StmtScope{
+			SubScopes: []*dparser.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*dmodel.Field{
+					Fields: []*dparser.Field{
 						{
 							AsName:  "root",
-							Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}},
+							Columns: []*dparser.FieldColumn{{ReferenceName: "<field0>", Type: dparser.FieldSubquery}},
 						},
 					},
-					FieldScopes: []*dmodel.StmtScope{
+					FieldScopes: []*dparser.StmtScope{
 						{
 							Name: "<field0>",
-							Fields: []*dmodel.Field{
-								{Columns: []*dmodel.FieldColumn{{Name: "_e", Type: dmodel.FieldReference}}},
+							Fields: []*dparser.Field{
+								{Columns: []*dparser.FieldColumn{{Name: "_e", Type: dparser.FieldReference}}},
 							},
-							Tables: []*dmodel.Table{{AsName: "_e", Name: "<select3>"}},
-							SubScopes: []*dmodel.StmtScope{
+							Tables: []*dparser.Table{{AsName: "_e", Name: "<select3>"}},
+							SubScopes: []*dparser.StmtScope{
 								{
 									Name: "<select3>",
-									Fields: []*dmodel.Field{
+									Fields: []*dparser.Field{
 										{
 											AsName:  "tasks",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.ar.root.tasks", Name: "tasks", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.ar.root.tasks", Name: "tasks", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "email",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.base", Name: "email", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.base", Name: "email", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "name",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.base", Name: "name", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.base", Name: "name", Type: dparser.FieldReference}},
 										},
 									},
 								},
 							},
 						},
 					},
-					Tables: []*dmodel.Table{
+					Tables: []*dparser.Table{
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.ar.root.tasks", Name: "<select2>", IsLateral: true},
 					},
-					SubScopes: []*dmodel.StmtScope{
+					SubScopes: []*dparser.StmtScope{
 						{
 							Name: "<select1>",
-							Fields: []*dmodel.Field{
-								{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
-								{Columns: []*dmodel.FieldColumn{{Table: "users", Name: "email", Type: dmodel.FieldCondition}}},
+							Fields: []*dparser.Field{
+								{Columns: []*dparser.FieldColumn{{Type: dparser.FieldStar}}},
+								{Columns: []*dparser.FieldColumn{{Table: "users", Name: "email", Type: dparser.FieldCondition}}},
 							},
-							Tables: []*dmodel.Table{{Name: "users"}},
+							Tables: []*dparser.Table{{Name: "users"}},
 						},
 						{
 							Name: "<select2>",
-							Fields: []*dmodel.Field{
+							Fields: []*dparser.Field{
 								{
 									AsName:  "tasks",
-									Columns: []*dmodel.FieldColumn{{Name: "tasks", Type: dmodel.FieldReference}},
+									Columns: []*dparser.FieldColumn{{Name: "tasks", Type: dparser.FieldReference}},
 								},
 							},
-							Tables: []*dmodel.Table{{AsName: "_root.ar.root.tasks", Name: "<select4>"}},
-							SubScopes: []*dmodel.StmtScope{
+							Tables: []*dparser.Table{{AsName: "_root.ar.root.tasks", Name: "<select4>"}},
+							SubScopes: []*dparser.StmtScope{
 								{
 									Name: "<select4>",
-									Fields: []*dmodel.Field{
-										{AsName: "tasks", Columns: []*dmodel.FieldColumn{{ReferenceName: "<field1>", Type: dmodel.FieldSubquery}}},
+									Fields: []*dparser.Field{
+										{AsName: "tasks", Columns: []*dparser.FieldColumn{{ReferenceName: "<field1>", Type: dparser.FieldSubquery}}},
 									},
-									FieldScopes: []*dmodel.StmtScope{
+									FieldScopes: []*dparser.StmtScope{
 										{
 											Name: "<field1>",
-											Fields: []*dmodel.Field{
-												{Columns: []*dmodel.FieldColumn{{Name: "_e", Type: dmodel.FieldReference}}},
+											Fields: []*dparser.Field{
+												{Columns: []*dparser.FieldColumn{{Name: "_e", Type: dparser.FieldReference}}},
 											},
-											Tables: []*dmodel.Table{{AsName: "_e", Name: "<select6>"}},
-											SubScopes: []*dmodel.StmtScope{
+											Tables: []*dparser.Table{{AsName: "_e", Name: "<select6>"}},
+											SubScopes: []*dparser.StmtScope{
 												{
 													Name: "<select6>",
-													Fields: []*dmodel.Field{
+													Fields: []*dparser.Field{
 														{
 															AsName:  "title",
-															Columns: []*dmodel.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "title", Type: dmodel.FieldReference}},
+															Columns: []*dparser.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "title", Type: dparser.FieldReference}},
 														},
 														{
 															AsName:  "status",
-															Columns: []*dmodel.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "status", Type: dmodel.FieldReference}},
+															Columns: []*dparser.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "status", Type: dparser.FieldReference}},
 														},
 													},
 												},
 											},
 										},
 									},
-									Tables: []*dmodel.Table{{AsName: "_root.ar.root.tasks.base", Name: "<select5>"}},
-									SubScopes: []*dmodel.StmtScope{
+									Tables: []*dparser.Table{{AsName: "_root.ar.root.tasks.base", Name: "<select5>"}},
+									SubScopes: []*dparser.StmtScope{
 										{
 											Name: "<select5>",
-											Fields: []*dmodel.Field{
+											Fields: []*dparser.Field{
 												{
-													Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}},
+													Columns: []*dparser.FieldColumn{{Type: dparser.FieldStar}},
 												},
 												{
-													Columns: []*dmodel.FieldColumn{
-														{Table: "_root.base", Name: "id", Type: dmodel.FieldCondition},
-														{Name: "user_id", Type: dmodel.FieldCondition},
+													Columns: []*dparser.FieldColumn{
+														{Table: "_root.base", Name: "id", Type: dparser.FieldCondition},
+														{Name: "user_id", Type: dparser.FieldCondition},
 													},
 												},
 											},
-											Tables: []*dmodel.Table{{Name: "tasks"}},
+											Tables: []*dparser.Table{{Name: "tasks"}},
 										},
 									},
 								},
@@ -312,133 +314,133 @@ FROM
       ) AS "_root.or.user" ON ('true')
   ) AS "_root"
 `,
-	Scopes: []*dmodel.StmtScope{
+	Scopes: []*dparser.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*dmodel.Field{
+			Fields: []*dparser.Field{
 				{
 					AsName:  "root",
-					Columns: []*dmodel.FieldColumn{{Name: "root", Type: dmodel.FieldReference}},
+					Columns: []*dparser.FieldColumn{{Name: "root", Type: dparser.FieldReference}},
 				},
 			},
-			Tables: []*dmodel.Table{
+			Tables: []*dparser.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			SubScopes: []*dmodel.StmtScope{
+			SubScopes: []*dparser.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*dmodel.Field{
+					Fields: []*dparser.Field{
 						{
 							AsName:  "root",
-							Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}},
+							Columns: []*dparser.FieldColumn{{ReferenceName: "<field0>", Type: dparser.FieldSubquery}},
 						},
 					},
-					FieldScopes: []*dmodel.StmtScope{
+					FieldScopes: []*dparser.StmtScope{
 						{
 							Name: "<field0>",
-							Fields: []*dmodel.Field{
-								{Columns: []*dmodel.FieldColumn{{Name: "_e", Type: dmodel.FieldReference}}},
+							Fields: []*dparser.Field{
+								{Columns: []*dparser.FieldColumn{{Name: "_e", Type: dparser.FieldReference}}},
 							},
-							Tables: []*dmodel.Table{{AsName: "_e", Name: "<select3>"}},
-							SubScopes: []*dmodel.StmtScope{
+							Tables: []*dparser.Table{{AsName: "_e", Name: "<select3>"}},
+							SubScopes: []*dparser.StmtScope{
 								{
 									Name: "<select3>",
-									Fields: []*dmodel.Field{
+									Fields: []*dparser.Field{
 										{
 											AsName:  "user",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.or.user", Name: "user", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.or.user", Name: "user", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "description",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.base", Name: "description", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.base", Name: "description", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "id",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.base", Name: "id", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.base", Name: "id", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "status",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.base", Name: "status", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.base", Name: "status", Type: dparser.FieldReference}},
 										},
 									},
 								},
 							},
 						},
 					},
-					Tables: []*dmodel.Table{
+					Tables: []*dparser.Table{
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.or.user", Name: "<select2>", IsLateral: true},
 					},
-					SubScopes: []*dmodel.StmtScope{
+					SubScopes: []*dparser.StmtScope{
 						{
 							Name: "<select1>",
-							Fields: []*dmodel.Field{
-								{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
-								{Columns: []*dmodel.FieldColumn{{ReferenceName: "<field1>", Type: dmodel.FieldSubquery}}},
+							Fields: []*dparser.Field{
+								{Columns: []*dparser.FieldColumn{{Type: dparser.FieldStar}}},
+								{Columns: []*dparser.FieldColumn{{ReferenceName: "<field1>", Type: dparser.FieldSubquery}}},
 							},
-							FieldScopes: []*dmodel.StmtScope{
+							FieldScopes: []*dparser.StmtScope{
 								{
 									Name: "<field1>",
-									Fields: []*dmodel.Field{
-										{Columns: []*dmodel.FieldColumn{
-											{Table: "__be_0_users", Name: "id", Type: dmodel.FieldCondition},
-											{Table: "tasks", Name: "user_id", Type: dmodel.FieldCondition},
-											{Table: "__be_0_users", Name: "email", Type: dmodel.FieldCondition},
+									Fields: []*dparser.Field{
+										{Columns: []*dparser.FieldColumn{
+											{Table: "__be_0_users", Name: "id", Type: dparser.FieldCondition},
+											{Table: "tasks", Name: "user_id", Type: dparser.FieldCondition},
+											{Table: "__be_0_users", Name: "email", Type: dparser.FieldCondition},
 										}},
 									},
-									Tables: []*dmodel.Table{{AsName: "__be_0_users", Name: "users"}},
+									Tables: []*dparser.Table{{AsName: "__be_0_users", Name: "users"}},
 								},
 							},
-							Tables: []*dmodel.Table{{Name: "tasks"}},
+							Tables: []*dparser.Table{{Name: "tasks"}},
 						},
 						{
 							Name: "<select2>",
-							Fields: []*dmodel.Field{
+							Fields: []*dparser.Field{
 								{
 									AsName:  "user",
-									Columns: []*dmodel.FieldColumn{{ReferenceName: "<field2>", Type: dmodel.FieldSubquery}},
+									Columns: []*dparser.FieldColumn{{ReferenceName: "<field2>", Type: dparser.FieldSubquery}},
 								},
 							},
-							FieldScopes: []*dmodel.StmtScope{
+							FieldScopes: []*dparser.StmtScope{
 								{
 									Name: "<field2>",
-									Fields: []*dmodel.Field{
-										{Columns: []*dmodel.FieldColumn{{Name: "_e", Type: dmodel.FieldReference}}},
+									Fields: []*dparser.Field{
+										{Columns: []*dparser.FieldColumn{{Name: "_e", Type: dparser.FieldReference}}},
 									},
-									Tables: []*dmodel.Table{{AsName: "_e", Name: "<select5>"}},
-									SubScopes: []*dmodel.StmtScope{
+									Tables: []*dparser.Table{{AsName: "_e", Name: "<select5>"}},
+									SubScopes: []*dparser.StmtScope{
 										{
 											Name: "<select5>",
-											Fields: []*dmodel.Field{
+											Fields: []*dparser.Field{
 												{
 													AsName:  "email",
-													Columns: []*dmodel.FieldColumn{{Table: "_root.or.user.base", Name: "email", Type: dmodel.FieldReference}},
+													Columns: []*dparser.FieldColumn{{Table: "_root.or.user.base", Name: "email", Type: dparser.FieldReference}},
 												},
 												{
 													AsName:  "id",
-													Columns: []*dmodel.FieldColumn{{Table: "_root.or.user.base", Name: "id", Type: dmodel.FieldReference}},
+													Columns: []*dparser.FieldColumn{{Table: "_root.or.user.base", Name: "id", Type: dparser.FieldReference}},
 												},
 												{
 													AsName:  "name",
-													Columns: []*dmodel.FieldColumn{{Table: "_root.or.user.base", Name: "name", Type: dmodel.FieldReference}},
+													Columns: []*dparser.FieldColumn{{Table: "_root.or.user.base", Name: "name", Type: dparser.FieldReference}},
 												},
 											},
 										},
 									},
 								},
 							},
-							Tables: []*dmodel.Table{{AsName: "_root.or.user.base", Name: "<select4>"}},
-							SubScopes: []*dmodel.StmtScope{
+							Tables: []*dparser.Table{{AsName: "_root.or.user.base", Name: "<select4>"}},
+							SubScopes: []*dparser.StmtScope{
 								{
 									Name: "<select4>",
-									Fields: []*dmodel.Field{
-										{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
-										{Columns: []*dmodel.FieldColumn{
-											{Table: "_root.base", Name: "user_id", Type: dmodel.FieldCondition},
-											{Name: "id", Type: dmodel.FieldCondition},
+									Fields: []*dparser.Field{
+										{Columns: []*dparser.FieldColumn{{Type: dparser.FieldStar}}},
+										{Columns: []*dparser.FieldColumn{
+											{Table: "_root.base", Name: "user_id", Type: dparser.FieldCondition},
+											{Name: "id", Type: dparser.FieldCondition},
 										}},
 									},
-									Tables: []*dmodel.Table{{Name: "users"}},
+									Tables: []*dparser.Table{{Name: "users"}},
 								},
 							},
 						},
@@ -551,99 +553,99 @@ FROM
           ) AS "_root.ar.root.tasks"
       ) AS "_root.ar.root.tasks" ON ('true')
   ) AS "_root"`,
-	Scopes: []*dmodel.StmtScope{
+	Scopes: []*dparser.StmtScope{
 		{
 			Name: "<root>",
-			Fields: []*dmodel.Field{
+			Fields: []*dparser.Field{
 				{
 					AsName:  "root",
-					Columns: []*dmodel.FieldColumn{{Name: "root", Type: dmodel.FieldReference}},
+					Columns: []*dparser.FieldColumn{{Name: "root", Type: dparser.FieldReference}},
 				},
 			},
-			Tables: []*dmodel.Table{
+			Tables: []*dparser.Table{
 				{AsName: "_root", Name: "<select0>"},
 			},
-			SubScopes: []*dmodel.StmtScope{
+			SubScopes: []*dparser.StmtScope{
 				{
 					Name: "<select0>",
-					Fields: []*dmodel.Field{
+					Fields: []*dparser.Field{
 						{
 							AsName:  "root",
-							Columns: []*dmodel.FieldColumn{{ReferenceName: "<field0>", Type: dmodel.FieldSubquery}},
+							Columns: []*dparser.FieldColumn{{ReferenceName: "<field0>", Type: dparser.FieldSubquery}},
 						},
 					},
-					FieldScopes: []*dmodel.StmtScope{
+					FieldScopes: []*dparser.StmtScope{
 						{
 							Name: "<field0>",
-							Fields: []*dmodel.Field{
-								{Columns: []*dmodel.FieldColumn{{Name: "_e", Type: dmodel.FieldReference}}},
+							Fields: []*dparser.Field{
+								{Columns: []*dparser.FieldColumn{{Name: "_e", Type: dparser.FieldReference}}},
 							},
-							Tables: []*dmodel.Table{{AsName: "_e", Name: "<select4>"}},
-							SubScopes: []*dmodel.StmtScope{
+							Tables: []*dparser.Table{{AsName: "_e", Name: "<select4>"}},
+							SubScopes: []*dparser.StmtScope{
 								{
 									Name: "<select4>",
-									Fields: []*dmodel.Field{
+									Fields: []*dparser.Field{
 										{
 											AsName:  "email",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.base", Name: "email", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.base", Name: "email", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "name",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.base", Name: "name", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.base", Name: "name", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "tasks_aggregate",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.ar.root.tasks_aggregate", Name: "tasks_aggregate", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.ar.root.tasks_aggregate", Name: "tasks_aggregate", Type: dparser.FieldReference}},
 										},
 										{
 											AsName:  "tasks",
-											Columns: []*dmodel.FieldColumn{{Table: "_root.ar.root.tasks", Name: "tasks", Type: dmodel.FieldReference}},
+											Columns: []*dparser.FieldColumn{{Table: "_root.ar.root.tasks", Name: "tasks", Type: dparser.FieldReference}},
 										},
 									},
 								},
 							},
 						},
 					},
-					Tables: []*dmodel.Table{
+					Tables: []*dparser.Table{
 						{AsName: "_root.base", Name: "<select1>"},
 						{AsName: "_root.ar.root.tasks_aggregate", Name: "<select2>", IsLateral: true},
 						{AsName: "_root.ar.root.tasks", Name: "<select3>", IsLateral: true},
 					},
-					SubScopes: []*dmodel.StmtScope{
+					SubScopes: []*dparser.StmtScope{
 						{
 							Name: "<select1>",
-							Fields: []*dmodel.Field{
-								{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
-								{Columns: []*dmodel.FieldColumn{{Table: "users", Name: "email", Type: dmodel.FieldCondition}}},
+							Fields: []*dparser.Field{
+								{Columns: []*dparser.FieldColumn{{Type: dparser.FieldStar}}},
+								{Columns: []*dparser.FieldColumn{{Table: "users", Name: "email", Type: dparser.FieldCondition}}},
 							},
-							Tables: []*dmodel.Table{{Name: "users"}},
+							Tables: []*dparser.Table{{Name: "users"}},
 						},
 						{
 							Name: "<select2>",
-							Fields: []*dmodel.Field{
-								{AsName: "tasks_aggregate", Columns: []*dmodel.FieldColumn{{Name: "status", Type: dmodel.FieldReference}}},
+							Fields: []*dparser.Field{
+								{AsName: "tasks_aggregate", Columns: []*dparser.FieldColumn{{Name: "status", Type: dparser.FieldReference}}},
 							},
-							Tables: []*dmodel.Table{{AsName: "_root.ar.root.tasks_aggregate", Name: "<select5>"}},
-							SubScopes: []*dmodel.StmtScope{
+							Tables: []*dparser.Table{{AsName: "_root.ar.root.tasks_aggregate", Name: "<select5>"}},
+							SubScopes: []*dparser.StmtScope{
 								{
 									Name: "<select5>",
-									Fields: []*dmodel.Field{
-										{AsName: "status", Columns: []*dmodel.FieldColumn{
-											{Table: "_root.ar.root.tasks_aggregate.base", Name: "status", Type: dmodel.FieldReference},
+									Fields: []*dparser.Field{
+										{AsName: "status", Columns: []*dparser.FieldColumn{
+											{Table: "_root.ar.root.tasks_aggregate.base", Name: "status", Type: dparser.FieldReference},
 										}},
 									},
-									Tables: []*dmodel.Table{{AsName: "_root.ar.root.tasks_aggregate.base", Name: "<select6>"}},
-									SubScopes: []*dmodel.StmtScope{
+									Tables: []*dparser.Table{{AsName: "_root.ar.root.tasks_aggregate.base", Name: "<select6>"}},
+									SubScopes: []*dparser.StmtScope{
 										{
 											Name: "<select6>",
-											Fields: []*dmodel.Field{
-												{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
-												{Columns: []*dmodel.FieldColumn{
-													{Table: "_root.base", Name: "id", Type: dmodel.FieldCondition},
-													{Name: "user_id", Type: dmodel.FieldCondition},
+											Fields: []*dparser.Field{
+												{Columns: []*dparser.FieldColumn{{Type: dparser.FieldStar}}},
+												{Columns: []*dparser.FieldColumn{
+													{Table: "_root.base", Name: "id", Type: dparser.FieldCondition},
+													{Name: "user_id", Type: dparser.FieldCondition},
 												}},
 											},
-											Tables: []*dmodel.Table{{Name: "tasks"}},
+											Tables: []*dparser.Table{{Name: "tasks"}},
 										},
 									},
 								},
@@ -651,55 +653,55 @@ FROM
 						},
 						{
 							Name: "<select3>",
-							Fields: []*dmodel.Field{
+							Fields: []*dparser.Field{
 								{
 									AsName:  "tasks",
-									Columns: []*dmodel.FieldColumn{{Name: "tasks", Type: dmodel.FieldReference}},
+									Columns: []*dparser.FieldColumn{{Name: "tasks", Type: dparser.FieldReference}},
 								},
 							},
-							Tables: []*dmodel.Table{{AsName: "_root.ar.root.tasks", Name: "<select7>"}},
-							SubScopes: []*dmodel.StmtScope{
+							Tables: []*dparser.Table{{AsName: "_root.ar.root.tasks", Name: "<select7>"}},
+							SubScopes: []*dparser.StmtScope{
 								{
 									Name: "<select7>",
-									Fields: []*dmodel.Field{
-										{AsName: "tasks", Columns: []*dmodel.FieldColumn{{ReferenceName: "<field1>", Type: dmodel.FieldSubquery}}},
+									Fields: []*dparser.Field{
+										{AsName: "tasks", Columns: []*dparser.FieldColumn{{ReferenceName: "<field1>", Type: dparser.FieldSubquery}}},
 									},
-									FieldScopes: []*dmodel.StmtScope{
+									FieldScopes: []*dparser.StmtScope{
 										{
 											Name: "<field1>",
-											Fields: []*dmodel.Field{
-												{Columns: []*dmodel.FieldColumn{{Name: "_e", Type: dmodel.FieldReference}}},
+											Fields: []*dparser.Field{
+												{Columns: []*dparser.FieldColumn{{Name: "_e", Type: dparser.FieldReference}}},
 											},
-											Tables: []*dmodel.Table{{AsName: "_e", Name: "<select9>"}},
-											SubScopes: []*dmodel.StmtScope{
+											Tables: []*dparser.Table{{AsName: "_e", Name: "<select9>"}},
+											SubScopes: []*dparser.StmtScope{
 												{
 													Name: "<select9>",
-													Fields: []*dmodel.Field{
+													Fields: []*dparser.Field{
 														{
 															AsName:  "title",
-															Columns: []*dmodel.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "title", Type: dmodel.FieldReference}},
+															Columns: []*dparser.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "title", Type: dparser.FieldReference}},
 														},
 														{
 															AsName:  "description",
-															Columns: []*dmodel.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "description", Type: dmodel.FieldReference}},
+															Columns: []*dparser.FieldColumn{{Table: "_root.ar.root.tasks.base", Name: "description", Type: dparser.FieldReference}},
 														},
 													},
 												},
 											},
 										},
 									},
-									Tables: []*dmodel.Table{{AsName: "_root.ar.root.tasks.base", Name: "<select8>"}},
-									SubScopes: []*dmodel.StmtScope{
+									Tables: []*dparser.Table{{AsName: "_root.ar.root.tasks.base", Name: "<select8>"}},
+									SubScopes: []*dparser.StmtScope{
 										{
 											Name: "<select8>",
-											Fields: []*dmodel.Field{
-												{Columns: []*dmodel.FieldColumn{{Type: dmodel.FieldStar}}},
-												{Columns: []*dmodel.FieldColumn{
-													{Table: "_root.base", Name: "id", Type: dmodel.FieldCondition},
-													{Name: "user_id", Type: dmodel.FieldCondition},
+											Fields: []*dparser.Field{
+												{Columns: []*dparser.FieldColumn{{Type: dparser.FieldStar}}},
+												{Columns: []*dparser.FieldColumn{
+													{Table: "_root.base", Name: "id", Type: dparser.FieldCondition},
+													{Name: "user_id", Type: dparser.FieldCondition},
 												}},
 											},
-											Tables: []*dmodel.Table{{Name: "tasks"}},
+											Tables: []*dparser.Table{{Name: "tasks"}},
 										},
 									},
 								},

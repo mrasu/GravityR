@@ -23,7 +23,7 @@ const indexTargetColumnSeparator = "+"
 func NewIndexTarget(tableName string, columns []string) *IndexTarget {
 	return &IndexTarget{
 		TableName: tableName,
-		Columns:   lo.Map(columns, func(col string, _ int) *IndexColumn { return &IndexColumn{name: col} }),
+		Columns:   lo.Map(columns, func(col string, _ int) *IndexColumn { return &IndexColumn{Name: col} }),
 	}
 }
 
@@ -66,7 +66,7 @@ func (it *IndexTarget) CombinationString() string {
 	txt := fmt.Sprintf(
 		"table: %s, columns: [%s])",
 		it.TableName,
-		lib.Join(it.Columns, ", ", func(f *IndexColumn) string { return f.name }),
+		lib.Join(it.Columns, ", ", func(f *IndexColumn) string { return f.Name }),
 	)
 	return txt
 }
@@ -94,7 +94,7 @@ func (it *IndexTarget) IsSafe() bool {
 	}
 
 	for _, c := range it.Columns {
-		if c.name != c.SafeName() {
+		if c.Name != c.SafeName() {
 			return false
 		}
 	}
@@ -108,7 +108,7 @@ func (it *IndexTarget) HasSameIdxColumns(info *IndexTarget) bool {
 	}
 
 	for i, col := range info.Columns {
-		if !strings.EqualFold(it.Columns[i].name, col.name) {
+		if !strings.EqualFold(it.Columns[i].Name, col.Name) {
 			return false
 		}
 	}

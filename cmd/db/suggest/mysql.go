@@ -72,7 +72,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) e
 		return err
 	}
 
-	its, err := mservice.NewIndexSuggester(db, dbName).Suggest(mr.query, aTree)
+	its, err := mservice.NewIndexSuggester(db, dbName).Suggest(mr.query)
 	if err != nil {
 		return err
 	}

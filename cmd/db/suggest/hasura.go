@@ -100,7 +100,7 @@ func (hr *hasuraRunner) suggest(outputPath string, cli *hasura.Client) error {
 		return err
 	}
 
-	its, err := hservice.NewIndexSuggester(cli).Suggest(r.SQL, aTree)
+	its, err := hservice.NewIndexSuggester(cli).Suggest(r.SQL)
 	if err != nil {
 		return err
 	}

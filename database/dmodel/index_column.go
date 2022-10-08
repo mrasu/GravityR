@@ -7,7 +7,7 @@ import (
 )
 
 type IndexColumn struct {
-	name string
+	Name string
 }
 
 func NewIndexColumn(name string) (*IndexColumn, error) {
@@ -15,19 +15,19 @@ func NewIndexColumn(name string) (*IndexColumn, error) {
 		return nil, errors.Errorf("Including non word character. %s", name)
 	}
 
-	return &IndexColumn{name: name}, nil
+	return &IndexColumn{Name: name}, nil
 }
 
 func (ic *IndexColumn) ToViewModel() *viewmodel.VmIndexColumn {
-	return &viewmodel.VmIndexColumn{Name: ic.name}
+	return &viewmodel.VmIndexColumn{Name: ic.Name}
 }
 
 var nonAsciiReg = regexp.MustCompile(`\W`)
 
 func (ic *IndexColumn) SafeName() string {
-	return nonAsciiReg.ReplaceAllString(ic.name, "_")
+	return nonAsciiReg.ReplaceAllString(ic.Name, "_")
 }
 
 func (ic *IndexColumn) Equals(other *IndexColumn) bool {
-	return ic.name == other.name
+	return ic.Name == other.Name
 }
