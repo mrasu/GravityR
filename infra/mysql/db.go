@@ -45,26 +45,17 @@ func (db *DB) Exec(query string) (sql.Result, error) {
 }
 
 func (db *DB) ExplainWithAnalyze(query string) (string, error) {
-	rows, err := db.db.Query("EXPLAIN ANALYZE FORMAT=TREE " + query)
+	var res []string
+	err := db.db.Select(&res, "EXPLAIN ANALYZE FORMAT=TREE "+query)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to select")
 	}
-	defer rows.Close()
 
-	var res string
-	if !rows.Next() {
-		if err := rows.Err(); err != nil {
-			return "", errors.Wrap(err, "failed to execute EXPLAIN ANALYZE")
-		} else {
-			return "", errors.New("no result for EXPLAIN ANALYZE")
-		}
+	if len(res) == 0 {
+		return "", errors.New("no result for EXPLAIN ANALYZE")
 	}
 
-	if err := rows.Scan(&res); err != nil {
-		return "", errors.Wrap(err, "failed to Scan")
-	}
-
-	return res, nil
+	return res[0], nil
 }
 
 func (db *DB) GetTableColumns(dbName string, tables []string) ([]*ColumnInfo, error) {

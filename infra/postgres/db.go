@@ -39,23 +39,10 @@ func (db *DB) Exec(query string) (sql.Result, error) {
 }
 
 func (db *DB) ExplainWithAnalyze(query string) ([]string, error) {
-	rows, err := db.db.Query("EXPLAIN (ANALYZE, BUFFERS) " + query)
+	var res []string
+	err := db.db.Select(&res, "EXPLAIN (ANALYZE, BUFFERS) "+query)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select")
-	}
-	defer rows.Close()
-
-	var res []string
-	for rows.Next() {
-		var txt string
-		if err := rows.Scan(&txt); err != nil {
-			return nil, errors.Wrap(err, "failed to Scan")
-		}
-		res = append(res, txt)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, errors.Wrap(err, "failed to execute EXPLAIN ANALYZE")
 	}
 
 	return res, nil
