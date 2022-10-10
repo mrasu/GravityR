@@ -6,10 +6,10 @@ import type {
 import { BaseSuggestData } from "./BaseSuggestData";
 import { plainToInstance } from "class-transformer";
 import type { IndexTarget } from "@/models/IndexTarget";
-import { PostgresIndexTarget } from "@/models/PostgresIndexTarget";
 import { ExaminationResult } from "@/models/ExaminationResult";
 import { format } from "sql-formatter";
 import { PostgresExplainData } from "@/models/explain_data/PostgresExplainData";
+import { HasuraIndexTarget } from "@/models/HasuraIndexTarget";
 
 export class HasuraSuggestData extends BaseSuggestData {
   gql: string;
@@ -37,7 +37,7 @@ export class HasuraSuggestData extends BaseSuggestData {
   }
 
   protected createIndexTargets(targets?: IIndexTarget[] | null): IndexTarget[] {
-    return targets?.map((v) => plainToInstance(PostgresIndexTarget, v));
+    return targets?.map((v) => plainToInstance(HasuraIndexTarget, v));
   }
 
   protected createExaminationResult(
@@ -48,7 +48,7 @@ export class HasuraSuggestData extends BaseSuggestData {
 
     for (const result of res.indexResults) {
       result.indexTarget = plainToInstance(
-        PostgresIndexTarget,
+        HasuraIndexTarget,
         result.indexTarget
       );
     }

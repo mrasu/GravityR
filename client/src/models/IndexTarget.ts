@@ -21,6 +21,10 @@ export class IndexTarget {
     return `ALTER TABLE ${this.tableName} ADD INDEX (${columns});`;
   }
 
+  toExecutableText(): string {
+    return this.toAlterAddSQL();
+  }
+
   private toGrColumnOption(): string {
     return this.columns.map((v) => v.name).join("+");
   }

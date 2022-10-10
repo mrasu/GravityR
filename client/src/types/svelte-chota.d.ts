@@ -7,4 +7,5 @@ declare module "svelte-chota" {
   export class Checkbox extends SvelteComponentTyped {}
   export class Nav extends SvelteComponentTyped {}
   export class Card extends SvelteComponentTyped {}
+  export class Button extends SvelteComponentTyped {}
 }

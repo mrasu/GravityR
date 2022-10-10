@@ -7,6 +7,7 @@
   import DetailsCard from "@/components/DetailsCard.svelte";
   import type { HasuraSuggestData } from "@/models/HasuraSuggestData";
   import PlainText from "@/components/PlainText.svelte";
+  import ExaminationLineMenu from "@/pages/suggest/hasura/ExaminationLineMenu.svelte";
 
   export let suggestData: HasuraSuggestData;
   const highlightIndexKey = createHighlightIndexContext();
@@ -65,7 +66,12 @@ ${JSON.stringify(suggestData.gqlVariables)}`;
 
   {#if suggestData.examinationResult}
     <DetailsCard title="Examination Result" open testId="examination">
-      <ExaminationResultTable result={suggestData.examinationResult} />
+      <ExaminationResultTable
+        result={suggestData.examinationResult}
+        let:indexResult
+      >
+        <ExaminationLineMenu {indexResult} slot="alter-add-sql" />
+      </ExaminationResultTable>
     </DetailsCard>
   {/if}
 </main>

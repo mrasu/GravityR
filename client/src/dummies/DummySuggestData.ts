@@ -131,7 +131,7 @@ export const dummySuggestData = {
       analyzeNodes: analyzeHasuraPostgresNodes,
       summaryText: hasuraPostgresSummaryText,
       indexTargets: hasuraIndexTargets,
-      examinationResult: null,
+      examinationResult: examinationResult,
       examinationCommandOptions: [
         { isShort: true, name: "o", value: "output_examine.html" },
         { isShort: true, name: "q", value: gql },

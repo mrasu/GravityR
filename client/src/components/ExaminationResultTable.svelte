@@ -38,7 +38,10 @@
         >
         <td class="reduction"><div>{reducedPercent}%</div></td>
         <td class="index">{indexResult.toIndex()}</td>
-        <td class="index">{indexResult.indexTarget.toAlterAddSQL()}</td>
+        <td class="index">
+          {indexResult.indexTarget.toAlterAddSQL()}
+          <slot {indexResult} name="alter-add-sql" />
+        </td>
       </tr>
     {/each}
   </thead>
