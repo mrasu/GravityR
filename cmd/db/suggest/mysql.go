@@ -62,7 +62,7 @@ func (mr *mysqlRunner) run() error {
 }
 
 func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) error {
-	examinationIdxTargets, err := parseIndexTargets(mr.indexTargets)
+	examinationIdxTargets, err := dmodel.NewIndexTargetsFromTexts(mr.indexTargets)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (mr *mysqlRunner) suggest(outputPath string, db *mysql.DB, dbName string) e
 	if err != nil {
 		return err
 	}
-	logNewIndexTargets(its)
+	util.LogNewIndexTargets(its)
 
 	var er *dmodel.ExaminationResult
 	if mr.runsExamination {

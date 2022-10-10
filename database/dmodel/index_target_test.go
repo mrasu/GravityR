@@ -7,6 +7,31 @@ import (
 	"testing"
 )
 
+func TestNewIndexTargetsFromTexts(t *testing.T) {
+	tests := []struct {
+		name     string
+		texts    []string
+		expected []*dmodel.IndexTarget
+	}{
+		{
+			name:  "single column",
+			texts: []string{"users:status", "users:status+name"},
+			expected: []*dmodel.IndexTarget{
+				buildIndexTarget(t, "users", []string{"status"}),
+				buildIndexTarget(t, "users", []string{"status", "name"}),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			it, err := dmodel.NewIndexTargetsFromTexts(tt.texts)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.expected, it)
+		})
+	}
+}
+
 func TestNewIndexTargetFromText(t *testing.T) {
 	tests := []struct {
 		name     string

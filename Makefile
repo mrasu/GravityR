@@ -56,8 +56,8 @@ export example_gql_variables
 
 example:
 	mkdir -p example
-	./dist/gr db suggest hasura -o "example/hasura.html" -q "$${example_gql}" --json-variables "$${example_gql_variables}"
-	./dist/gr db suggest hasura --with-examine -o "example/hasura_examine.html" -q "$${example_gql}" --json-variables "$${example_gql_variables}"
+	./dist/gr db suggest hasura postgres -o "example/hasura_postgres.html" -q "$${example_gql}" --json-variables "$${example_gql_variables}"
+	./dist/gr db suggest hasura postgres --with-examine -o "example/hasura_postgres_examine.html" -q "$${example_gql}" --json-variables "$${example_gql_variables}"
 	./dist/gr db suggest mysql -o "example/mysql.html" -q "$${example_query}"
 	./dist/gr db suggest mysql --with-examine -o "example/mysql_examine.html" -q "$${example_query}"
 	./dist/gr db suggest postgres -o "example/postgres.html" -q "$${example_query}"

@@ -56,7 +56,7 @@ ${JSON.stringify(suggestData.gqlVariables)}`;
       testId="suggest"
     >
       <IndexSuggestion
-        subCommand="hasura"
+        subCommandKey="hasuraPostgres"
         examinationCommandOptions={suggestData.examinationCommandOptions}
         indexTargets={suggestData.indexTargets}
       />

@@ -62,7 +62,7 @@ func (pr *postgresRunner) run() error {
 }
 
 func (pr *postgresRunner) suggest(outputPath string, db *postgres.DB, schema string) error {
-	examinationIdxTargets, err := parseIndexTargets(pr.indexTargets)
+	examinationIdxTargets, err := dmodel.NewIndexTargetsFromTexts(pr.indexTargets)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (pr *postgresRunner) suggest(outputPath string, db *postgres.DB, schema str
 	if err != nil {
 		return err
 	}
-	logNewIndexTargets(its)
+	util.LogNewIndexTargets(its)
 
 	var er *dmodel.ExaminationResult
 	if pr.runsExamination {

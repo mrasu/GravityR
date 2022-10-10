@@ -6,18 +6,18 @@
   const subCommands = {
     mysql: "mysql",
     postgres: "postgres",
-    hasura: "hasura",
+    hasuraPostgres: "hasura postgres",
   } as const;
-  type Subcommand = typeof subCommands[keyof typeof subCommands];
+  type SubCommandKey = keyof typeof subCommands;
 
-  export let subCommand: Subcommand;
+  export let subCommandKey: SubCommandKey;
   export let examinationCommandOptions: ExaminationCommandOption[];
   export let indexTargets: IndexTarget[];
   let checked = indexTargets.map(() => true);
 
   // Use function index of svelte because <code> needs to remove leading space but its formatter adds spaces to align lines.
   const buildCommandText = (targets: IndexTarget[]): string => {
-    let command = `gr db suggest ${subCommand} --with-examine \\\n`;
+    let command = `gr db suggest ${subCommands[subCommandKey]} --with-examine \\\n`;
     let iOption: string;
 
     if (targets.length === 0) {

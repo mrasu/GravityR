@@ -45,7 +45,7 @@
       testId="suggest"
     >
       <IndexSuggestion
-        subCommand="mysql"
+        subCommandKey="mysql"
         examinationCommandOptions={suggestData.examinationCommandOptions}
         indexTargets={suggestData.indexTargets}
       />

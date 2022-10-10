@@ -46,7 +46,7 @@
       testId="suggest"
     >
       <IndexSuggestion
-        subCommand="postgres"
+        subCommandKey="postgres"
         examinationCommandOptions={suggestData.examinationCommandOptions}
         indexTargets={suggestData.indexTargets}
       />

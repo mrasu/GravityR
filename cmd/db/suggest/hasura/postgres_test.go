@@ -1,4 +1,4 @@
-package suggest
+package hasura
 
 import (
 	"github.com/jarcoal/httpmock"
@@ -15,7 +15,7 @@ import (
 )
 
 func Test_runHasuraSuggest(t *testing.T) {
-	hr := hasuraRunner{
+	pr := postgresRunner{
 		query: `
 query MyQuery($$email: String) {
   users(where: {email: {_eq: $$email}}) {
@@ -39,7 +39,7 @@ query MyQuery($$email: String) {
 	m := hasuraMock{}
 	m.mockAll(func() {
 		thelper.CreateTemp(t, "tmp.html", func(tmpfile *os.File) {
-			err := hr.suggest(tmpfile.Name(), cli)
+			err := pr.suggest(tmpfile.Name(), cli)
 			require.NoError(t, err)
 
 			html, err := os.ReadFile(tmpfile.Name())

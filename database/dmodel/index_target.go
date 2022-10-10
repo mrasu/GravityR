@@ -27,6 +27,19 @@ func NewIndexTarget(tableName string, columns []string) *IndexTarget {
 	}
 }
 
+func NewIndexTargetsFromTexts(texts []string) ([]*IndexTarget, error) {
+	var its []*IndexTarget
+	for _, text := range texts {
+		it, err := NewIndexTargetFromText(text)
+		if err != nil {
+			return nil, err
+		}
+		its = append(its, it)
+	}
+
+	return its, nil
+}
+
 func NewIndexTargetFromText(text string) (*IndexTarget, error) {
 	m := indexTargetReg.FindStringSubmatch(text)
 	if m == nil {

@@ -137,7 +137,7 @@ export const dummySuggestData = {
         { isShort: true, name: "q", value: gql },
         {
           isShort: false,
-          name: "variables-json",
+          name: "json-variables",
           value: '{"email": "test1112@example.com"}',
         },
       ],
