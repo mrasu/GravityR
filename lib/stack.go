@@ -13,6 +13,10 @@ func (s *Stack[T]) Push(val *T) {
 }
 
 func (s *Stack[T]) Pop() *T {
+	if len(s.vals) == 0 {
+		return nil
+	}
+
 	v := s.vals[len(s.vals)-1]
 	s.vals = s.vals[:len(s.vals)-1]
 

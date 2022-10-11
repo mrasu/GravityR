@@ -1,7 +1,5 @@
 package lib
 
-import "fmt"
-
 type Set[T comparable] struct {
 	vals map[T]bool
 }
@@ -50,8 +48,4 @@ func (s *Set[T]) Contains(val T) bool {
 
 func (s *Set[T]) Count() int {
 	return len(s.vals)
-}
-
-func (s *Set[T]) String() string {
-	return fmt.Sprintf("%v", s.Values())
 }
