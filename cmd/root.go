@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/mrasu/GravityR/cmd/flag"
+	"github.com/mrasu/GravityR/cmd/util"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os"
@@ -11,11 +12,13 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gr",
-	Short: "Gravity Radar to remove bottleneck in your application",
+	Use:           "gr",
+	SilenceUsage:  true,
+	SilenceErrors: true,
+	Short:         "Gravity Radar to remove bottleneck in your application",
 	Long: `GravityR is Gravity-Radar.
-This exists to remove bottleneck in your application without help of experts.
-And also this is to help experts solving problems faster and easily.  
+This exists to reduce time to find bottleneck in your application.
+And also this is to solve the problems faster and easier.  
 `,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
@@ -36,12 +39,14 @@ And also this is to help experts solving problems faster and easily.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
+		util.LogError(err)
 		os.Exit(1)
 	}
 }
 
 func init() {
 	rootCmd.AddCommand(dbCmd)
+	rootCmd.AddCommand(versionCmd)
 
 	rootCmd.PersistentFlags().BoolVar(&flag.GlobalFlag.UseMock, "use-mock", false, "use mock (for development)")
 	rootCmd.PersistentFlags().BoolVarP(&flag.GlobalFlag.Verbose, "verbose", "v", false, "verbose output")

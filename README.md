@@ -1,6 +1,6 @@
 GravityR is a Gravity-Radar.  
-This exists to remove bottleneck in your application without help of experts.  
-And also this is to help experts solving problems faster and easily.  
+This exists to reduce time to find bottleneck in your application.
+And also this is to solve the problems faster and easier.  
 
 # Example
 

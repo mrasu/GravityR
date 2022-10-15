@@ -18,11 +18,8 @@ import (
 var MySqlCmd = &cobra.Command{
 	Use:   "mysql",
 	Short: "Suggest ways to increase MySQL's performance",
-	Run: func(cmd *cobra.Command, args []string) {
-		err := mysqlR.run()
-		if err != nil {
-			util.LogError(err)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return mysqlR.run()
 	},
 }
 

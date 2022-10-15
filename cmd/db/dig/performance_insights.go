@@ -15,11 +15,8 @@ import (
 var PerformanceInsightsCmd = &cobra.Command{
 	Use:   "performance-insights",
 	Short: "Dig database behavior with AWS' PerformanceInsights",
-	Run: func(cmd *cobra.Command, args []string) {
-		err := piR.run()
-		if err != nil {
-			util.LogError(err)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return piR.run()
 	},
 }
 

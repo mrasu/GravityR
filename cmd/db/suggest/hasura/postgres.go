@@ -21,17 +21,18 @@ import (
 var PostgresCmd = &cobra.Command{
 	Use:   "postgres",
 	Short: "Suggest ways to increase performance of Hasura with PostgreSQL",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		err := postgresR.prepare()
 		if err != nil {
-			util.LogError(err)
-			return
+			return err
 		}
 
 		err = postgresR.run()
 		if err != nil {
-			util.LogError(err)
+			return err
 		}
+
+		return nil
 	},
 }
 

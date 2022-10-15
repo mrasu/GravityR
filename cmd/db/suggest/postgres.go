@@ -18,11 +18,8 @@ import (
 var PostgresCmd = &cobra.Command{
 	Use:   "postgres",
 	Short: "Suggest ways to increase PostgreSQL's performance",
-	Run: func(cmd *cobra.Command, args []string) {
-		err := postgresR.run()
-		if err != nil {
-			util.LogError(err)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return postgresR.run()
 	},
 }
 

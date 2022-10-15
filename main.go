@@ -1,7 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package main
 
 import (
@@ -15,8 +11,15 @@ import (
 //go:embed client/dist/assets/*
 var clientDist embed.FS
 
+var (
+	version = "0.0.0"
+	commit  = "none"
+)
+
 func main() {
 	injection.ClientDist = clientDist
+	injection.SetBinInfo(version, commit)
+
 	http.DefaultTransport = lib.NewHttpTransport()
 
 	cmd.Execute()

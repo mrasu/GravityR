@@ -14,13 +14,21 @@ lint:
 test:
 	go test ./...
 
-build:
+build_client:
 	cd client && yarn build
+
+build: build_client
 	go build -o dist/gr main.go
 
-clean:
-	rm -rf dist/
+clean_client:
 	rm -rf client/dist/
+
+clean: clean_client
+	rm -rf dist/
+
+release_snapshot: clean_client build_client
+	rm -rf dist/goreleaser
+	goreleaser release --snapshot --rm-dist
 
 define example_query
 SELECT
