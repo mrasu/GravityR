@@ -74,6 +74,26 @@ Below shows how you can accelerate the query by adding index.
     " --json-variables '{"email": "test1112@example.com"}'
     ```
 
+# Environment Variables
+
+| Command                 | Key                 | Description                                    |
+|-------------------------|---------------------|------------------------------------------------|
+| suggest hasura postgres | HASURA_URL          | URL to hasura. (e.g. http://localhost:8081)    |
+|                         | HASURA_ADMIN_SECRET | Token to connect as admin                      |
+| suggest mysql           | DB_USERNAME         | User of mysql                                  |
+|                         | DB_PASSWORD         | Password of mysql                              |
+|                         | DB_PROTOCOL         | Protocol to connect mysql. `tcp` by default    |
+|                         | DB_ADDRESS          | Network address of mysql                       |
+|                         | DB_DATABASE         | Database name of mysql                         |
+|                         | DB_PARAM_TEXT       | Arbitrary text used after `?` in DSN           |
+| suggest postgres        | DB_USERNAME         | User of PostgreSQL                             |
+|                         | DB_PASSWORD         | Password of PostgreSQL                         |
+|                         | DB_HOST             | Host of PostgreSQL                             |
+|                         | DB_PORT             | Port of PostgreSQL                             |
+|                         | DB_DATABASE         | Database name of PostgreSQL                    |
+|                         | DB_SEARCH_PATH      | Search path of PostgreSQL. `public` by default |
+|                         | DB_PARAM_TEXT       | Arbitrary text for connection string           |
+
 # Build
 ```sh
 $ cd client && yarn

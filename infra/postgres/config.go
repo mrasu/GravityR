@@ -62,7 +62,7 @@ func (cfg *Config) GetKVConnectionString() string {
 		texts = append(texts, "dbname='"+cfg.DBName+"'")
 	}
 	if cfg.paramText != "" {
-		texts = append(texts, "paramText='"+cfg.paramText+"'")
+		texts = append(texts, cfg.paramText)
 	}
 	texts = append(texts, "sslmode=disable")
 
