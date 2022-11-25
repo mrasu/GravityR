@@ -179,7 +179,7 @@ func (pr *postgresRunner) createHTML(outputPath string, variables map[string]int
 		ver,
 	)
 
-	err := html.CreateHtml(outputPath, bo)
+	err := html.CreateHtml(html.TypeMain, outputPath, bo)
 	if err != nil {
 		return err
 	}

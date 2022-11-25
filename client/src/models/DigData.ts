@@ -1,10 +1,25 @@
-import { Type } from "class-transformer";
-import { TimeDbLoad } from "./TimeDbLoad";
+import { plainToInstance, Type } from "class-transformer";
+import { PerformanceInsightsData } from "@/models/PerformanceInsightsData";
+import { JaegerData } from "@/models/JaegerData";
+import type { IDigData } from "@/types/gr_param";
 
 export class DigData {
-  @Type(() => TimeDbLoad)
-  sqlDbLoads: TimeDbLoad[];
+  @Type(() => PerformanceInsightsData)
+  performanceInsightsData?: PerformanceInsightsData;
 
-  @Type(() => TimeDbLoad)
-  tokenizedSqlDbLoads: TimeDbLoad[];
+  @Type(() => JaegerData)
+  jaegerData?: JaegerData;
+
+  constructor(iDigData: IDigData) {
+    if (iDigData.performanceInsights) {
+      this.performanceInsightsData = plainToInstance(
+        PerformanceInsightsData,
+        iDigData.performanceInsights
+      );
+    }
+
+    if (iDigData.jaeger) {
+      this.jaegerData = plainToInstance(JaegerData, iDigData.jaeger);
+    }
+  }
 }

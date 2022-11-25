@@ -1,4 +1,4 @@
-package parser
+package ast
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ type walker interface {
 	Leave(node interface{}) bool
 }
 
-func walk(walker walker, stmt *parser.Statement) []error {
+func Walk(walker walker, stmt *parser.Statement) []error {
 	w := &astWalker{
 		Enter: walker.Enter,
 		Leave: walker.Leave,

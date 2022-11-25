@@ -46,6 +46,7 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(dbCmd)
+	rootCmd.AddCommand(appCmd)
 	rootCmd.AddCommand(versionCmd)
 
 	rootCmd.PersistentFlags().BoolVar(&flag.GlobalFlag.UseMock, "use-mock", false, "use mock (for development)")

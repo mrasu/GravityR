@@ -1,0 +1,355 @@
+{
+  "Spans": [
+    {
+      "TraceID": "5",
+      "SpanID": "1",
+      "OperationName": "request",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "foo": "bar"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "0000000000000000"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "2",
+      "OperationName": "get user",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "foo": "bar"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "1"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "3",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "4",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "5",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "5",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "6",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "7",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "8",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:06Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "9",
+      "OperationName": "cmd",
+      "StartTime": "2001-02-03T05:05:07Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "redis"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "2"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "10",
+      "OperationName": "get user",
+      "StartTime": "2001-02-03T05:05:16Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "foo": "bar"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "1"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "11",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:16Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "10"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "12",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:16Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "10"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "13",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:16Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "10"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "14",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:16Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "10"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "15",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:16Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "mysql"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "10"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "16",
+      "OperationName": "cmd",
+      "StartTime": "2001-02-03T05:05:17Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "redis"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "10"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "17",
+      "OperationName": "get todos",
+      "StartTime": "2001-02-03T05:05:27Z",
+      "DurationMilliSec": 10000,
+      "ServiceName": "todo",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "1"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "18",
+      "OperationName": "get todos",
+      "StartTime": "2001-02-03T05:05:27Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "postgres"
+      },
+      "ServiceName": "todo",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "17"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "19",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:27Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "postgres"
+      },
+      "ServiceName": "todo",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "17"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "20",
+      "OperationName": "query",
+      "StartTime": "2001-02-03T05:05:27Z",
+      "DurationMilliSec": 10000,
+      "Tags": {
+        "db.system": "postgres"
+      },
+      "ServiceName": "todo",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "17"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "21",
+      "OperationName": "get user todo count",
+      "StartTime": "2001-02-03T05:05:37Z",
+      "DurationMilliSec": 10000,
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "1"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "22",
+      "OperationName": "get",
+      "StartTime": "2001-02-03T05:05:37Z",
+      "DurationMilliSec": 10000,
+      "ServiceName": "todo",
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "21"
+      }
+    },
+    {
+      "TraceID": "5",
+      "SpanID": "23",
+      "OperationName": "get aa",
+      "StartTime": "2001-02-03T05:05:37Z",
+      "DurationMilliSec": 10000,
+      "ServiceName": "todo",
+      "Tags": {
+        "db.system": "postgres"
+      },
+      "SpanRef": {
+        "TraceID": "5",
+        "SpanID": "22"
+      }
+    }
+  ]
+}

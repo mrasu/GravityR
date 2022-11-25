@@ -2,7 +2,6 @@ package html
 
 import (
 	"github.com/mrasu/GravityR/html/viewmodel"
-	"github.com/mrasu/GravityR/lib"
 )
 
 type suggestData struct {
@@ -44,8 +43,21 @@ type hasuraPostgresData struct {
 }
 
 type digData struct {
-	sqlDbLoads          []*viewmodel.VmTimeDbLoad
-	tokenizedSqlDbLoads []*viewmodel.VmTimeDbLoad
+	PerformanceInsights *performanceInsightsData `json:"performanceInsights"`
+	Jaeger              *jaegerData              `json:"jaeger"`
+}
+
+type performanceInsightsData struct {
+	SqlDbLoads          []*viewmodel.VmTimeDbLoad `json:"sqlDbLoads"`
+	TokenizedSqlDbLoads []*viewmodel.VmTimeDbLoad `json:"tokenizedSqlDbLoads"`
+}
+
+type jaegerData struct {
+	UIPath               string                          `json:"uiPath"`
+	SlowThresholdMilli   int                             `json:"slowThresholdMilli"`
+	SameServiceThreshold int                             `json:"sameServiceThreshold"`
+	SlowTraces           []*viewmodel.VmOtelCompactTrace `json:"slowTraces"`
+	SameServiceTraces    []*viewmodel.VmOtelCompactTrace `json:"sameServiceTraces"`
 }
 
 type BuildOption struct {
@@ -117,24 +129,36 @@ func NewSuggestHasuraDataBuildOption(
 	}}
 }
 
-func NewDigDataBuildOption(sqlCpuUsages []*viewmodel.VmTimeDbLoad, tokenizedSqlCpuUsages []*viewmodel.VmTimeDbLoad) *BuildOption {
+func NewPerformanceInsightsDataBuildOption(sqlCpuUsages []*viewmodel.VmTimeDbLoad, tokenizedSqlCpuUsages []*viewmodel.VmTimeDbLoad) *BuildOption {
 	return &BuildOption{DigData: &digData{
-		sqlDbLoads:          sqlCpuUsages,
-		tokenizedSqlDbLoads: tokenizedSqlCpuUsages,
+		PerformanceInsights: &performanceInsightsData{
+			SqlDbLoads:          sqlCpuUsages,
+			TokenizedSqlDbLoads: tokenizedSqlCpuUsages,
+		},
+	}}
+}
+
+func NewDigJaegerBuildOption(
+	uIPath string,
+	slowThresholdMilli int,
+	sameServiceThreshold int,
+	slowTraces []*viewmodel.VmOtelCompactTrace,
+	sameServiceTraces []*viewmodel.VmOtelCompactTrace,
+) *BuildOption {
+	return &BuildOption{DigData: &digData{
+		Jaeger: &jaegerData{
+			UIPath:               uIPath,
+			SlowThresholdMilli:   slowThresholdMilli,
+			SameServiceThreshold: sameServiceThreshold,
+			SlowTraces:           slowTraces,
+			SameServiceTraces:    sameServiceTraces,
+		},
 	}}
 }
 
 func (bo *BuildOption) createGrMap() map[string]interface{} {
-	var digData map[string]interface{}
-	if bo.DigData != nil {
-		digData = map[string]interface{}{
-			"sqlDbLoads":          lib.SliceOrEmpty(bo.DigData.sqlDbLoads),
-			"tokenizedSqlDbLoads": lib.SliceOrEmpty(bo.DigData.tokenizedSqlDbLoads),
-		}
-	}
-
 	return map[string]interface{}{
 		"suggestData": bo.SuggestData,
-		"digData":     digData,
+		"digData":     bo.DigData,
 	}
 }

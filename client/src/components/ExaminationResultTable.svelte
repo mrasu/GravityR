@@ -17,34 +17,34 @@
       <th class="index"><div>Columns</div></th>
       <th class="index"><div>SQL</div></th>
     </tr>
-    <tr>
-      <td class="time-ms"
-        ><div>
-          {result.originalTimeMillis.toLocaleString()}ms
-        </div></td
-      >
-      <td class="reduction"><div>-</div></td>
-      <td class="index"><div>(Original)</div></td>
-      <td class="index" />
-    </tr>
-
-    {#each sortedIndexResults as indexResult}
-      {@const reducedPercent = indexResult.toReductionPercent(
-        result.originalTimeMillis
-      )}
-      <tr>
-        <td class="time-ms">
-          <div>{indexResult.executionTimeMillis.toLocaleString()}ms</div></td
-        >
-        <td class="reduction"><div>{reducedPercent}%</div></td>
-        <td class="index">{indexResult.toIndex()}</td>
-        <td class="index">
-          {indexResult.indexTarget.toAlterAddSQL()}
-          <slot {indexResult} name="alter-add-sql" />
-        </td>
-      </tr>
-    {/each}
   </thead>
+  <tr>
+    <td class="time-ms"
+      ><div>
+        {result.originalTimeMillis.toLocaleString()}ms
+      </div></td
+    >
+    <td class="reduction"><div>-</div></td>
+    <td class="index"><div>(Original)</div></td>
+    <td class="index" />
+  </tr>
+
+  {#each sortedIndexResults as indexResult}
+    {@const reducedPercent = indexResult.toReductionPercent(
+      result.originalTimeMillis
+    )}
+    <tr>
+      <td class="time-ms">
+        <div>{indexResult.executionTimeMillis.toLocaleString()}ms</div></td
+      >
+      <td class="reduction"><div>{reducedPercent}%</div></td>
+      <td class="index">{indexResult.toIndex()}</td>
+      <td class="index">
+        {indexResult.indexTarget.toAlterAddSQL()}
+        <slot {indexResult} name="alter-add-sql" />
+      </td>
+    </tr>
+  {/each}
 </table>
 
 <style>

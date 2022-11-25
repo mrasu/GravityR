@@ -1,19 +1,10 @@
 import { defineConfig } from "vite";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
+import { config } from "./vite-common.config";
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [svelte()],
-  build: {
-    rollupOptions: {
-      input: ["src/main.ts", "src/dummy.ts"],
-      output: {
-        assetFileNames: "assets/[name].[ext]",
-        entryFileNames: "assets/[name].js",
-      },
-    },
-  },
-  resolve: {
-    alias: [{ find: "@", replacement: "/src" }],
-  },
-});
+config["build"]["rollupOptions"]["input"] = [
+  "src/main.ts",
+  "src/mermaid.ts",
+  "src/dummy.ts",
+];
+
+export default defineConfig(config);

@@ -5,6 +5,7 @@ import (
 	"github.com/mrasu/GravityR/database/dservice"
 	"github.com/mrasu/GravityR/database/mysql/mservice/parser"
 	"github.com/mrasu/GravityR/infra/mysql"
+	tParser "github.com/pingcap/tidb/parser"
 )
 
 type IndexSuggester struct {
@@ -20,7 +21,8 @@ func NewIndexSuggester(db *mysql.DB, dbName string) *IndexSuggester {
 }
 
 func (is *IndexSuggester) Suggest(query string) ([]*dmodel.IndexTarget, error) {
-	rootNode, err := parser.Parse(query)
+	p := tParser.New()
+	rootNode, err := Parse(p, query)
 	if err != nil {
 		return nil, err
 	}

@@ -4,8 +4,8 @@ type Stack[T any] struct {
 	vals []*T
 }
 
-func NewStack[T any]() *Stack[T] {
-	return &Stack[T]{}
+func NewStack[T any](vals ...*T) *Stack[T] {
+	return &Stack[T]{vals: vals}
 }
 
 func (s *Stack[T]) Push(val *T) {

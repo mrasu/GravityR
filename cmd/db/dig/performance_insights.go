@@ -83,9 +83,9 @@ func (pr *piRunner) dig(outputPath string, rdsCli *aws.Rds, piCli *aws.Performan
 
 	sqlDbLoads := aws.ConvertPiSQLLoadAvgsToVms(startFrom, end, sqlLoadAvgs)
 	tokenizedSqlDbLoads := aws.ConvertPiSQLLoadAvgsToVms(startFrom, end, tokenizedSqlLoadAvgs)
-	bo := html.NewDigDataBuildOption(sqlDbLoads, tokenizedSqlDbLoads)
+	bo := html.NewPerformanceInsightsDataBuildOption(sqlDbLoads, tokenizedSqlDbLoads)
 
-	err = html.CreateHtml(outputPath, bo)
+	err = html.CreateHtml(html.TypeMain, outputPath, bo)
 	if err != nil {
 		return err
 	}

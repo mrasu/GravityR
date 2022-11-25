@@ -1,12 +1,11 @@
-package parser
+package mservice
 
 import (
 	"github.com/pingcap/tidb/parser"
 	"github.com/pingcap/tidb/parser/ast"
 )
 
-func Parse(query string) (ast.StmtNode, error) {
-	p := parser.New()
+func Parse(p *parser.Parser, query string) (ast.StmtNode, error) {
 	stmtNodes, _, err := p.Parse(query, "", "")
 	if err != nil {
 		return nil, err

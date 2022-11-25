@@ -1,0 +1,3789 @@
+{
+  "Spans": [
+    {
+      "TraceID": "3",
+      "SpanID": "1f481e6c8d3e7919",
+      "OperationName": "middleware - graphqlMiddleware",
+      "StartTime": "2001-02-03T03:33:59.478Z",
+      "DurationMilliSec": 138,
+      "Tags": {
+        "express.name": "graphqlMiddleware",
+        "express.type": "middleware",
+        "http.route": "/graphql",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "64c04664ff95f635"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "1c94f7ef319e9183",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "34cab7f3c3fe04fe",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ffb56b36b60f1829",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "45f98c7910a0c545",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.57Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.7.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bfcc773e08cdfd83",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.569Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.6.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "5fac6f4d5c4fa744",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.544Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.6.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "e0c6cd620532531f",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.593Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.10.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "5c9c0763e217d930",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.549Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.8.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "3841771a1ff602ac",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.585Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.3.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "047fd879bc54674f",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.514Z",
+      "DurationMilliSec": 1,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "5c107f43c9d209c8",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.552Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.10.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "0933d1adfb4cd9f0",
+      "OperationName": "users",
+      "StartTime": "2001-02-03T03:33:59.505Z",
+      "DurationMilliSec": 13,
+      "Tags": {
+        "http.flavor": "1.1",
+        "http.host": "user:9002",
+        "http.method": "GET",
+        "http.scheme": "http",
+        "http.server_name": "users",
+        "http.status_code": 200,
+        "http.target": "/users/3",
+        "http.user_agent": "undici",
+        "http.wrote_bytes": 673,
+        "internal.span.format": "jaeger",
+        "net.host.name": "user",
+        "net.host.port": 9002,
+        "net.peer.ip": "172.24.0.5",
+        "net.peer.port": 41118,
+        "net.transport": "ip_tcp",
+        "user_id": 3
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "2eaffd9467aca631",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ea438d54aca6237f",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.559Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "id",
+        "graphql.field.path": "users.1.id",
+        "graphql.field.type": "Int!",
+        "graphql.source": "id",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bb69e87ded51c4de",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.581Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "name",
+        "graphql.field.path": "users.2.name",
+        "graphql.field.type": "String!",
+        "graphql.source": "name",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "fafd042e587c9163",
+      "OperationName": "users",
+      "StartTime": "2001-02-03T03:33:59.505Z",
+      "DurationMilliSec": 13,
+      "Tags": {
+        "http.flavor": "1.1",
+        "http.host": "user:9002",
+        "http.method": "GET",
+        "http.scheme": "http",
+        "http.server_name": "users",
+        "http.status_code": 200,
+        "http.target": "/users/1",
+        "http.user_agent": "undici",
+        "http.wrote_bytes": 673,
+        "internal.span.format": "jaeger",
+        "net.host.name": "user",
+        "net.host.port": 9002,
+        "net.peer.ip": "172.24.0.5",
+        "net.peer.port": 41098,
+        "net.transport": "ip_tcp",
+        "user_id": 1
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "352ba2966499e9dc",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "88a86849fa334f83",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.555Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.13.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "44f7d4e7684eee55",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.564Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.2.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "60fc5f6843ae3291",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.55Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.9.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "340cd8d46bb439db",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.566Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.4.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "37ab43e01ed0919a",
+      "OperationName": "middleware - expressInit",
+      "StartTime": "2001-02-03T03:33:59.477Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "express.name": "expressInit",
+        "express.type": "middleware",
+        "http.route": "/",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "64c04664ff95f635"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "14cebcfa4b26dbc5",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.608Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.13.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d47142faaf91a31a",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.61Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.15.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "95d409f4906cc22f",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.532Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "name",
+        "graphql.field.path": "users.0.name",
+        "graphql.field.type": "String!",
+        "graphql.source": "name",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "029e71336250b49e",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "4b6350c8a14b6115",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.567Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.5.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9baf5c751ea73565",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9b7b6a9acb96ab26",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.515Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "56650a056c552089",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bf3744621cba1630",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.586Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.4.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "c242691c89e5452e",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "6cb5cc241a330b4a",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "7393b22b11fd1902",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "cdf22c1d72e3d031",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.591Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.8.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b654ae485c384093",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "222bbdcf1e9ae2dc",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "314b64e6064ac819",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.563Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.1.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "8677034138560295",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.577Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.14.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "8eb45073f79600e3",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.569Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.7.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "447c3874abc7c60e",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.583Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.0.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "e1fd37f15aa07620",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.606Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.11.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "85cfdac9de143d93",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.541Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.4.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "575e2f15d4c34246",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.589Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.6.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bdea8fbe94bfbf3d",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.587Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.5.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b7267bf3aeb4a942",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "49e0f7982f562b5b",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.515Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9cabd3231fd84700",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.572Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.9.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b83121a6279f85b4",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.561Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "histories",
+        "graphql.field.path": "users.1.histories",
+        "graphql.field.type": "[PaymentHistory!]",
+        "graphql.source": "histories {\n   amount\n   last_numbers\n  }",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d2479275f4de3383",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.577Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.13.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "0ec7e972c9d140ef",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.574Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.11.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "974f757c159c102c",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.588Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.5.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "3bc01f436a4194f7",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.592Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.10.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "4fcf7e206084ca89",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.567Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.4.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "a2749a43503f204d",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.59Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.7.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "535fc581b13e515d",
+      "OperationName": "graphql.validate",
+      "StartTime": "2001-02-03T03:33:59.481Z",
+      "DurationMilliSec": 1,
+      "Tags": {
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "64c04664ff95f635"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "87ebcac5aa9ea1c9",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.539Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.3.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "96a98546e8febc3b",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.582Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.0.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "2e6a0881594aed95",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.579Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.15.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "7cf1b4703e061443",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "0e70982f037e222f",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.571Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.8.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "2c80d9d773ed532d",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.575Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.12.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "072436e1b0a4e037",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.574Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.11.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "198e8cee83385754",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.505Z",
+      "DurationMilliSec": 6,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "users",
+        "db.statement": "SELECT * FROM `users` WHERE id = 2 ORDER BY `users`.`id` LIMIT 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "c6bc613f2d11eccb",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "734594bc92715897",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.54Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.4.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ef9a913ab0e8f14a",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.556Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.13.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b253a6afab33d438",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.593Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.11.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "468787ffa7b0eddb",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "6888b06fe0c32ff7",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.575Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.12.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b560422930ef5eba",
+      "OperationName": "users",
+      "StartTime": "2001-02-03T03:33:59.505Z",
+      "DurationMilliSec": 13,
+      "Tags": {
+        "http.flavor": "1.1",
+        "http.host": "user:9002",
+        "http.method": "GET",
+        "http.scheme": "http",
+        "http.server_name": "users",
+        "http.status_code": 200,
+        "http.target": "/users/2",
+        "http.user_agent": "undici",
+        "http.wrote_bytes": 673,
+        "internal.span.format": "jaeger",
+        "net.host.name": "user",
+        "net.host.port": 9002,
+        "net.peer.ip": "172.24.0.5",
+        "net.peer.port": 41114,
+        "net.transport": "ip_tcp",
+        "user_id": 2
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "82275e2723230610",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "567aaedd63e36928",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.582Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "histories",
+        "graphql.field.path": "users.2.histories",
+        "graphql.field.type": "[PaymentHistory!]",
+        "graphql.source": "histories {\n   amount\n   last_numbers\n  }",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "68e3dcc8df78ce63",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.514Z",
+      "DurationMilliSec": 1,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "79c86ec453bc856c",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "284be892cd469023",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ed12ff6d542394ce",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.541Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.5.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "212742419e4acd91",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.553Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.11.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "003ff88ed0597e54",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.562Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.0.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "f01bf83f80c7b1b6",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.583Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.1.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "64c04664ff95f635",
+      "OperationName": "HTTP POST",
+      "StartTime": "2001-02-03T03:33:59.476Z",
+      "DurationMilliSec": 9139,
+      "Tags": {
+        "http.flavor": "1.1",
+        "http.host": "localhost:9001",
+        "http.method": "POST",
+        "http.request_content_length_uncompressed": 133,
+        "http.route": "/graphql",
+        "http.scheme": "http",
+        "http.status_code": 200,
+        "http.status_text": "OK",
+        "http.target": "/graphql",
+        "http.url": "http://localhost:9001/graphql",
+        "http.user_agent": "insomnia/2022.3.0",
+        "internal.span.format": "jaeger",
+        "net.host.ip": "::ffff:172.24.0.5",
+        "net.host.name": "localhost",
+        "net.host.port": 9001,
+        "net.peer.ip": "::ffff:172.24.0.1",
+        "net.peer.port": 57696,
+        "net.transport": "ip_tcp",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0000000000000000"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "7e0205de968998c4",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.511Z",
+      "DurationMilliSec": 2,
+      "Tags": {
+        "db.rows_affected": 16,
+        "db.sql.table": "payment_histories",
+        "db.statement": "SELECT * FROM `payment_histories` WHERE user_id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "cc08cf6f090fd2d5",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.61Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.15.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9046e40329963eea",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.537Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.2.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b909ec38f90d8ae1",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.559Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.15.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "710c3719d9b4adfe",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.591Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.9.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "567e387b76a0f0b6",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.568Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.6.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "7278d17b83829c38",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ac27f2742262ca64",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.536Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.1.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "93168858d1640fb8",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.553Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.11.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "cbf3693126ac0420",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.548Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.7.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ed7c735762451247",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.56Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "name",
+        "graphql.field.path": "users.1.name",
+        "graphql.field.type": "String!",
+        "graphql.source": "name",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "5893256ba194a51a",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.543Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.6.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "c8c381043a83b859",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.584Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.2.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "7d14a3ffa0a42d90",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.589Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.6.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "a24b59aaf4a86754",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.505Z",
+      "DurationMilliSec": 6,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "users",
+        "db.statement": "SELECT * FROM `users` WHERE id = 1 ORDER BY `users`.`id` LIMIT 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "70b57197f2ad09b1",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.606Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.12.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "79c689533bfc8f24",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.563Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.1.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "1b19c94fdc2a76ce",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.565Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.3.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "8c587d5e71c14b7c",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.551Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.9.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d9ddaccda05980fe",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d4ec41c4bd6d6cf1",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.607Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.13.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "dbe83888ac2dd15e",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.573Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.10.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "0f88cb0fe73f8c10",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.576Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.13.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "f86b1c34aca4bbcb",
+      "OperationName": "graphql.execute",
+      "StartTime": "2001-02-03T03:33:59.483Z",
+      "DurationMilliSec": 130,
+      "Tags": {
+        "graphql.operation.type": "query",
+        "graphql.source": "{\n users(ids: [* * *]) {\n  id\n  name\n  email\n  histories {\n   amount\n   last_numbers\n  }\n }\n}",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "64c04664ff95f635"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "64981d2da7a23326",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.59Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.7.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "824070c3aacb8dd0",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9b5e1c6906b0e58a",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "3e273234b9c0b5f1",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "2820943d3989d401",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "656957d648fd841f",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.536Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.1.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "176df0e318beb058",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.558Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.14.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "5048ff9d98f8b33f",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.514Z",
+      "DurationMilliSec": 1,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "87b475c0217fcd48",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bf298a036bcc406d",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.55Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.8.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "55653c48c4184246",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.505Z",
+      "DurationMilliSec": 6,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "users",
+        "db.statement": "SELECT * FROM `users` WHERE id = 3 ORDER BY `users`.`id` LIMIT 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "c7c5b746c41a2e5f",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d103ba8da67b56bb",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "df60149a4c91ac3d",
+      "OperationName": "graphql.parse",
+      "StartTime": "2001-02-03T03:33:59.48Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.source": "{\n users(ids: [* * *]) {\n  id\n  name\n  email\n  histories {\n   amount\n   last_numbers\n  }\n }\n}",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "64c04664ff95f635"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "997a3440747e4d72",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.542Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.5.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "4543023423e3afac",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.557Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.14.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ec4f5056b20e1704",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.566Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.3.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "aa38ee2a57942f1e",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.591Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.8.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "62a79cb98f5dfe40",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.511Z",
+      "DurationMilliSec": 2,
+      "Tags": {
+        "db.rows_affected": 16,
+        "db.sql.table": "payment_histories",
+        "db.statement": "SELECT * FROM `payment_histories` WHERE user_id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "db4921dffd0c0c0c",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "31e5d8401e86bf5a",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "5fc10f37f6d117e4",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.609Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.14.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "7dcbf6f81200d5bb",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.532Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "id",
+        "graphql.field.path": "users.0.id",
+        "graphql.field.type": "Int!",
+        "graphql.source": "id",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "1c83bc60a05589a9",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.564Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.2.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "5d032254cc8d9f91",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.579Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.15.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "a72a473d07d60fcf",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "2cec6e7fc993f781",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.539Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.3.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "95ae5f3430973f7b",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.558Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.15.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "1f25cc73b30f170a",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.555Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.12.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bcacaab639738c98",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.58Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "id",
+        "graphql.field.path": "users.2.id",
+        "graphql.field.type": "Int!",
+        "graphql.source": "id",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "0fb5889b296ca9ef",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.554Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.12.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "cac6c4ad3c910084",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "23d86119e451d9a6",
+      "OperationName": "middleware - query",
+      "StartTime": "2001-02-03T03:33:59.476Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "express.name": "query",
+        "express.type": "middleware",
+        "http.route": "/",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "64c04664ff95f635"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ae3cc75bfd155e1e",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.545Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.7.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "f7460792bee2cead",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "c49f186d71f4211f",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.585Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.2.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "fce384b636f501a1",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.511Z",
+      "DurationMilliSec": 2,
+      "Tags": {
+        "db.rows_affected": 16,
+        "db.sql.table": "payment_histories",
+        "db.statement": "SELECT * FROM `payment_histories` WHERE user_id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "415b189f36189955",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "27846b4b11401588",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.607Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.12.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d85ff2e9965f869d",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.534Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "histories",
+        "graphql.field.path": "users.0.histories",
+        "graphql.field.type": "[PaymentHistory!]",
+        "graphql.source": "histories {\n   amount\n   last_numbers\n  }",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bd3f5fc5fa4bd418",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.561Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.0.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "4739c611d89556ed",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.573Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.10.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d541aeedb7c5f6fc",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.586Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.4.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bbfc9b7e52448ac6",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.516Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "fa4818072b5f0557",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9f2c42695b25c5f1",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.609Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.2.histories.14.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b39f1dceb25a255a",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.483Z",
+      "DurationMilliSec": 47,
+      "Tags": {
+        "graphql.field.name": "users",
+        "graphql.field.path": "users",
+        "graphql.field.type": "[User!]!",
+        "graphql.source": "users(ids: [* * *]) {\n  id\n  name\n  email\n  histories {\n   amount\n   last_numbers\n  }\n }",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "f86b1c34aca4bbcb"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "ac5d995300a7e879",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.533Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "email",
+        "graphql.field.path": "users.0.email",
+        "graphql.field.type": "String!",
+        "graphql.source": "email",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "36fd391e259ce875",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.538Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.2.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9478e5c9dec43594",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.584Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.1.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "d37416dabdd81aad",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.578Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.14.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "b06996312a0f8087",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.592Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.9.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "35905824bbb12723",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.586Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.2.histories.3.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "567aaedd63e36928"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "448012155b2b3313",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.534Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.0.histories.0.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "2a38b66bbc54839a",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.535Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.0.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "760677c777dbb190",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.552Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.0.histories.10.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "d85ff2e9965f869d"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "a69b2c4be94662a0",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.572Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.9.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "07c1a8074ee81650",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "3c87b192bf0d3953",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 2",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b560422930ef5eba"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "141cdb2d115ca946",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "3b35dac9e2838418",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.517Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "bb967526c401b2db",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 1",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "fafd042e587c9163"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "387b9c560a6a3b83",
+      "OperationName": "gorm.Query",
+      "StartTime": "2001-02-03T03:33:59.518Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "db.rows_affected": 1,
+        "db.sql.table": "payment_methods",
+        "db.statement": "SELECT * FROM `payment_methods` WHERE id = 3",
+        "db.system": "mysql",
+        "internal.span.format": "jaeger"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "0933d1adfb4cd9f0"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "9940339ea1bd05ab",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.581Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "email",
+        "graphql.field.path": "users.2.email",
+        "graphql.field.type": "String!",
+        "graphql.source": "email",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "2eb73d4345a24a12",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.56Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "email",
+        "graphql.field.path": "users.1.email",
+        "graphql.field.type": "String!",
+        "graphql.source": "email",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b39f1dceb25a255a"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "0302eeac1ab46c12",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.57Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "amount",
+        "graphql.field.path": "users.1.histories.8.amount",
+        "graphql.field.type": "Int!",
+        "graphql.source": "amount",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    },
+    {
+      "TraceID": "3",
+      "SpanID": "107f4df47bcca595",
+      "OperationName": "graphql.resolve",
+      "StartTime": "2001-02-03T03:33:59.568Z",
+      "DurationMilliSec": 0,
+      "Tags": {
+        "graphql.field.name": "last_numbers",
+        "graphql.field.path": "users.1.histories.5.last_numbers",
+        "graphql.field.type": "String!",
+        "graphql.source": "last_numbers",
+        "internal.span.format": "jaeger",
+        "service.name": "bff",
+        "telemetry.sdk.language": "nodejs",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.7.0"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "3",
+        "SpanID": "b83121a6279f85b4"
+      }
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { DigData } from "@/models/DigData";
   import { Details, Tab, Tabs } from "svelte-chota";
   import HeavySqlTimeline from "./HeavySqlTimeline.svelte";
   import HeaviestSqlRanking from "./HeaviestSqlRanking.svelte";
   import HeavyTokenizedSqlTimeline from "./HeavyTokenizedSqlTimeline.svelte";
   import HeaviestTokenizedSqlRanking from "./HeaviestTokenizedSqlRanking.svelte";
+  import type { PerformanceInsightsData } from "@/models/PerformanceInsightsData";
 
-  export let digData: DigData;
+  export let performanceInsightsData: PerformanceInsightsData;
   let activeTab = "plain";
 </script>
 
@@ -21,14 +21,14 @@
   <div class="details-card">
     <Details class="card" open data-testid="sqls">
       <span slot="summary">Heaviest SQLs</span>
-      <HeaviestSqlRanking timeDbLoads={digData.sqlDbLoads} />
+      <HeaviestSqlRanking timeDbLoads={performanceInsightsData.sqlDbLoads} />
     </Details>
   </div>
 
   <div class="details-card">
     <Details class="card" open data-testid="timeline">
       <span slot="summary">Heavy SQL Timeline</span>
-      <HeavySqlTimeline timeDbLoads={digData.sqlDbLoads} />
+      <HeavySqlTimeline timeDbLoads={performanceInsightsData.sqlDbLoads} />
     </Details>
   </div>
 {:else}
@@ -36,8 +36,8 @@
     <Details class="card" open>
       <span slot="summary">Heaviest Tokenized SQLs</span>
       <HeaviestTokenizedSqlRanking
-        tokenizedTimeDbLoads={digData.tokenizedSqlDbLoads}
-        rawTimeDbLoads={digData.sqlDbLoads}
+        tokenizedTimeDbLoads={performanceInsightsData.tokenizedSqlDbLoads}
+        rawTimeDbLoads={performanceInsightsData.sqlDbLoads}
       />
     </Details>
   </div>
@@ -46,8 +46,8 @@
     <Details class="card" open>
       <span slot="summary">Heavy Tokenized SQL Timeline</span>
       <HeavyTokenizedSqlTimeline
-        tokenizedTimeDbLoads={digData.tokenizedSqlDbLoads}
-        rawTimeDbLoads={digData.sqlDbLoads}
+        tokenizedTimeDbLoads={performanceInsightsData.tokenizedSqlDbLoads}
+        rawTimeDbLoads={performanceInsightsData.sqlDbLoads}
       />
     </Details>
   </div>
