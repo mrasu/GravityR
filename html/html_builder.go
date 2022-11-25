@@ -8,12 +8,17 @@ import (
 	"os"
 )
 
-func CreateHtml(filename string, bo *BuildOption) error {
-	script, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/main.js")
+const (
+	TypeMain    = "main"
+	TypeMermaid = "mermaid"
+)
+
+func CreateHtml(htmlType, filename string, bo *BuildOption) error {
+	script, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/"+htmlType+".js")
 	if err != nil {
 		return errors.Wrap(err, "failed to open file")
 	}
-	style, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/main.css")
+	style, err := fs.ReadFile(injection.ClientDist, "client/dist/assets/"+htmlType+".css")
 	if err != nil {
 		return errors.Wrap(err, "failed to open file")
 	}

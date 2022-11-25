@@ -13,5 +13,11 @@ func InjectClientDist() {
 		"client/dist/assets/main.css": {
 			Data: []byte("body{}"),
 		},
+		"client/dist/assets/mermaid.js": {
+			Data: []byte("console.log('hello')"),
+		},
+		"client/dist/assets/mermaid.css": {
+			Data: []byte("body{}"),
+		},
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"github.com/mrasu/GravityR/database/dmodel"
 	"github.com/mrasu/GravityR/database/dservice"
 	"github.com/mrasu/GravityR/database/hasura/hservice/parser"
-	pParser "github.com/mrasu/GravityR/database/postgres/pservice/parser"
+	"github.com/mrasu/GravityR/database/postgres/pservice"
 	"github.com/mrasu/GravityR/infra/hasura"
 )
 
@@ -19,7 +19,7 @@ func NewIndexSuggester(cli *hasura.Client) *IndexSuggester {
 }
 
 func (is *IndexSuggester) Suggest(query string) ([]*dmodel.IndexTarget, error) {
-	stmt, err := pParser.Parse(query)
+	stmt, err := pservice.Parse(query)
 	if err != nil {
 		return nil, err
 	}

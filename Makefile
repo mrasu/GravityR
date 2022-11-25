@@ -4,9 +4,15 @@ export DB_USERNAME := root
 export DB_DATABASE := gravityr
 export HASURA_URL := http://localhost:8081
 export HASURA_ADMIN_SECRET := myadminsecretkey
+export JAEGER_UI_URL := http://localhost:16686
+export JAEGER_GRPC_ADDRESS := localhost:16685
 
 devSetup:
 	go install github.com/spf13/cobra-cli@latest
+	go install github.com/vektra/mockery/v2@latest
+
+# mockery usage:
+# 	mockery --name Reader --srcpkg github.com/jaegertracing/jaeger/storage/spanstore --output mocks/jaeger --outpkg jaegermock
 
 lint:
 	golangci-lint run --fix
@@ -71,4 +77,5 @@ example:
 	./dist/gr db suggest postgres -o "example/postgres.html" -q "$${example_query}"
 	./dist/gr db suggest postgres --with-examine -o "example/postgres_examine.html" -q "$${example_query}"
 	./dist/gr db dig performance-insights -o "example/performance-insights.html"  --use-mock --start-from 2022-08-04T14:00:00Z
+	./dist/gr app dig jaeger -o "example/jaeger.html" --service-name bff --start-from 2001-02-03T00:00:00Z
 

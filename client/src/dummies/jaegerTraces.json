@@ -1,0 +1,356 @@
+{
+  "uiPath": "http://localhost:16686",
+  "slowThresholdMilli": 1000,
+  "sameServiceThreshold": 5,
+  "slowTraces": [
+    {
+      "traceId": "ec9142293a014b3699dfb22b1584f8f4",
+      "sameServiceAccessCount": 1,
+      "timeConsumingServiceName": "user",
+      "root": {
+        "name": "slow trace 1",
+        "spanId": "bb9a13e2fd404c37",
+        "startTimeMillis": 1668321500225,
+        "endTimeMillis": 1668321503558,
+        "serviceName": "bff",
+        "children": [
+          {
+            "name": "slow trace 1",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "user",
+            "children": []
+          },
+          {
+            "name": "slow trace 2",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "user",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "traceId": "ec9142293a014b3699dfb22b1584f8f5",
+      "sameServiceAccessCount": 1,
+      "timeConsumingServiceName": "bff",
+      "root": {
+        "name": "slow trace 1",
+        "spanId": "bb9a13e2fd404c37",
+        "startTimeMillis": 1668321500225,
+        "endTimeMillis": 1668321613000,
+        "serviceName": "bff",
+        "children": [
+          {
+            "name": "slow trace 1",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "user",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "traceId": "ec9142293a014b3699dfb22b1584f8f6",
+      "sameServiceAccessCount": 1,
+      "timeConsumingServiceName": "user",
+      "root": {
+        "name": "slow trace 1",
+        "spanId": "bb9a13e2fd404c37",
+        "startTimeMillis": 1668321500225,
+        "endTimeMillis": 1668321615000,
+        "serviceName": "bff",
+        "children": [
+          {
+            "name": "slow trace 1",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "user",
+            "children": [
+              {
+                "name": "slow trace 2",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "todo",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "traceId": "ec9142293a014b3699dfb22b1584f8f7",
+      "sameServiceAccessCount": 1,
+      "timeConsumingServiceName": "user",
+      "root": {
+        "name": "slow trace 1",
+        "spanId": "bb9a13e2fd404c37",
+        "startTimeMillis": 1668321500225,
+        "endTimeMillis": 1668321615000,
+        "serviceName": "bff",
+        "children": []
+      }
+    }
+  ],
+  "sameServiceTraces": [
+    {
+      "traceId": "ff801ca81b75c8b82f7d579774c38881",
+      "sameServiceAccessCount": 20,
+      "timeConsumingServiceName": "todo",
+      "root": {
+        "name": "slow span 1",
+        "spanId": "bb9a13e2fd404c37",
+        "startTimeMillis": 1668321500225,
+        "endTimeMillis": 1668321613927,
+        "serviceName": "bff",
+        "children": [
+          {
+            "name": "slow span 1",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "user",
+            "children": [
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "redis",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "slow span 1",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "user",
+            "children": [
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "mysql (user)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "redis",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "slow span 1",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "todo",
+            "children": [
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "postgres (todo)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "postgres (todo)",
+                "children": []
+              },
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "postgres (todo)",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "slow span 1",
+            "spanId": "bb9a13e2fd404c37",
+            "startTimeMillis": 1668321500225,
+            "endTimeMillis": 1668321613927,
+            "serviceName": "user",
+            "children": [
+              {
+                "name": "slow span 1",
+                "spanId": "bb9a13e2fd404c37",
+                "startTimeMillis": 1668321500225,
+                "endTimeMillis": 1668321613927,
+                "serviceName": "todo",
+                "children": [
+                  {
+                    "name": "slow span 1",
+                    "spanId": "bb9a13e2fd404c37",
+                    "startTimeMillis": 1668321500225,
+                    "endTimeMillis": 1668321613927,
+                    "serviceName": "postgres (todo)",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

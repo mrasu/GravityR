@@ -6,20 +6,21 @@ And also this is to solve the problems faster and easier.
 
 ### Dig
 
-Below shows slow queries by digging database's history from AWS's PerformanceInsights.  
+Below shows performance information by digging run history like traces.  
 
-* [dig performance-insights](https://mrasu.github.io/GravityR/performance-insights.html)
+* [app dig jaeger](https://mrasu.github.io/GravityR/jaeger.html)
+* [db dig performance-insights](https://mrasu.github.io/GravityR/performance-insights.html)
 
 ### Suggest
 
 Below shows how you can accelerate the query by adding index.
 
-* [suggest mysql](https://mrasu.github.io/GravityR/mysql.html)
-* [suggest mysql --with-examine](https://mrasu.github.io/GravityR/mysql_examine.html)
-* [suggest postgres](https://mrasu.github.io/GravityR/postgres.html)
-* [suggest postgres --with-examine](https://mrasu.github.io/GravityR/postgres_examine.html)
-* [suggest hasura postgres](https://mrasu.github.io/GravityR/hasura_postgres.html)
-* [suggest hasura postgres --with-examine](https://mrasu.github.io/GravityR/hasura_postgres_examine.html)
+* [db suggest mysql](https://mrasu.github.io/GravityR/mysql.html)
+* [db suggest mysql --with-examine](https://mrasu.github.io/GravityR/mysql_examine.html)
+* [db suggest postgres](https://mrasu.github.io/GravityR/postgres.html)
+* [db suggest postgres --with-examine](https://mrasu.github.io/GravityR/postgres_examine.html)
+* [db suggest hasura postgres](https://mrasu.github.io/GravityR/hasura_postgres.html)
+* [db suggest hasura postgres --with-examine](https://mrasu.github.io/GravityR/hasura_postgres_examine.html)
 
 # Usage
 
@@ -35,6 +36,7 @@ Below shows how you can accelerate the query by adding index.
     # Set envs to connect DB and Hasura
     export DB_USERNAME=root DB_DATABASE=gravityr
     export HASURA_URL="http://localhost:8081" HASURA_ADMIN_SECRET="myadminsecretkey" 
+    export JAEGER_UI_URL="http://localhost:16686" JAEGER_GRPC_ADDRESS="localhost:16685"
     
     # Get database information with AWS' Performance Insights
     gr db dig performance-insights -o "example/performance-insights.html"
@@ -72,27 +74,32 @@ Below shows how you can accelerate the query by adding index.
       }
     }
     " --json-variables '{"email": "test1112@example.com"}'
+   
+    # Get application information with Jaeger
+    gr app dig jaeger -o "example/jaeger.html" --service-name bff
     ```
 
 # Environment Variables
 
-| Command                 | Key                 | Description                                    |
-|-------------------------|---------------------|------------------------------------------------|
-| suggest hasura postgres | HASURA_URL          | URL to hasura. (e.g. http://localhost:8081)    |
-|                         | HASURA_ADMIN_SECRET | Token to connect as admin                      |
-| suggest mysql           | DB_USERNAME         | User of mysql                                  |
-|                         | DB_PASSWORD         | Password of mysql                              |
-|                         | DB_PROTOCOL         | Protocol to connect mysql. `tcp` by default    |
-|                         | DB_ADDRESS          | Network address of mysql                       |
-|                         | DB_DATABASE         | Database name of mysql                         |
-|                         | DB_PARAM_TEXT       | Arbitrary text used after `?` in DSN           |
-| suggest postgres        | DB_USERNAME         | User of PostgreSQL                             |
-|                         | DB_PASSWORD         | Password of PostgreSQL                         |
-|                         | DB_HOST             | Host of PostgreSQL                             |
-|                         | DB_PORT             | Port of PostgreSQL                             |
-|                         | DB_DATABASE         | Database name of PostgreSQL                    |
-|                         | DB_SEARCH_PATH      | Search path of PostgreSQL. `public` by default |
-|                         | DB_PARAM_TEXT       | Arbitrary text for connection string           |
+| Command                    | Key                 | Description                                      |
+|----------------------------|---------------------|--------------------------------------------------|
+| db suggest hasura postgres | HASURA_URL          | URL to hasura. (e.g. http://localhost:8081)      |
+|                            | HASURA_ADMIN_SECRET | Token to connect as admin                        |
+| db suggest mysql           | DB_USERNAME         | User of mysql                                    |
+|                            | DB_PASSWORD         | Password of mysql                                |
+|                            | DB_PROTOCOL         | Protocol to connect mysql. `tcp` by default      |
+|                            | DB_ADDRESS          | Network address of mysql                         |
+|                            | DB_DATABASE         | Database name of mysql                           |
+|                            | DB_PARAM_TEXT       | Arbitrary text used after `?` in DSN             |
+| db suggest postgres        | DB_USERNAME         | User of PostgreSQL                               |
+|                            | DB_PASSWORD         | Password of PostgreSQL                           |
+|                            | DB_HOST             | Host of PostgreSQL                               |
+|                            | DB_PORT             | Port of PostgreSQL                               |
+|                            | DB_DATABASE         | Database name of PostgreSQL                      |
+|                            | DB_SEARCH_PATH      | Search path of PostgreSQL. `public` by default   |
+|                            | DB_PARAM_TEXT       | Arbitrary text for connection string             |
+| app dig jaeger             | JAEGER_UI_URL       | URL to Jaeger's UI (e.g. http://localhost:16686) |
+|                            | JAEGER_GRPC_ADDRESS | Address to GRPC's query server                   |
 
 # Build
 ```sh

@@ -11,6 +11,7 @@ services:
       MYSQL_DATABASE: gravityr
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
   postgres14:
+    profiles: [all]
     image: postgres:14
     volumes:
       - ./docker/postgres14/data:/var/lib/postgresql/data
@@ -23,13 +24,24 @@ services:
     ports:
       - "5432:5432"
   aws_mock:
+    profiles: [all]
     build:
       context: ./docker/aws_mock
     volumes:
       - ./docker/aws_mock/fastapi:/app
     ports:
       - "8080:8080"
+  jaeger_mock:
+    profiles: [all]
+    build:
+      context: ./docker/jaeger_mock
+    volumes:
+      - ./docker/jaeger_mock/mock:/app
+    ports:
+      - "16685:16685"
+    restart: unless-stopped
   hasura2:
+    profiles: [all]
     image: hasura/graphql-engine:v2.10.0
     ports:
       - "8081:8080"
@@ -41,6 +53,7 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
   node:
+    profiles: [all]
     build:
       context: ./docker/node
     command: ["tail", "-f", "/dev/null"]

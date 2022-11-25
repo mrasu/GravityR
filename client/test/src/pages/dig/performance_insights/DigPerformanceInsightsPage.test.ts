@@ -1,31 +1,31 @@
-import DigPage from "@/pages/dig/DigPage.svelte";
+import DigPerformanceInsightsPage from "@/pages/dig/performance_insights/DigPerformanceInsightsPage.svelte";
 import { render, screen } from "@testing-library/svelte";
 import { plainToInstance } from "class-transformer";
-import { DigData } from "@/models/DigData";
+import { PerformanceInsightsData } from "@/models/PerformanceInsightsData";
 import ApexCharts from "apexcharts";
 
-describe("DigPage", () => {
+describe("DigPerformanceInsightsPage", () => {
   beforeEach(() => {
     jest.spyOn(ApexCharts.prototype, "render").mockReturnValue(null);
   });
 
   describe("smoke test", () => {
-    const digData = plainToInstance(DigData, {
+    const performanceInsightsData = plainToInstance(PerformanceInsightsData, {
       sqlDbLoads: [],
       tokenizedSqlDbLoads: [],
     });
 
     it("renders sqls", () => {
-      render(DigPage, {
-        digData: digData,
+      render(DigPerformanceInsightsPage, {
+        performanceInsightsData: performanceInsightsData,
       });
       const data = screen.getByTestId("sqls");
       expect(data).toBeInTheDocument();
     });
 
     it("renders timeline", () => {
-      render(DigPage, {
-        digData: digData,
+      render(DigPerformanceInsightsPage, {
+        performanceInsightsData: performanceInsightsData,
       });
       const data = screen.getByTestId("timeline");
       expect(data).toBeInTheDocument();

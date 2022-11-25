@@ -1,0 +1,19 @@
+{
+  "Spans": [
+    {
+      "TraceID": "4",
+      "SpanID": "1",
+      "OperationName": "request",
+      "StartTime": "2001-02-03T04:05:06Z",
+      "DurationMilliSec": 120000,
+      "Tags": {
+        "foo": "bar"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "4",
+        "SpanID": "0000000000000000"
+      }
+    }
+  ]
+}

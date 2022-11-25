@@ -2,7 +2,7 @@
   import "chota";
   import "reflect-metadata";
   import SuggestMysqlPage from "./pages/suggest/mysql/SuggestMysqlPage.svelte";
-  import DigPage from "./pages/dig/DigPage.svelte";
+  import DigPerformanceInsightsPage from "./pages/dig/performance_insights/DigPerformanceInsightsPage.svelte";
   import { grParam } from "./stores/gr_param.js";
   import { Nav } from "svelte-chota";
   import SuggestPostgresPage from "./pages/suggest/postgres/SuggestPostgresPage.svelte";
@@ -10,16 +10,16 @@
 
   const getCurrentTab = (path: string): string => {
     if ($grParam.dev) {
-      if (path === "/suggest_mysql") {
+      if (path === "suggest_mysql") {
         return "suggest_mysql";
       }
-      if (path === "/suggest_postgres") {
+      if (path === "suggest_postgres") {
         return "suggest_postgres";
       }
-      if (path === "/suggest_hasura") {
+      if (path === "suggest_hasura") {
         return "suggest_hasura";
       }
-      if (path === "/dig") {
+      if (path === "dig") {
         return "dig";
       }
     }
@@ -37,7 +37,9 @@
     }
   };
 
-  let page = getCurrentTab(window.location.pathname);
+  let page = getCurrentTab(
+    new URL(window.location.href).searchParams.get("page")
+  );
 </script>
 
 <main>
@@ -45,10 +47,11 @@
     <Nav>
       <svelte:fragment slot="left">
         <a href="/">Root</a>
-        <a href="/suggest_mysql">Suggest (MySQL)</a>
-        <a href="/suggest_postgres">Suggest (Postgres)</a>
-        <a href="/suggest_hasura">Suggest (Hasura)</a>
-        <a href="/dig">Dig</a>
+        <a href="/?page=suggest_mysql">Suggest (MySQL)</a>
+        <a href="/?page=suggest_postgres">Suggest (Postgres)</a>
+        <a href="/?page=suggest_hasura">Suggest (Hasura)</a>
+        <a href="/?page=dig">Dig</a>
+        <a href="/roots/mermaid.html">Mermaid</a>
       </svelte:fragment>
     </Nav>
   {/if}
@@ -64,7 +67,9 @@
   {:else if page === "suggest_hasura"}
     <SuggestHasuraPage suggestData={$grParam.suggestData.hasuraSuggestData} />
   {:else if page === "dig"}
-    <DigPage digData={$grParam.digData} />
+    <DigPerformanceInsightsPage
+      performanceInsightsData={$grParam.digData.performanceInsightsData}
+    />
   {/if}
 </main>
 

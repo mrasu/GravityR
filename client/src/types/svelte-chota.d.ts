@@ -8,4 +8,5 @@ declare module "svelte-chota" {
   export class Nav extends SvelteComponentTyped {}
   export class Card extends SvelteComponentTyped {}
   export class Button extends SvelteComponentTyped {}
+  export class Modal extends SvelteComponentTyped {}
 }

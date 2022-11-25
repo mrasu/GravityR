@@ -1,6 +1,7 @@
 import type { IDbLoad, ITimeDbLoad } from "../types/gr_param";
 import digSqlDbLoads from "./digSqlDbLoads.json";
 import digTokenizedSqlDbLoads from "./digTokenizedSqlDbLoads.json";
+import jaegerTraces from "./jaegerTraces.json";
 
 type timeDbLoad = { timestamp: string; databases: IDbLoad[] };
 
@@ -16,6 +17,9 @@ const toTimeDbLoads = (loads: timeDbLoad[]) => {
 };
 
 export const dummyDigData = {
-  sqlDbLoads: toTimeDbLoads(digSqlDbLoads),
-  tokenizedSqlDbLoads: toTimeDbLoads(digTokenizedSqlDbLoads),
+  performanceInsights: {
+    sqlDbLoads: toTimeDbLoads(digSqlDbLoads),
+    tokenizedSqlDbLoads: toTimeDbLoads(digTokenizedSqlDbLoads),
+  },
+  jaeger: jaegerTraces,
 };

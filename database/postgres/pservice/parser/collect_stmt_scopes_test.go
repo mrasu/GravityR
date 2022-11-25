@@ -4,6 +4,7 @@ import (
 	pParser "github.com/auxten/postgresql-parser/pkg/sql/parser"
 	"github.com/google/go-cmp/cmp"
 	"github.com/mrasu/GravityR/database/dservice/dparser"
+	"github.com/mrasu/GravityR/database/postgres/pservice"
 	"github.com/mrasu/GravityR/database/postgres/pservice/parser"
 	"github.com/mrasu/GravityR/thelper/tdata"
 	"github.com/stretchr/testify/assert"
@@ -77,7 +78,7 @@ func TestCollectStmtScopes_SingleField(t *testing.T) {
 		},
 		{
 			name:   "in query",
-			query:  "SELECT user_id in (1, 2, 3, parent_id) FROM users",
+			query:  "SELECT user_id IN (1, 2, 3, parent_id) FROM users",
 			fields: []*dparser.Field{{Columns: []*dparser.FieldColumn{{Name: "user_id", Type: dparser.FieldReference}, {Name: "parent_id", Type: dparser.FieldReference}}}},
 			table:  &dparser.Table{Name: "users"},
 		},
@@ -517,7 +518,7 @@ func TestCollectStmtScopes_GroupBy(t *testing.T) {
 		},
 		{
 			name:   "group by null",
-			query:  "SELECT COUNT(*) FROM users GROUP BY null",
+			query:  "SELECT COUNT(*) FROM users GROUP BY NULL",
 			fields: nil,
 			tables: []*dparser.Table{{Name: "users"}},
 		},
@@ -587,7 +588,7 @@ func TestCollectStmtScopes_Having(t *testing.T) {
 	}{
 		{
 			name:  "simple query",
-			query: "SELECT count(*) FROM users HAVING COUNT(name) > 1",
+			query: "SELECT COUNT(*) FROM users HAVING COUNT(name) > 1",
 			fields: []*dparser.Field{
 				{Columns: []*dparser.FieldColumn{{Name: "name", Type: dparser.FieldReference}}},
 			},
@@ -595,7 +596,7 @@ func TestCollectStmtScopes_Having(t *testing.T) {
 		},
 		{
 			name:  "comparison",
-			query: "SELECT count(*) FROM users HAVING COUNT(first_name) > COUNT(last_name)",
+			query: "SELECT COUNT(*) FROM users HAVING COUNT(first_name) > COUNT(last_name)",
 			fields: []*dparser.Field{
 				{Columns: []*dparser.FieldColumn{
 					{Name: "first_name", Type: dparser.FieldReference},
@@ -646,7 +647,7 @@ func TestCollectStmtScopes_OrderBy(t *testing.T) {
 		},
 		{
 			name:   "group by null",
-			query:  "SELECT COUNT(*) FROM users ORDER BY null",
+			query:  "SELECT COUNT(*) FROM users ORDER BY NULL",
 			fields: nil,
 			tables: []*dparser.Table{{Name: "users"}},
 		},
@@ -794,7 +795,7 @@ func TestCollectStmtScopes_SchemaSpecified(t *testing.T) {
 
 func toStatement(t *testing.T, query string) *pParser.Statement {
 	t.Helper()
-	stmt, err := parser.Parse(query)
+	stmt, err := pservice.Parse(query)
 	require.NoError(t, err)
 
 	return stmt

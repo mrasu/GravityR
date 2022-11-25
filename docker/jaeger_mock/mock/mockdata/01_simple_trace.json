@@ -1,0 +1,34 @@
+{
+  "Spans": [
+    {
+      "TraceID": "1",
+      "SpanID": "1",
+      "OperationName": "request",
+      "StartTime": "2001-02-03T01:05:06Z",
+      "DurationMilliSec": 1000,
+      "Tags": {
+        "foo": "bar"
+      },
+      "ServiceName": "bff",
+      "SpanRef": {
+        "TraceID": "1",
+        "SpanID": "0000000000000000"
+      }
+    },
+    {
+      "TraceID": "1",
+      "SpanID": "2",
+      "OperationName": "getUser",
+      "StartTime": "2001-02-03T01:05:06Z",
+      "DurationMilliSec": 1000,
+      "Tags": {
+        "foo": "buz"
+      },
+      "ServiceName": "user",
+      "SpanRef": {
+        "TraceID": "1",
+        "SpanID": "1"
+      }
+    }
+  ]
+}

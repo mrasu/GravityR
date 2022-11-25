@@ -20,7 +20,7 @@ func NewIndexSuggester(db *postgres.DB, schema string) *IndexSuggester {
 }
 
 func (is *IndexSuggester) Suggest(query string) ([]*dmodel.IndexTarget, error) {
-	stmt, err := parser.Parse(query)
+	stmt, err := Parse(query)
 	if err != nil {
 		return nil, err
 	}

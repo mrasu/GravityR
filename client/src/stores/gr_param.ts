@@ -1,7 +1,6 @@
 import { readable } from "svelte/store";
-import { SuggestData } from "../models/SuggestData";
-import { DigData } from "../models/DigData";
-import { plainToInstance } from "class-transformer";
+import { SuggestData } from "@/models/SuggestData";
+import { DigData } from "@/models/DigData";
 
 export const grParam = readable({
   dev: window.grParam.dev || false,
@@ -9,7 +8,5 @@ export const grParam = readable({
     ? new SuggestData(window.grParam.suggestData)
     : null,
 
-  digData: window.grParam.digData
-    ? plainToInstance(DigData, window.grParam.digData)
-    : null,
+  digData: window.grParam.digData ? new DigData(window.grParam.digData) : null,
 });

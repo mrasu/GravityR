@@ -1,10 +1,6 @@
 import ApexCharts from "apexcharts";
 import type { ApexOptions } from "apexcharts";
-import type {
-  ChartConfig,
-  ChartContext,
-  ChartPoint,
-} from "../types/apexcharts";
+import type { ChartConfig, ChartContext, ChartPoint } from "@/types/apexcharts";
 
 export type GrChartPoint<T> = ChartPoint<GrChartSeries<T>>;
 

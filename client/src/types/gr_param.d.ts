@@ -37,11 +37,6 @@ export interface IHasuraPostgresSuggestData extends IDbSuggestData {
   summaryText: string;
 }
 
-export interface IDigData {
-  sqlDbLoads: ITimeDbLoad[];
-  tokenizedSqlDbLoads: ITimeDbLoad[];
-}
-
 export abstract interface IDbAnalyzeData {
   text: string;
   title: string;
@@ -113,12 +108,22 @@ interface IExaminationIndexResult {
   executionTimeMillis: number;
 }
 
-export interface ITimeDbLoad {
+interface IDigData {
+  performanceInsights: IPerformanceInsightsData;
+  jaeger: IJaegerData;
+}
+
+interface IPerformanceInsightsData {
+  sqlDbLoads: ITimeDbLoad[];
+  tokenizedSqlDbLoads: ITimeDbLoad[];
+}
+
+interface ITimeDbLoad {
   timestamp: number;
   databases: IDbLoad[];
 }
 
-export interface IDbLoad {
+interface IDbLoad {
   name: string;
   sqls: IDbLoadOfSql[];
 }
@@ -128,4 +133,28 @@ export interface IDbLoadOfSql {
   loadMax: number;
   loadSum: number;
   tokenizedId: string;
+}
+
+interface IJaegerData {
+  uiPath: string;
+  slowThresholdMilli: number;
+  sameServiceThreshold: number;
+  slowTraces: IOtelCompactedTrace[];
+  sameServiceTraces: IOtelCompactedTrace[];
+}
+
+interface IOtelCompactedTrace {
+  traceId: string;
+  sameServiceAccessCount: number;
+  timeConsumingServiceName: string;
+  root: IOtelTraceSpan;
+}
+
+interface IOtelTraceSpan {
+  name: string;
+  spanId: string;
+  startTimeMillis: number;
+  endTimeMillis: number;
+  serviceName: string;
+  children: IOtelTraceSpan[];
 }

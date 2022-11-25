@@ -1,4 +1,4 @@
-package parser
+package pservice
 
 import (
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
 	"github.com/auxten/postgresql-parser/pkg/sql/sem/tree"
+	"github.com/mrasu/GravityR/database/postgres/pservice/ast"
 	"github.com/mrasu/GravityR/lib"
 )
 
@@ -24,7 +25,7 @@ func CollectTableNames(stmt *parser.Statement) ([]string, []error) {
 		return nil, []error{lib.NewUnsupportedError("only SELECT query is supported")}
 	}
 
-	errs := walk(tc, stmt)
+	errs := ast.Walk(tc, stmt)
 	if len(errs) > 0 {
 		return nil, errs
 	}

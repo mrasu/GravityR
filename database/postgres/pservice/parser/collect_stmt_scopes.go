@@ -5,6 +5,7 @@ import (
 	"github.com/auxten/postgresql-parser/pkg/sql/parser"
 	"github.com/auxten/postgresql-parser/pkg/sql/sem/tree"
 	"github.com/mrasu/GravityR/database/dservice/dparser"
+	"github.com/mrasu/GravityR/database/postgres/pservice/ast"
 	"github.com/mrasu/GravityR/lib"
 	"reflect"
 )
@@ -47,7 +48,7 @@ func CollectStmtScopes(stmt *parser.Statement, targetSchema string) ([]*dparser.
 		return nil, []error{lib.NewUnsupportedError("only SELECT query is supported")}
 	}
 
-	errs := walk(sc, stmt)
+	errs := ast.Walk(sc, stmt)
 	if len(errs) > 0 {
 		return nil, errs
 	}

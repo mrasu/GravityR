@@ -129,7 +129,7 @@ func (mr *mysqlRunner) createHTML(outputPath string, its []*dmodel.IndexTarget, 
 		ver,
 	)
 
-	err := html.CreateHtml(outputPath, bo)
+	err := html.CreateHtml(html.TypeMain, outputPath, bo)
 	if err != nil {
 		return err
 	}
