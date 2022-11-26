@@ -2,6 +2,20 @@ GravityR is a Gravity-Radar.
 This exists to reduce time to find bottleneck in your application.
 And also this is to solve the problems faster and easier.  
 
+# Features
+
+### Analyze application bottleneck
+
+You can find bottleneck of application using Jaeger or AWS's PerformanceInsights
+
+![Jaeger](/docs/images/jaeger.png)
+
+### Analyze database bottleneck
+
+You can find bottleneck of PostgreSQL, Hasura and MySQL
+
+![PostgreSQL](/docs/images/postgres.png)
+
 # Example
 
 ### Dig
